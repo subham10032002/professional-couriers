@@ -12,3 +12,5 @@ val Pink40 = Color(0xFF7D5260)
 
 val Red = Color(0xFFE92429)
 val ButtonGrey = Color(0xFFE4E4E4)
+val GradientLeft = Color(0xFFF48020)
+val GradientRight = Color(0xFFE92429)
