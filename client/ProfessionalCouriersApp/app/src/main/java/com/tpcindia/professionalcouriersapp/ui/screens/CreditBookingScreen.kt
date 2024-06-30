@@ -17,7 +17,7 @@ import com.tpcindia.professionalcouriersapp.ui.components.DatePickerInputField
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
 import com.tpcindia.professionalcouriersapp.ui.components.ImagePickerBox
 import com.tpcindia.professionalcouriersapp.ui.components.InputTextField
-import com.tpcindia.professionalcouriersapp.ui.components.MandatoryLabelText
+import com.tpcindia.professionalcouriersapp.ui.components.LabelText
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 
@@ -60,7 +60,7 @@ fun CreditBookingScreen() {
                 .fillMaxWidth()
         ) {
             // Date * header
-            MandatoryLabelText("Date ")
+            LabelText("Date ")
             InputTextField(
                 value = currentDate,
                 onValueChange = { currentDate = it },
@@ -69,7 +69,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Consignment Number ")
+            LabelText("Consignment Number ")
             InputTextField(
                 value = consignmentNumber,
                 onValueChange = { consignmentNumber = it },
@@ -78,7 +78,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Client Name ")
+            LabelText("Client Name ")
             DropdownTextField(
                 label = "Select..",
                 options = mutableListOf("ab", "abcd"),
@@ -88,7 +88,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Booking Date ")
+            LabelText("Booking Date ")
             DatePickerInputField(
                 label = "Ex- 15/07/2023",
                 selectedDate = selectedDate,
@@ -97,7 +97,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Pincode ")
+            LabelText("Pincode ")
             InputTextField(
                 value = pincode,
                 onValueChange = { pincode = it },
@@ -106,7 +106,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Destination ")
+            LabelText("Destination ")
             DropdownTextField(
                 label = "Select..",
                 options = mutableListOf("ab", "abcd"),
@@ -116,7 +116,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Consignee Type ")
+            LabelText("Consignee Type ")
             DropdownTextField(
                 label = "Select..",
                 options = mutableListOf("ab", "abcd"),
@@ -126,7 +126,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Mode ")
+            LabelText("Mode ")
             DropdownTextField(
                 label = "Select..",
                 options = mutableListOf("ab", "abcd"),
@@ -136,12 +136,12 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Photo of address ")
+            LabelText("Photo of address ")
             ImagePickerBox()
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Consignee Name ")
+            LabelText("Consignee Name ")
             InputTextField(
                 value = consigneeName,
                 onValueChange = { consigneeName = it },
@@ -150,7 +150,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("No of Psc ")
+            LabelText("No of Psc ")
             InputTextField(
                 value = noOfPsc,
                 onValueChange = { noOfPsc = it },
@@ -159,7 +159,7 @@ fun CreditBookingScreen() {
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            MandatoryLabelText("Weight ", false)
+            LabelText("Weight ", false)
             InputTextField(
                 value = weight,
                 onValueChange = { weight = it },
@@ -170,7 +170,7 @@ fun CreditBookingScreen() {
 
             CustomButton(
                 onClick = {  },
-                horizontalPadding = 80.dp,
+                horizontalPadding = 60.dp,
                 isFilled = true, // Check for all the mandatory fields are filled or Not
                 loginState = false,
                 text = "Next",

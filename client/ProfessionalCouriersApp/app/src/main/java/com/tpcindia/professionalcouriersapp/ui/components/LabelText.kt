@@ -11,7 +11,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun MandatoryLabelText(text: String, showAsterisk: Boolean = true) {
+fun LabelText(text: String, showAsterisk: Boolean = true) {
     Text(
         text = buildAnnotatedString {
             append(text)
