@@ -31,6 +31,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.R
+import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
+import com.tpcindia.professionalcouriersapp.ui.theme.GradientLeft
+import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
 
@@ -130,29 +133,16 @@ fun LoginScreen(viewModel: LoginViewModel = LoginViewModel(), navController: Nav
             )
         )
         Spacer(modifier = Modifier.height(40.dp))
-        Button(
-            onClick = {
-                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                viewModel.login(username, password)
-            },
-            modifier = Modifier
-                .width(273.dp)
-                .height(46.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = if (isFilled) Red else Color.LightGray),
-            shape = RoundedCornerShape(23.dp),
-            enabled = isFilled
-        ) {
-            if (loginState.isLoading) {
-                CircularProgressIndicator(color = Color.White)
-            } else {
-                Text(
-                    text = "Login",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-            }
-        }
+
+        CustomButton(
+            onClick = { viewModel.login(username, password) },
+            horizontalPadding = 60.dp,
+            isFilled = isFilled,
+            loginState = loginState.isLoading,
+            text = "LogIn",
+            textColor = Color.White,
+            backgroundColor = Red
+        )
     }
 }
 
