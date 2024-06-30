@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -26,7 +25,7 @@ import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 
 @Composable
-fun CreditBillingScreen(noOfPsc: String) {
+fun CBDimensionsScreen(noOfPsc: String) {
 
     var selectedUnit by remember { mutableStateOf("") }
 
@@ -40,7 +39,7 @@ fun CreditBillingScreen(noOfPsc: String) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Credit Billing",
+            text = "Credit Booking",
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = 16.dp)
@@ -144,6 +143,6 @@ fun CreditBillingScreen(noOfPsc: String) {
 
 @Preview
 @Composable
-fun CreditBillingScreenPreview() {
-    CreditBillingScreen("3")
+fun CBDimensionsScreenPreview() {
+    CBDimensionsScreen("3")
 }
