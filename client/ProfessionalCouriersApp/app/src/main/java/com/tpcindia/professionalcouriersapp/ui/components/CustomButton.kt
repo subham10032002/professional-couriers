@@ -33,7 +33,6 @@ fun CustomButton(
     textColor: Color,
     backgroundColor: Color
 ) {
-    val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
 
     Button(
