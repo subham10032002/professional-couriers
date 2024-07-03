@@ -13,8 +13,10 @@ public class AccountsCustomer {
     @Column(name = "FirmName")
     private String firmName;
 
+    @Column(name = "Type")
+    private String type;
 
-
-
+    @Column(name = "Flag")
+    private String flag;
 
 }
