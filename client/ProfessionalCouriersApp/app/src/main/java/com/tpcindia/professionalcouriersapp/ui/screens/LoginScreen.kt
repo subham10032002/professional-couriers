@@ -4,7 +4,9 @@ import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,17 +23,17 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.R
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
+import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = LoginViewModel(), navController: NavController) {
+fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -45,7 +47,10 @@ fun LoginScreen(viewModel: LoginViewModel = LoginViewModel(), navController: Nav
             Toast.makeText(context, loginState.error, Toast.LENGTH_SHORT).show()
         }
         if (loginState.isAuthenticated) {
-            navController.navigate("home/${loginState.name}/${loginState.branch}")
+            val route = viewModel.createHomeScreenRoute()
+            if (route != null) {
+                navController.navigate(route)
+            }
         }
     }
 
@@ -53,6 +58,7 @@ fun LoginScreen(viewModel: LoginViewModel = LoginViewModel(), navController: Nav
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
@@ -76,12 +82,12 @@ fun LoginScreen(viewModel: LoginViewModel = LoginViewModel(), navController: Nav
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
+            placeholder = { Text("Username") },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 5.dp)
-                .height(46.dp),
+                .height(56.dp),
             textStyle = LocalTextStyle.current.copy(color = Color.Black),
             shape = RoundedCornerShape(7.dp),
             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -93,13 +99,13 @@ fun LoginScreen(viewModel: LoginViewModel = LoginViewModel(), navController: Nav
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            placeholder = { Text("Password") },
             singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 5.dp)
-                .height(46.dp),
+                .height(56.dp),
             trailingIcon = {
                 val image = if (passwordVisible)
                     painterResource(id = R.drawable.tpc_password_visibility_off)
@@ -127,7 +133,9 @@ fun LoginScreen(viewModel: LoginViewModel = LoginViewModel(), navController: Nav
         Spacer(modifier = Modifier.height(40.dp))
 
         CustomButton(
-            onClick = { viewModel.login(username, password) },
+            onClick = {
+                viewModel.login(username, password)
+                      },
             horizontalPadding = 60.dp,
             isFilled = isFilled,
             loginState = loginState.isLoading,
@@ -137,10 +145,3 @@ fun LoginScreen(viewModel: LoginViewModel = LoginViewModel(), navController: Nav
         )
     }
 }
-
-@Preview
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen(viewModel = LoginViewModel(), navController = NavController(context = LocalContext.current))
-}
-

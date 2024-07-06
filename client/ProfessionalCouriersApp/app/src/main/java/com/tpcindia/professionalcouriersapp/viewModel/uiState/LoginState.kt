@@ -1,4 +1,4 @@
-package com.tpcindia.professionalcouriersapp.data.model
+package com.tpcindia.professionalcouriersapp.viewModel.uiState
 
 data class LoginState(
     val isLoading: Boolean = false,
