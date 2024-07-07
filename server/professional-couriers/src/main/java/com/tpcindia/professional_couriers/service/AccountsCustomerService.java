@@ -1,5 +1,6 @@
 package com.tpcindia.professional_couriers.service;
 
+import com.tpcindia.professional_couriers.model.AccountsCustomer;
 import com.tpcindia.professional_couriers.repository.AccountsCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,5 +15,14 @@ public class AccountsCustomerService {
 
     public List<String> getFirmNamesByBranch(String branchCode) {
         return accountsCustomerRepository.findFirmNamesByTypeAndBranch(branchCode);
+    }
+
+    public String findEmailByFirmName(String firmName) {
+        String email = accountsCustomerRepository.findEmailByFirmNameAndType(firmName);
+        if (email != null) {
+            return email.trim();
+        } else {
+            return null;
+        }
     }
 }
