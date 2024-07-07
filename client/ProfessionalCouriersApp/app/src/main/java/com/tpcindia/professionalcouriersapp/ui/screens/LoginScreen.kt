@@ -38,7 +38,6 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     val isFilled = username.isNotEmpty() && password.isNotEmpty()
-    val haptic = LocalHapticFeedback.current
     val context = LocalContext.current
     val loginState by viewModel.loginState.collectAsState()
 
@@ -82,7 +81,7 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            placeholder = { Text("Username") },
+            placeholder = { Text("Username", color = Color.LightGray) },
             singleLine = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,7 +98,7 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            placeholder = { Text("Password") },
+            placeholder = { Text("Password", color = Color.LightGray) },
             singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             modifier = Modifier

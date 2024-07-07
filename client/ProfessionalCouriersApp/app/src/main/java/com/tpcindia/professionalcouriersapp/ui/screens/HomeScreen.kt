@@ -1,5 +1,6 @@
 package com.tpcindia.professionalcouriersapp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -8,11 +9,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,16 +37,20 @@ import com.tpcindia.professionalcouriersapp.ui.components.BookingCard
 import com.tpcindia.professionalcouriersapp.ui.theme.*
 import com.tpcindia.professionalcouriersapp.R
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
+import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun HomeScreen(navController: NavController, name: String, branch: String, bookings: List<String>) {
+fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: String, branch: String, bookings: List<String>) {
 
     var fabState by remember { mutableStateOf(FabState.Default) }
 
     val isNetworkCallInProgress = fabState == FabState.Loading
 
     var rotation by remember { mutableFloatStateOf(0f) }
+
+    val homeState by viewModel.homeState.collectAsState()
 
 
     val fabIcon = when (fabState) {
@@ -123,7 +130,9 @@ fun HomeScreen(navController: NavController, name: String, branch: String, booki
                     .verticalScroll(rememberScrollState())
             ) {
                 bookings.forEach { booking ->
-                    BookingCard(booking = booking)
+                    BookingCard(booking = booking, onClick = {
+                        viewModel.onBookingClick(branchCode = branch)
+                    })
                     Spacer(modifier = Modifier.height(4.dp))
                 }
             }
@@ -169,6 +178,34 @@ fun HomeScreen(navController: NavController, name: String, branch: String, booki
                 )
             }
         }
+
+        if (homeState.isLoading) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0x80000000))
+            ) {
+                CircularProgressIndicator(color = Color.White)
+                Text(
+                    text = "Please wait, we're fetching details...",
+                    color = Color.White,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
+            }
+        }
+
+        homeState.error?.let { errorMessage ->
+            ShowToastMessage(errorMessage)
+            viewModel.clearErrorMessage()
+        }
+
+        if (homeState.isDataFetched) {
+            val route = viewModel.createLoginScreenRoute()
+            if (route != null) {
+                navController.navigate(route)
+            }
+        }
     }
 }
 
@@ -176,8 +213,10 @@ enum class FabState {
     Default, Loading, Success, Failure
 }
 
-@Preview
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen(navController = NavController(context = LocalContext.current), "Name", "branch", mutableListOf("Credit Booking", "Cash Booking"))
+fun ShowToastMessage(message: String) {
+    val context = LocalContext.current
+    LaunchedEffect(message) {
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    }
 }

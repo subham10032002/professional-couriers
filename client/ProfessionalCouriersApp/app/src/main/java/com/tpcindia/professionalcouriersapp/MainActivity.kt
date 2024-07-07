@@ -16,13 +16,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tpcindia.professionalcouriersapp.ui.navigation.AppNavHost
 import com.tpcindia.professionalcouriersapp.ui.theme.ProfessionalCouriersAppTheme
+import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.viewModelFactory.HomeViewModelFactory
 import com.tpcindia.professionalcouriersapp.viewModel.viewModelFactory.LoginViewModelFactory
 
 class MainActivity : ComponentActivity() {
 
     private val loginViewModel: LoginViewModel by viewModels {
         LoginViewModelFactory(application)
+    }
+
+    private val homeViewModel: HomeViewModel by viewModels {
+        HomeViewModelFactory()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +40,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                 ) { innerPadding ->
                     AppContent(
-                        viewModel = loginViewModel,
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -43,7 +48,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun AppContent(viewModel: LoginViewModel, modifier: Modifier) {
-        AppNavHost(loginViewModel = viewModel, modifier = modifier)
+    private fun AppContent(modifier: Modifier) {
+        AppNavHost(loginViewModel = loginViewModel, homeViewModel = homeViewModel, modifier = modifier)
     }
 }

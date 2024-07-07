@@ -2,8 +2,8 @@ package com.tpcindia.professionalcouriersapp.data.repository
 
 import android.content.Context
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
-import com.tpcindia.professionalcouriersapp.data.model.LoginRequest
-import com.tpcindia.professionalcouriersapp.data.model.User
+import com.tpcindia.professionalcouriersapp.data.model.request.LoginRequest
+import com.tpcindia.professionalcouriersapp.data.model.response.User
 import com.tpcindia.professionalcouriersapp.data.utils.SharedPreferencesManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
