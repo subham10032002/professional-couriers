@@ -19,4 +19,11 @@ public class AccountsCustomer {
     @Column(name = "Flag")
     private String flag;
 
+    @Column(name = "EmailId")
+    private String emailId;
+
+    public String getEmailId() {
+        return emailId;
+    }
+
 }
