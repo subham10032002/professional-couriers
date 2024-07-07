@@ -1,5 +1,6 @@
 package com.tpcindia.professional_couriers.controller;
 
+import com.tpcindia.professional_couriers.dto.BranchEmailDTO;
 import com.tpcindia.professional_couriers.dto.CustomerEmailDTO;
 import com.tpcindia.professional_couriers.dto.FirmNameDTO;
 import com.tpcindia.professional_couriers.service.AccountsCustomerService;
@@ -32,6 +33,16 @@ public class AccountsCustomerController {
             return ResponseEntity.ok(emailId);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found");
+        }
+    }
+
+    @PostMapping("/branchEmail")
+    public ResponseEntity<String> getBranchEmailId(@RequestBody BranchEmailDTO emailDTO) {
+        String emailId = accountsCustomerService.findEmailByBranchCode(emailDTO.getBranchCode());
+        if (emailId != null) {
+            return ResponseEntity.ok(emailId);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Branch Email not found");
         }
     }
 }
