@@ -17,4 +17,8 @@ public interface AccountsCustomerRepository extends JpaRepository<AccountsCustom
 
     @Query("SELECT ac.emailId FROM AccountsCustomer ac WHERE ac.type = 'Cust' AND ac.firmName = :firmName AND ac.flag = 'Acti'")
     String findEmailByFirmNameAndType(@Param("firmName") String firmName);
+
+    @Query("SELECT ac.emailId FROM AccountsCustomer ac WHERE ac.type = 'Bran' AND ac.custCode = :branchCode AND ac.flag = 'Acti'")
+    String findEmailByBranchCodeAndType(@Param("branchCode") String branchCode);
+
 }

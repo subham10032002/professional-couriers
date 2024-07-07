@@ -25,4 +25,13 @@ public class AccountsCustomerService {
             return null;
         }
     }
+
+    public String findEmailByBranchCode(String branchCode) {
+        String email = accountsCustomerRepository.findEmailByBranchCodeAndType(branchCode);
+        if (email != null) {
+            return email.trim();
+        } else {
+            return null;
+        }
+    }
 }
