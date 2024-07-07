@@ -2,7 +2,7 @@ package com.tpcindia.professionalcouriersapp.data.utils
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.tpcindia.professionalcouriersapp.data.model.User
+import com.tpcindia.professionalcouriersapp.data.model.response.User
 
 object SharedPreferencesManager {
 
@@ -29,7 +29,7 @@ object SharedPreferencesManager {
         val lastName = sharedPreferences.getString(KEY_LAST_NAME, null)
         val branchCode = sharedPreferences.getString(KEY_BRANCH_CODE, null)
         return if (firstName != null && lastName != null && branchCode != null) {
-            User(firstName = "firstName", lastName = lastName, branchCode = branchCode)
+            User(firstName = firstName, lastName = lastName, branchCode = branchCode)
         } else {
             null
         }

@@ -1,4 +1,4 @@
-package com.tpcindia.professionalcouriersapp.data.model
+package com.tpcindia.professionalcouriersapp.data.model.response
 
 data class User(
     val firstName: String,

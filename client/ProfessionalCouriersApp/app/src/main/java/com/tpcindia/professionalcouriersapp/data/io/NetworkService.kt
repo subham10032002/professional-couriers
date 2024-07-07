@@ -5,7 +5,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONArray
 import org.json.JSONObject
+import java.io.IOException
 
 class NetworkService {
 
@@ -30,6 +32,71 @@ class NetworkService {
             } else {
                 Result.failure(Exception("Authentication failed"))
             }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    fun getFirmNames(branchCode: String): Result<List<String>> {
+        val json = JSONObject()
+        json.put("branchCode", branchCode)
+        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(IOConfig.getFirmNameUrl())
+            .post(requestBody)
+            .build()
+
+        return try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+                val jsonArray = JSONArray(responseData)
+                val firmNames = mutableListOf<String>()
+                for (i in 0 until jsonArray.length()) {
+                    val element = jsonArray.get(i)
+                    if (element is String) {
+                        firmNames.add(element)
+                    }
+                }
+                Result.success(firmNames)
+            } else {
+                Result.failure(Exception("Failed to fetch firm names"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    fun getConsignmentDetails(firmName: String): Result<Map<String, Any>> {
+        val json = JSONObject()
+        json.put("firmName", firmName)
+        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(IOConfig.getConsignmentDetailsUrl())
+            .post(requestBody)
+            .build()
+
+        return try {
+//            val response = client.newCall(request).execute()
+//            if (response.isSuccessful) {
+//                val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+//                val jsonResponse = JSONObject(responseData)
+//                val details = mutableMapOf<String, Any>()
+//                jsonResponse.keys().forEach {
+//                    details[it] = jsonResponse[it]
+//                }
+//                Result.success(details)
+//            } else {
+//                Result.failure(Exception("Failed to fetch consignment details"))
+//            }
+            val details = mutableMapOf<String, Any>()
+            details.put("startNo", "123")
+            details.put("accCode", "ABC")
+            details.put("consignmentNo", "12345")
+            details.put("balanceStock", "100")
+            Result.success(details)
         } catch (e: Exception) {
             Result.failure(e)
         }

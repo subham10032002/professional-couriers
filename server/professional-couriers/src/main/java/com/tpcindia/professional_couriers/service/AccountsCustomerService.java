@@ -5,7 +5,10 @@ import com.tpcindia.professional_couriers.repository.AccountsCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static java.lang.System.in;
 
 @Service
 public class AccountsCustomerService {
@@ -14,7 +17,9 @@ public class AccountsCustomerService {
     private AccountsCustomerRepository accountsCustomerRepository;
 
     public List<String> getFirmNamesByBranch(String branchCode) {
-        return accountsCustomerRepository.findFirmNamesByTypeAndBranch(branchCode);
+        List<String> firmNames = accountsCustomerRepository.findFirmNamesByTypeAndBranch(branchCode);
+        firmNames.replaceAll(String::trim);
+        return firmNames;
     }
 
     public String findEmailByFirmName(String firmName) {

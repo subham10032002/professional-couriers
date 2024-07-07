@@ -9,9 +9,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
 import com.tpcindia.professionalcouriersapp.ui.components.DatePickerInputField
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
@@ -22,7 +22,13 @@ import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 
 @Composable
-fun CreditBookingScreen() {
+fun CreditBookingScreen(
+    navController: NavController,
+    date: String,
+    consignmentNumber: String,
+    balanceStock: String,
+    clientName: String
+) {
     var selectedDate by remember { mutableStateOf("") }
     var currentDate by remember { mutableStateOf("") }
     var consignmentNumber by remember { mutableStateOf("") }
@@ -181,10 +187,4 @@ fun CreditBookingScreen() {
             Spacer(modifier = Modifier.height(20.dp))
         }
     }
-}
-
-@Preview
-@Composable
-fun CreditBookingScreenPreview() {
-    CreditBookingScreen()
 }

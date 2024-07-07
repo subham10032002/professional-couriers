@@ -39,7 +39,7 @@ public class ConsignmentService {
         Map<String, Object> result = new HashMap<>();
         result.put("startNo", lastUsedConsNo);
         result.put("accCode", accCode);
-        result.put("lastUsedConsNo", lastUsedConsNo);
+        result.put("consignmentNo", lastUsedConsNo);
         result.put("balanceStock", balanceStock);
 
         return result;

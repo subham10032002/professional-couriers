@@ -16,7 +16,7 @@ public class UserLoginService {
     private UserLoginRepository userLoginRepository;
 
     public UserLogin authenticateUser(String loginId, String password) throws InvalidCredentialsException {
-        UserLogin userLogin = userLoginRepository.findByLoginIdAndPassword(loginId, getDecryptedPassword(password), "active");
+        UserLogin userLogin = userLoginRepository.findByLoginIdAndPassword(loginId, password, "active");
 
         if (userLogin == null) {
             throw new InvalidCredentialsException("Invalid Credentials");

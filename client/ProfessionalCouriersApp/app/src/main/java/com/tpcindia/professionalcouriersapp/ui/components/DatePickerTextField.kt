@@ -43,11 +43,7 @@ fun DatePickerInputField(
                 }
             }
         },
-        label = {
-            Text(
-                text = label,
-                color = Color.LightGray
-            )},
+        placeholder = { Text(label, color = Color.LightGray) },
         trailingIcon = {
             Icon(
                 painter = painterResource(id = R.drawable.tpc_calendar),
@@ -56,7 +52,7 @@ fun DatePickerInputField(
         },
         modifier = Modifier
             .fillMaxWidth()
-            .height(46.dp)
+            .height(56.dp)
             .padding(horizontal = 16.dp),
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Number
