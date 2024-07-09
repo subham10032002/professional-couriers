@@ -8,7 +8,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.gson.Gson
+import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.screens.*
+import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
 
@@ -16,6 +19,7 @@ import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
 fun AppNavHost(
     loginViewModel: LoginViewModel,
     homeViewModel: HomeViewModel,
+    creditBookingViewModel: CreditBookingViewModel,
     modifier: Modifier = Modifier,
     startDestination: String = Screen.Login.route
 ) {
@@ -63,6 +67,7 @@ fun AppNavHost(
             val currentDate = "$day/$month/$year" // Construct date string
 
             CreditBookingScreen(
+                viewModel = creditBookingViewModel,
                 navController = navController,
                 date = currentDate,
                 consignmentNumber = consignmentNumber,
@@ -71,5 +76,13 @@ fun AppNavHost(
             )
         }
 
+        composable(
+            route = Screen.CBDimensions.route,
+            arguments = listOf(navArgument("creditBookingData") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val json = backStackEntry.arguments?.getString("creditBookingData") ?: ""
+            val creditBookingData = Gson().fromJson(json, CreditBookingData::class.java)
+            CBDimensionsScreen(creditBookingData = creditBookingData)
+        }
     }
 }

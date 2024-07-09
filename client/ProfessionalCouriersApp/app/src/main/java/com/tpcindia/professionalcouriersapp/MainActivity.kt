@@ -16,8 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tpcindia.professionalcouriersapp.ui.navigation.AppNavHost
 import com.tpcindia.professionalcouriersapp.ui.theme.ProfessionalCouriersAppTheme
+import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.viewModelFactory.CreditBookingViewModelFactory
 import com.tpcindia.professionalcouriersapp.viewModel.viewModelFactory.HomeViewModelFactory
 import com.tpcindia.professionalcouriersapp.viewModel.viewModelFactory.LoginViewModelFactory
 
@@ -29,6 +31,10 @@ class MainActivity : ComponentActivity() {
 
     private val homeViewModel: HomeViewModel by viewModels {
         HomeViewModelFactory()
+    }
+
+    private val creditBookingViewModel: CreditBookingViewModel by viewModels {
+        CreditBookingViewModelFactory()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +55,6 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun AppContent(modifier: Modifier) {
-        AppNavHost(loginViewModel = loginViewModel, homeViewModel = homeViewModel, modifier = modifier)
+        AppNavHost(loginViewModel = loginViewModel, homeViewModel = homeViewModel, creditBookingViewModel = creditBookingViewModel, modifier = modifier)
     }
 }

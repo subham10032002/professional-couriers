@@ -3,6 +3,7 @@ package com.tpcindia.professionalcouriersapp.ui.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -10,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,30 +22,27 @@ fun InputTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
+    maxLength: Int? = null,
+    keyboardType: KeyboardType = KeyboardType.Text
 ) {
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = {
-            Text(
-            text = label,
-            color = Color.LightGray
-        )},
+        value = if (maxLength != null && value.length > maxLength) {
+            value.substring(0, maxLength)
+        } else {
+            value
+        },
+        onValueChange = { newValue ->
+            if (maxLength == null || newValue.length <= maxLength) {
+                onValueChange(newValue)
+            }
+        },
+        placeholder = { Text(label, color = Color.LightGray) },
         trailingIcon = trailingIcon,
         modifier = modifier
             .fillMaxWidth()
-            .height(46.dp)
-            .padding(horizontal = 16.dp)
-    )
-}
-
-@Preview
-@Composable
-fun InputTextFieldPreview() {
-    InputTextField(
-        value = "consignmentNumber",
-        onValueChange = { var selectedDate = it },
-        label = "Ex- 1234567890"
+            .height(56.dp)
+            .padding(horizontal = 16.dp),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType)
     )
 }

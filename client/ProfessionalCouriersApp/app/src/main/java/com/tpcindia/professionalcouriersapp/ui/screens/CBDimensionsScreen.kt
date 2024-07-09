@@ -15,6 +15,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.tpcindia.professionalcouriersapp.configs.UIConfig
+import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
 import com.tpcindia.professionalcouriersapp.ui.components.InputTextFieldWithSum
@@ -25,7 +28,7 @@ import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 
 @Composable
-fun CBDimensionsScreen(noOfPsc: String) {
+fun CBDimensionsScreen(creditBookingData: CreditBookingData) {
 
     var selectedUnit by remember { mutableStateOf("") }
 
@@ -50,7 +53,7 @@ fun CBDimensionsScreen(noOfPsc: String) {
             text = buildAnnotatedString {
                 append("No of psc selected was: ")
                 withStyle(style = SpanStyle(color = Color.Red)) {
-                    append(noOfPsc)
+                    append(creditBookingData.noOfPsc)
                 }
             },
             fontSize = 16.sp,
@@ -64,13 +67,13 @@ fun CBDimensionsScreen(noOfPsc: String) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .weight(1f)  // Takes up available vertical space
+                .weight(1f)
         ) {
 
             LabelText("Unit ")
             DropdownTextField(
                 label = "Select..",
-                options = mutableListOf("ab", "abcd"),
+                options = UIConfig.UNIT,
                 selectedOption = selectedUnit,
                 onOptionSelected = { selectedUnit = it }
             )
@@ -101,7 +104,6 @@ fun CBDimensionsScreen(noOfPsc: String) {
                 onValueChange = { },
                 label = "Ex- 10,20,30"
             )
-
 
         }
 
@@ -141,8 +143,3 @@ fun CBDimensionsScreen(noOfPsc: String) {
     }
 }
 
-@Preview
-@Composable
-fun CBDimensionsScreenPreview() {
-    CBDimensionsScreen("3")
-}

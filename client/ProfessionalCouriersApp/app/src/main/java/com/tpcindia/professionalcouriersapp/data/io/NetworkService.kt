@@ -1,6 +1,8 @@
 package com.tpcindia.professionalcouriersapp.data.io
 
 import com.tpcindia.professionalcouriersapp.configs.IOConfig
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -97,6 +99,40 @@ class NetworkService {
             details.put("consignmentNo", "12345")
             details.put("balanceStock", "100")
             Result.success(details)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    fun getDestination(pincode: String): Result<List<String>> {
+        val baseUrl = IOConfig.getDestinationUrl()
+        val url = baseUrl.toHttpUrlOrNull()?.newBuilder()
+            ?.addQueryParameter("pinCode", pincode)
+            ?.build()
+
+        val request = url?.let {
+            Request.Builder()
+                .url(it)
+                .build()
+        }
+
+
+        return try {
+            val response = request?.let { client.newCall(it).execute() }
+            if (response?.isSuccessful == true) {
+                val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+                val jsonArray = JSONArray(responseData)
+                val destinations = mutableListOf<String>()
+                for (i in 0 until jsonArray.length()) {
+                    val element = jsonArray.get(i)
+                    if (element is String) {
+                        destinations.add(element)
+                    }
+                }
+                Result.success(destinations)
+            } else {
+                Result.failure(Exception("Failed to fetch destinations"))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

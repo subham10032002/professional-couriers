@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -61,6 +62,8 @@ dependencies {
     implementation libs.androidx.hilt.navigation.compose
     implementation libs.okhttp
     implementation libs.androidx.datastore.preferences
+    implementation(libs.coil.compose)
+    implementation libs.gson
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
