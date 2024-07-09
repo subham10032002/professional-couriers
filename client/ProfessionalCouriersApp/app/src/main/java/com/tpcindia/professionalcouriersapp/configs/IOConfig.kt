@@ -12,6 +12,7 @@ object IOConfig {
         const val LOGIN = "/api/users/authenticate"
         const val CONSIGNMENT_DETAILS = "/api/consignment"
         const val FIRM_NAMES = "/api/accountsCustomer/firmNames"
+        const val DESTINATION = "/api/destination/cities"
     }
 
     fun getBaseUrl(): String {
@@ -28,6 +29,10 @@ object IOConfig {
 
     fun getFirmNameUrl(): String {
         return String.format("%s%s", BASE_URL, Endpoints.FIRM_NAMES)
+    }
+
+    fun getDestinationUrl(): String {
+        return String.format("%s%s", BASE_URL, Endpoints.DESTINATION)
     }
 
 }

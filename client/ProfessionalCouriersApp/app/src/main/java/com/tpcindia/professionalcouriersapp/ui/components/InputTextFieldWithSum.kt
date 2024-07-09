@@ -37,12 +37,7 @@ fun InputTextFieldWithSum(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = {
-            Text(
-                text = label,
-                color = Color.LightGray
-            )
-        },
+        placeholder = { Text(label, color = Color.LightGray) },
         trailingIcon = {
             Card(
                 shape = RoundedCornerShape(8.dp),
@@ -67,7 +62,7 @@ fun InputTextFieldWithSum(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .height(46.dp)
+            .height(56.dp)
     )
 }
 

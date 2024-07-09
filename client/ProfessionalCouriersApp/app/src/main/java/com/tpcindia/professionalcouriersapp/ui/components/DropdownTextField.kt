@@ -40,11 +40,7 @@ fun DropdownTextField(
                 }
                 expanded = true
             },
-            label = {
-                Text(
-                    text = label,
-                    color = Color.LightGray
-                )},
+            placeholder = { Text(label, color = Color.LightGray) },
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
@@ -54,7 +50,7 @@ fun DropdownTextField(
             },
             modifier = modifier
                 .fillMaxWidth()
-                .height(46.dp)
+                .height(56.dp)
                 .padding(horizontal = 16.dp),
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text

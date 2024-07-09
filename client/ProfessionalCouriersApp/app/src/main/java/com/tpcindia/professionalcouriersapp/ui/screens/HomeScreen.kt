@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.ui.components.BookingCard
 import com.tpcindia.professionalcouriersapp.ui.theme.*
 import com.tpcindia.professionalcouriersapp.R
+import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
@@ -213,10 +214,4 @@ enum class FabState {
     Default, Loading, Success, Failure
 }
 
-@Composable
-fun ShowToastMessage(message: String) {
-    val context = LocalContext.current
-    LaunchedEffect(message) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-    }
-}
+
