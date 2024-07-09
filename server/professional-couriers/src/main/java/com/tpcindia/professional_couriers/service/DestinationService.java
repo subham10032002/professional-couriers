@@ -15,6 +15,8 @@ public class DestinationService {
     }
 
     public List<String> getCitiesByPinCode(String pinCode) {
-        return destinationRepository.findCitiesByPinCode(pinCode);
+        List<String> cities = destinationRepository.findCitiesByPinCode(pinCode);
+        cities.replaceAll(String::trim);
+        return cities;
     }
 }
