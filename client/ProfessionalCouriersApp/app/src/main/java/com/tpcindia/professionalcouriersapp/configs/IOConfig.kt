@@ -13,6 +13,7 @@ object IOConfig {
         const val CONSIGNMENT_DETAILS = "/api/consignment"
         const val FIRM_NAMES = "/api/accountsCustomer/firmNames"
         const val DESTINATION = "/api/destination/cities"
+        const val SAVE_DATA = "/api/credit-booking-data/save"
     }
 
     fun getBaseUrl(): String {
@@ -33,6 +34,10 @@ object IOConfig {
 
     fun getDestinationUrl(): String {
         return String.format("%s%s", BASE_URL, Endpoints.DESTINATION)
+    }
+
+    fun getSaveDataUrl(): String {
+        return String.format("%s%s", BASE_URL, Endpoints.SAVE_DATA)
     }
 
 }

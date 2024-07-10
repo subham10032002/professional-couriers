@@ -37,7 +37,7 @@ fun CreditBookingScreen(
     navController: NavController,
     date: String,
     consignmentNumber: String,
-    balanceStock: String,
+    balanceStock: String = "",
     clientName: String
 ) {
     var selectedDate by remember { mutableStateOf("") }
