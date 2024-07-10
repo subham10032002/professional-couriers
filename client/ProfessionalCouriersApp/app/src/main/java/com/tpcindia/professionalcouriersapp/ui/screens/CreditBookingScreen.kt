@@ -114,7 +114,6 @@ fun CreditBookingScreen(
             )
             navController.navigate(viewModel.createCBDimensionRoute(bookingData = creditBookingData))
         } else {
-            // Show toast message or alert to fill all mandatory fields
             Toast.makeText(context, "Please fill all mandatory fields", Toast.LENGTH_SHORT).show()
         }
     }
@@ -255,7 +254,8 @@ fun CreditBookingScreen(
             InputTextField(
                 value = noOfPsc,
                 onValueChange = { noOfPsc = it },
-                label = "Ex- 5"
+                label = "Ex- 5",
+                keyboardType = KeyboardType.Number
             )
 
             Spacer(modifier = Modifier.height(15.dp))

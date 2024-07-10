@@ -9,8 +9,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
+import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.screens.*
+import com.tpcindia.professionalcouriersapp.viewModel.CBDimensionsViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
@@ -20,6 +22,7 @@ fun AppNavHost(
     loginViewModel: LoginViewModel,
     homeViewModel: HomeViewModel,
     creditBookingViewModel: CreditBookingViewModel,
+    cbDimensionViewModel: CBDimensionsViewModel,
     modifier: Modifier = Modifier,
     startDestination: String = Screen.Login.route
 ) {
@@ -82,7 +85,16 @@ fun AppNavHost(
         ) { backStackEntry ->
             val json = backStackEntry.arguments?.getString("creditBookingData") ?: ""
             val creditBookingData = Gson().fromJson(json, CreditBookingData::class.java)
-            CBDimensionsScreen(creditBookingData = creditBookingData)
+            CBDimensionsScreen(navController = navController, viewModel = cbDimensionViewModel, creditBookingData = creditBookingData)
+        }
+
+        composable(
+            route = Screen.CBInfo.route,
+            arguments = listOf(navArgument("cbDimensionData") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val json = backStackEntry.arguments?.getString("cbDimensionData") ?: ""
+            val cbDimensionData = Gson().fromJson(json, CBDimensionData::class.java)
+            CBInfoScreen()
         }
     }
 }

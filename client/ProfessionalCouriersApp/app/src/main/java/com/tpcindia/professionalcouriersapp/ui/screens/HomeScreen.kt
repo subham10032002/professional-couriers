@@ -46,13 +46,9 @@ import kotlinx.coroutines.delay
 fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: String, branch: String, bookings: List<String>) {
 
     var fabState by remember { mutableStateOf(FabState.Default) }
-
     val isNetworkCallInProgress = fabState == FabState.Loading
-
     var rotation by remember { mutableFloatStateOf(0f) }
-
     val homeState by viewModel.homeState.collectAsState()
-
 
     val fabIcon = when (fabState) {
         FabState.Default -> painterResource(id = R.drawable.tpc_outline_email_24)
