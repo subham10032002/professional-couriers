@@ -1,10 +1,11 @@
 package com.tpcindia.professionalcouriersapp.ui.components
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -13,7 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientLeft
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
@@ -24,26 +25,26 @@ fun InputTextFieldWithSum(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    maxEntries: Int,
+    keyboardType: KeyboardType = KeyboardType.Number,
+    sum: Int
 ) {
-    var sum by remember { mutableStateOf(0) }
-
-    LaunchedEffect(value) {
-        sum = value.split(",")
-            .filter { it.isNotEmpty() }
-            .mapNotNull { it.toIntOrNull() }
-            .sum()
-    }
-
     OutlinedTextField(
         value = value,
-        onValueChange = onValueChange,
+        onValueChange = { newValue ->
+            val commaCount = newValue.count { char -> char == ',' }
+            if (commaCount < maxEntries) {
+                onValueChange(newValue)
+            }
+        },
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
         placeholder = { Text(label, color = Color.LightGray) },
         trailingIcon = {
             Card(
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .padding(4.dp)
-                    .size(40.dp),
+                    .size(60.dp),
                 border = BorderStroke(
                     1.dp, Brush.horizontalGradient(
                         colors = listOf(GradientLeft, GradientRight)
@@ -52,10 +53,17 @@ fun InputTextFieldWithSum(
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
                         .background(Color.Transparent),
                 ) {
-                    Text(text = sum.toString(), color = Color.Black)
+                    Text(
+                        text = sum.toString(),
+                        color = Color.Black,
+                        maxLines = 1,
+                        modifier = Modifier
+                            .padding(1.dp)
+                    )
                 }
             }
         },
@@ -63,15 +71,5 @@ fun InputTextFieldWithSum(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .height(56.dp)
-    )
-}
-
-@Preview
-@Composable
-fun InputTextFieldWithSumPreview() {
-    InputTextFieldWithSum(
-        value = "10,20,30,40",
-        onValueChange = { },
-        label = "Enter numbers separated by commas"
     )
 }

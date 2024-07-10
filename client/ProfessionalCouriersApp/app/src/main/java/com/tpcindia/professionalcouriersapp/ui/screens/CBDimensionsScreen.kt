@@ -1,5 +1,6 @@
 package com.tpcindia.professionalcouriersapp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,15 +9,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.configs.UIConfig
+import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
@@ -26,11 +28,23 @@ import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientLeft
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
+import com.tpcindia.professionalcouriersapp.viewModel.CBDimensionsViewModel
 
 @Composable
-fun CBDimensionsScreen(creditBookingData: CreditBookingData) {
+fun CBDimensionsScreen(
+    navController: NavController,
+    creditBookingData: CreditBookingData,
+    viewModel: CBDimensionsViewModel
+) {
+    val selectedUnit by viewModel.selectedUnit.collectAsState()
+    val length by viewModel.length.collectAsState()
+    val width by viewModel.width.collectAsState()
+    val height by viewModel.height.collectAsState()
+    val lengthSum by viewModel.lengthSum.collectAsState()
+    val widthSum by viewModel.widthSum.collectAsState()
+    val heightSum by viewModel.heightSum.collectAsState()
 
-    var selectedUnit by remember { mutableStateOf("") }
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -69,42 +83,46 @@ fun CBDimensionsScreen(creditBookingData: CreditBookingData) {
                 .verticalScroll(rememberScrollState())
                 .weight(1f)
         ) {
-
             LabelText("Unit ")
             DropdownTextField(
                 label = "Select..",
                 options = UIConfig.UNIT,
                 selectedOption = selectedUnit,
-                onOptionSelected = { selectedUnit = it }
+                onOptionSelected = { viewModel.onUnitSelected(it) }
             )
 
             Spacer(modifier = Modifier.height(15.dp))
 
             LabelText("Length ", false)
             InputTextFieldWithSum(
-                value = "",
-                onValueChange = { },
-                label = "Ex- 10,20,30"
+                value = length,
+                onValueChange = { viewModel.onLengthChanged(it, creditBookingData.noOfPsc.toInt()) },
+                label = "Ex- 10,20,30",
+                sum = lengthSum,
+                maxEntries = creditBookingData.noOfPsc.toInt()
             )
 
             Spacer(modifier = Modifier.height(15.dp))
 
             LabelText("Width ", false)
             InputTextFieldWithSum(
-                value = "",
-                onValueChange = { },
-                label = "Ex- 10,20,30"
+                value = width,
+                onValueChange = { viewModel.onWidthChanged(it, creditBookingData.noOfPsc.toInt()) },
+                label = "Ex- 10,20,30",
+                sum = widthSum,
+                maxEntries = creditBookingData.noOfPsc.toInt()
             )
 
             Spacer(modifier = Modifier.height(15.dp))
 
             LabelText("Height ", false)
             InputTextFieldWithSum(
-                value = "",
-                onValueChange = { },
-                label = "Ex- 10,20,30"
+                value = height,
+                onValueChange = { viewModel.onHeightChanged(it, creditBookingData.noOfPsc.toInt()) },
+                label = "Ex- 10,20,30",
+                sum = heightSum,
+                maxEntries = creditBookingData.noOfPsc.toInt()
             )
-
         }
 
         // Bottom buttons
@@ -116,7 +134,9 @@ fun CBDimensionsScreen(creditBookingData: CreditBookingData) {
         ) {
 
             CustomButton(
-                onClick = {  },
+                onClick = {
+                    navController.navigate(viewModel.createCBInfoRoute(CBDimensionData()))
+                },
                 isFilled = true,
                 horizontalPadding = 0.dp,
                 modifier = Modifier.weight(1f),
@@ -130,7 +150,13 @@ fun CBDimensionsScreen(creditBookingData: CreditBookingData) {
             Spacer(modifier = Modifier.width(16.dp))
 
             CustomButton(
-                onClick = {  },
+                onClick = {
+                    if (validateEntries(length, width, height, creditBookingData.noOfPsc.toInt())) {
+                        navController.navigate(viewModel.createCBInfoRoute())
+                    } else {
+                        Toast.makeText(context, "Please enter exactly ${creditBookingData.noOfPsc} numbers in each field.", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 horizontalPadding = 0.dp,
                 isFilled = true,
                 modifier = Modifier.weight(1f),
@@ -143,3 +169,9 @@ fun CBDimensionsScreen(creditBookingData: CreditBookingData) {
     }
 }
 
+private fun validateEntries(length: String, width: String, height: String, maxEntries: Int): Boolean {
+    val lengthCount = length.split(",").size
+    val widthCount = width.split(",").size
+    val heightCount = height.split(",").size
+    return lengthCount == maxEntries && widthCount == maxEntries && heightCount == maxEntries
+}

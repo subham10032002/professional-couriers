@@ -2,6 +2,7 @@ package com.tpcindia.professionalcouriersapp.ui.navigation
 
 import android.net.Uri
 import com.google.gson.Gson
+import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 
 sealed class Screen(val route: String) {
@@ -19,7 +20,12 @@ sealed class Screen(val route: String) {
             balanceStock: String
         ) = "credit_booking/$consignmentNumber/$firmName/$day/$month/$year/$balanceStock"
     }
-    data object CBInfo : Screen("cb_info")
+    data object CBInfo : Screen("cb_info/{cbDimensionData}") {
+        fun createRoute(cbDimensionsData: CBDimensionData) : String {
+            val json = Uri.encode(Gson().toJson(cbDimensionsData))
+            return "cb_info/$json"
+        }
+    }
     data object CBDimensions : Screen("cb_dimensions/{creditBookingData}") {
         fun createRoute(creditBookingData: CreditBookingData): String {
             val json = Uri.encode(Gson().toJson(creditBookingData))
