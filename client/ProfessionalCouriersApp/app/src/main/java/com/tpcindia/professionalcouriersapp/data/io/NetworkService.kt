@@ -137,4 +137,25 @@ class NetworkService {
             Result.failure(e)
         }
     }
+
+    fun sendCreditBookingData(data: String) : Result<String> {
+        val requestBody = data.toRequestBody("application/json".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(IOConfig.getSaveDataUrl())
+            .post(requestBody)
+            .build()
+
+        return try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                val responseBody = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+                Result.success(responseBody)
+            } else {
+                val responseBody = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+                Result.failure(Exception(responseBody))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

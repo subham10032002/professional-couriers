@@ -10,9 +10,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
 import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
+import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.screens.*
 import com.tpcindia.professionalcouriersapp.viewModel.CBDimensionsViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.CBInfoViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
@@ -23,6 +25,7 @@ fun AppNavHost(
     homeViewModel: HomeViewModel,
     creditBookingViewModel: CreditBookingViewModel,
     cbDimensionViewModel: CBDimensionsViewModel,
+    cbInfoViewModel: CBInfoViewModel,
     modifier: Modifier = Modifier,
     startDestination: String = Screen.Login.route
 ) {
@@ -90,11 +93,20 @@ fun AppNavHost(
 
         composable(
             route = Screen.CBInfo.route,
-            arguments = listOf(navArgument("cbDimensionData") { type = NavType.StringType })
+            arguments = listOf(navArgument("cbDimensionData") { type = NavType.StringType },
+                navArgument("creditBookingData") { type = NavType.StringType },
+            )
         ) { backStackEntry ->
-            val json = backStackEntry.arguments?.getString("cbDimensionData") ?: ""
-            val cbDimensionData = Gson().fromJson(json, CBDimensionData::class.java)
-            CBInfoScreen()
+            val dimensionData = backStackEntry.arguments?.getString("cbDimensionData") ?: ""
+            val bookingData = backStackEntry.arguments?.getString("creditBookingData") ?: ""
+            val cbDimensionData = Gson().fromJson(dimensionData, CBDimensionData::class.java)
+            val creditBookingData = Gson().fromJson(bookingData, CreditBookingData::class.java)
+            CBInfoScreen(
+                viewModel = cbInfoViewModel,
+                navController = navController,
+                creditBookingData = creditBookingData,
+                cbDimensionData = cbDimensionData
+            )
         }
     }
 }

@@ -19,6 +19,4 @@ class CreditBookingRepository(private val networkService: NetworkService) {
             Result.failure(e)
         }
     }
-
-
 }

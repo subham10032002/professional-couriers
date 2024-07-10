@@ -51,17 +51,24 @@ class CBDimensionsViewModel : ViewModel() {
         calculateSum(value, _heightSum, maxEntries)
     }
 
-    fun createCBInfoRoute(dimensionData: CBDimensionData? = null): String {
+    fun createCBInfoRoute(dimensionData: CBDimensionData? = null, bookingData: CreditBookingData): String {
         dimensionData?.let {
-            return Screen.CBInfo.createRoute(dimensionData)
+            return Screen.CBInfo.createRoute(dimensionData, bookingData)
         } ?: run {
             return Screen.CBInfo.createRoute(CBDimensionData(
                 length = lengthSum.toString(),
                 width = widthSum.toString(),
                 height = heightSum.toString(),
                 unit = selectedUnit.toString()
-            ))
+            ), bookingData)
         }
+    }
+
+    fun validateEntries(length: String, width: String, height: String, maxEntries: Int): Boolean {
+        val lengthCount = length.split(",").size
+        val widthCount = width.split(",").size
+        val heightCount = height.split(",").size
+        return lengthCount == maxEntries && widthCount == maxEntries && heightCount == maxEntries
     }
 
     private fun calculateSum(value: String, sumState: MutableStateFlow<Int>, maxEntries: Int) {
