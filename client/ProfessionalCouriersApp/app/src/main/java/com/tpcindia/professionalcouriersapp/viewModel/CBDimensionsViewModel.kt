@@ -64,6 +64,13 @@ class CBDimensionsViewModel : ViewModel() {
         }
     }
 
+    fun validateEntries(length: String, width: String, height: String, maxEntries: Int): Boolean {
+        val lengthCount = length.split(",").size
+        val widthCount = width.split(",").size
+        val heightCount = height.split(",").size
+        return lengthCount == maxEntries && widthCount == maxEntries && heightCount == maxEntries
+    }
+
     private fun calculateSum(value: String, sumState: MutableStateFlow<Int>, maxEntries: Int) {
         viewModelScope.launch(Dispatchers.Main) {
             val values = value.split(",")

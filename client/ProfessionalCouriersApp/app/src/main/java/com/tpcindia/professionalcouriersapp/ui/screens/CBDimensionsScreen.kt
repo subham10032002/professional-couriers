@@ -151,7 +151,7 @@ fun CBDimensionsScreen(
 
             CustomButton(
                 onClick = {
-                    if (validateEntries(length, width, height, creditBookingData.noOfPsc.toInt())) {
+                    if (viewModel.validateEntries(length, width, height, creditBookingData.noOfPsc.toInt())) {
                         navController.navigate(viewModel.createCBInfoRoute())
                     } else {
                         Toast.makeText(context, "Please enter exactly ${creditBookingData.noOfPsc} numbers in each field.", Toast.LENGTH_SHORT).show()
@@ -167,11 +167,4 @@ fun CBDimensionsScreen(
             )
         }
     }
-}
-
-private fun validateEntries(length: String, width: String, height: String, maxEntries: Int): Boolean {
-    val lengthCount = length.split(",").size
-    val widthCount = width.split(",").size
-    val heightCount = height.split(",").size
-    return lengthCount == maxEntries && widthCount == maxEntries && heightCount == maxEntries
 }
