@@ -18,6 +18,7 @@ import com.tpcindia.professionalcouriersapp.viewModel.CBInfoViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.PdfViewModel
 
 @Composable
 fun AppNavHost(
@@ -26,6 +27,7 @@ fun AppNavHost(
     creditBookingViewModel: CreditBookingViewModel,
     cbDimensionViewModel: CBDimensionsViewModel,
     cbInfoViewModel: CBInfoViewModel,
+    pdfViewModel: PdfViewModel,
     modifier: Modifier = Modifier,
     startDestination: String = Screen.Login.route
 ) {
@@ -107,6 +109,16 @@ fun AppNavHost(
                 creditBookingData = creditBookingData,
                 cbDimensionData = cbDimensionData
             )
+        }
+
+        composable(
+            route = Screen.PdfScreen.route,
+            arguments = listOf(
+                navArgument("branch") { defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            val branch = backStackEntry.arguments?.getString("branch") ?: ""
+            PdfScreen(branch = branch, viewModel = pdfViewModel)
         }
     }
 }

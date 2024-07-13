@@ -1,13 +1,18 @@
 package com.tpcindia.professionalcouriersapp.viewModel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.tpcindia.professionalcouriersapp.data.db.dao.PdfDao
+import com.tpcindia.professionalcouriersapp.data.db.database.DatabaseProvider
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.repository.CBInfoRepository
-import com.tpcindia.professionalcouriersapp.viewModel.uiState.LoginState
+import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.viewModel.uiState.SubmitDetailsState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,13 +20,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class CBInfoViewModel : ViewModel() {
+class CBInfoViewModel(application: Application) : AndroidViewModel(application) {
     private val _submitDetailsState = MutableStateFlow(SubmitDetailsState())
     val submitDetailsState: StateFlow<SubmitDetailsState> = _submitDetailsState
 
     private var job: Job? = null
 
     private val repository = CBInfoRepository(NetworkService())
+    private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
 
     fun submitCreditBookingData(creditBookingData: CreditBookingData, cbDimensionData: CBDimensionData, cbInfoData: CBInfoData) {
         _submitDetailsState.value = SubmitDetailsState(isLoading = true)
@@ -55,6 +61,27 @@ class CBInfoViewModel : ViewModel() {
                 )
             }
         }
+    }
+
+    fun createPdf(context: Context) : ByteArray {
+        return repository.createPdf(context)
+    }
+
+    fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {
+        _submitDetailsState.value = SubmitDetailsState(isLoading = true, isPdfSaved = false)
+        viewModelScope.launch {
+            val isSaved = repository.savePdf(pdfData, fileName, branch, pdfDao)
+            if (isSaved) {
+                _submitDetailsState.value = SubmitDetailsState(isLoading = false, isPdfSaved = true)
+            } else {
+                _submitDetailsState.value = SubmitDetailsState(isLoading = false, isPdfSaved = false)
+                Toast.makeText(getApplication(), "Failed to save PDF", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun createPDFScreenRoute(branch: String): String {
+        return Screen.PdfScreen.createRoute(branch)
     }
 
     fun clearErrorMessage() {

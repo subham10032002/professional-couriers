@@ -4,5 +4,6 @@ data class SubmitDetailsState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val isDataSubmitted: Boolean = false,
+    val isPdfSaved: Boolean = false,
     val dataSubmissionMessage: String? = null
 )

@@ -138,7 +138,7 @@ fun CBInfoScreen(
                 Spacer(modifier = Modifier.height(20.dp))
             }
         }
-        
+
         if (submitDetailsState.isLoading) {
             Box(
                 contentAlignment = Alignment.Center,
@@ -160,13 +160,23 @@ fun CBInfoScreen(
             viewModel.clearErrorMessage()
         }
 
-        if (submitDetailsState.isDataSubmitted) {
-            submitDetailsState.dataSubmissionMessage?.let { ShowToastMessage(it) }
-            viewModel.clearDataSubmissionMessage()
-//            val route = viewModel.createLoginScreenRoute()
-//            if (route != null) {
-//                navController.navigate(route)
-//            }
+        if (submitDetailsState.isPdfSaved) {
+            val route = viewModel.createPDFScreenRoute(branch = creditBookingData.branch)
+            route.let {
+                navController.navigate(it)
+            }
+        }
+
+        LaunchedEffect(submitDetailsState.isDataSubmitted) {
+            if (submitDetailsState.isDataSubmitted) {
+                try {
+                    val byteArray = viewModel.createPdf(context)
+                    val fileName = "${creditBookingData.clientName}_CreditBooking_${System.currentTimeMillis()}.pdf"
+                    viewModel.savePdf(byteArray, fileName, branch = creditBookingData.branch)
+                } catch (e: Exception) {
+                    // Handle Exception
+                }
+            }
         }
     }
 

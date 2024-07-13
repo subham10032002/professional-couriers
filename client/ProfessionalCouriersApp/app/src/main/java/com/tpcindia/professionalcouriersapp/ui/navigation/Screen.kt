@@ -33,5 +33,7 @@ sealed class Screen(val route: String) {
             return "cb_dimensions/$json"
         }
     }
-    data object CBPayment : Screen("cb_payment")
+    data object PdfScreen : Screen("pdf_screen/{branch}") {
+        fun createRoute(branch: String) = "pdf_screen/$branch"
+    }
 }
