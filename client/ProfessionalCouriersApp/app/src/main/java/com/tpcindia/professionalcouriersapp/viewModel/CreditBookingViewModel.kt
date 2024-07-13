@@ -10,6 +10,7 @@ import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.repository.CreditBookingRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class CreditBookingViewModel : ViewModel() {
@@ -17,11 +18,16 @@ class CreditBookingViewModel : ViewModel() {
     val creditBookingState: StateFlow<CreditBookingState> = _creditBookingState
 
     private val repository: CreditBookingRepository = CreditBookingRepository(NetworkService())
+    private var job: Job? = null
 
     fun fetchDestination(pincode: String) {
         if (pincode.length == 6) {
             _creditBookingState.value = CreditBookingState(isLoading = true)
-            viewModelScope.launch(Dispatchers.IO) {
+            job?.cancel()
+            job = viewModelScope.launch(Dispatchers.IO) {
+                if (job?.isActive == false) {
+                    return@launch
+                }
                 try {
                     val result = repository.getDestination(pincode)
                     if (result.isSuccess) {
