@@ -95,7 +95,7 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: Str
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.tpc_contact_new), // Replace with your contact image resource
+                        painter = painterResource(id = R.drawable.tpc_contact_new),
                         contentDescription = null,
                         modifier = Modifier.size(40.dp)
                     )

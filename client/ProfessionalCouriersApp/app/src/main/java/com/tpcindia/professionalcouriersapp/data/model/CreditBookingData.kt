@@ -8,6 +8,7 @@ data class CreditBookingData(
     val currentDate: String,
     val consignmentNumber: String,
     val balanceStock: String,
+    val branch: String = "branch",
     val clientName: String,
     val bookingDate: String,
     val pincode: String,
