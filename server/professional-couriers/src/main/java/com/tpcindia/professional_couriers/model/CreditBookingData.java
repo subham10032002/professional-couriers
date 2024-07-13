@@ -43,8 +43,8 @@ public class CreditBookingData {
     @Column(name = "noOfPsc", nullable = false)
     private String noOfPsc;
 
-//    @Column(name = "unit", nullable = false)
-//    private String unit;
+    @Column(name = "unit", nullable = false)
+    private String unit;
 
     @Column(name = "weight")
     private String weight;
@@ -176,13 +176,13 @@ public class CreditBookingData {
         this.weight = weight;
     }
 
-//    public String getUnit() {
-//        return unit;
-//    }
-//
-//    public void setUnit(String unit) {
-//        this.unit = unit;
-//    }
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 
     public String getLength() {
         return length;

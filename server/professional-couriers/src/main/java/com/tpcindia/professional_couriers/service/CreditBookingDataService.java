@@ -30,7 +30,7 @@ public class CreditBookingDataService {
         entity.setConsigneeName(dto.getConsigneeName());
         entity.setNoOfPsc(dto.getNoOfPsc());
         entity.setWeight(dto.getWeight());
-//        entity.setUnit(dto.getUnit());
+        entity.setUnit(dto.getUnit());
         entity.setLength(dto.getLength());
         entity.setWidth(dto.getWidth());
         entity.setHeight(dto.getHeight());
