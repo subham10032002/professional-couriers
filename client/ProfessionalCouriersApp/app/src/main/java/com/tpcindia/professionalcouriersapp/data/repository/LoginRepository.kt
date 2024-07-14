@@ -20,7 +20,8 @@ class LoginRepository(private val networkService: NetworkService) {
                     val firstName = responseJson.getString("firstName")
                     val lastName = responseJson.getString("lastName")
                     val branchCode = responseJson.getString("branchCode")
-                    Result.success(User(firstName, lastName, branchCode))
+                    val branch = responseJson.getString("branch")
+                    Result.success(User(firstName, lastName, branchCode, branch))
                 } else {
                     Result.failure(Exception("Authentication failed"))
                 }

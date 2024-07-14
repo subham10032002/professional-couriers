@@ -10,6 +10,7 @@ object SharedPreferencesManager {
     private const val KEY_FIRST_NAME = "firstName"
     private const val KEY_LAST_NAME = "lastName"
     private const val KEY_BRANCH_CODE = "branchCode"
+    private const val KEY_BRANCH = "branch"
 
     private fun getSharedPreferences(context: Context): SharedPreferences {
         return context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -20,6 +21,7 @@ object SharedPreferencesManager {
         editor.putString(KEY_FIRST_NAME, user.firstName)
         editor.putString(KEY_LAST_NAME, user.lastName)
         editor.putString(KEY_BRANCH_CODE, user.branchCode)
+        editor.putString(KEY_BRANCH, user.branch)
         editor.apply()
     }
 
@@ -28,8 +30,9 @@ object SharedPreferencesManager {
         val firstName = sharedPreferences.getString(KEY_FIRST_NAME, null)
         val lastName = sharedPreferences.getString(KEY_LAST_NAME, null)
         val branchCode = sharedPreferences.getString(KEY_BRANCH_CODE, null)
-        return if (firstName != null && lastName != null && branchCode != null) {
-            User(firstName = firstName, lastName = lastName, branchCode = branchCode)
+        val branch = sharedPreferences.getString(KEY_BRANCH, null)
+        return if (firstName != null && lastName != null && branchCode != null && branch != null) {
+            User(firstName = firstName, lastName = lastName, branchCode = branchCode, branch = branch)
         } else {
             null
         }

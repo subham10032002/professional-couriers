@@ -128,7 +128,7 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: Str
             ) {
                 bookings.forEach { booking ->
                     BookingCard(booking = booking, onClick = {
-                        viewModel.onBookingClick(branchCode = branch)
+                        viewModel.onBookingClick(branch = branch)
                     })
                     Spacer(modifier = Modifier.height(4.dp))
                 }

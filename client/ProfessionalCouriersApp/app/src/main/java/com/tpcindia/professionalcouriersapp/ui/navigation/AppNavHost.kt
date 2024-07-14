@@ -1,5 +1,6 @@
 package com.tpcindia.professionalcouriersapp.ui.navigation
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -57,30 +58,25 @@ fun AppNavHost(
         composable(
             route = Screen.CreditBooking.route,
             arguments = listOf(
-                navArgument("consignmentNumber") { type = NavType.StringType },
                 navArgument("firmName") { type = NavType.StringType },
                 navArgument("day") { type = NavType.StringType },
                 navArgument("month") { type = NavType.StringType },
                 navArgument("year") { type = NavType.StringType },
-                navArgument("balanceStock") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val consignmentNumber = backStackEntry.arguments?.getString("consignmentNumber") ?: ""
             val firmName = backStackEntry.arguments?.getString("firmName") ?: ""
             val day = backStackEntry.arguments?.getString("day") ?: ""
             val month = backStackEntry.arguments?.getString("month") ?: ""
             val year = backStackEntry.arguments?.getString("year") ?: ""
-            val balanceStock = backStackEntry.arguments?.getString("balanceStock") ?: ""
 
-            val currentDate = "$day/$month/$year" // Construct date string
+            val firmNames: List<String> = Gson().fromJson(Uri.decode(firmName), Array<String>::class.java).toList()
+            val currentDate = "$day/$month/$year"
 
             CreditBookingScreen(
                 viewModel = creditBookingViewModel,
                 navController = navController,
                 date = currentDate,
-                consignmentNumber = consignmentNumber,
-                balanceStock = balanceStock,
-                clientName = firmName
+                clientName = firmNames
             )
         }
 
