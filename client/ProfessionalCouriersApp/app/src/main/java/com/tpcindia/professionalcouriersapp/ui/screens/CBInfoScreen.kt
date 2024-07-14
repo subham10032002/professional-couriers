@@ -69,7 +69,6 @@ fun CBInfoScreen(
                     .verticalScroll(scrollState)
                     .fillMaxWidth()
             ) {
-                // Date * header
                 LabelText("Invoice Number ", false)
                 InputTextField(
                     value = invoiceNumber,

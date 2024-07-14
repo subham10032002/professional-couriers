@@ -47,6 +47,7 @@ fun CreditBookingScreen(
     var selectedClientName by remember { mutableStateOf(clientName.first()) }
     var noOfPsc by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
+    var selectedImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
     val scrollState = rememberScrollState()
 
     val context = LocalContext.current
@@ -85,6 +86,7 @@ fun CreditBookingScreen(
             mode.isBlank() -> false
             consigneeName.isBlank() -> false
             noOfPsc.isBlank() -> false
+            selectedImageByteArray?.isEmpty() == true -> false
             else -> true
         }
     }
@@ -101,14 +103,14 @@ fun CreditBookingScreen(
                 clientName = selectedClientName,
                 noOfPsc = noOfPsc,
                 weight = weight,
-                bookingDate = selectedDate
+                bookingDate = selectedDate,
+                photoOfAddress = selectedImageByteArray
             )
             navController.navigate(viewModel.createCBDimensionRoute(bookingData = creditBookingData))
         } else {
             Toast.makeText(context, "Please fill all mandatory fields", Toast.LENGTH_SHORT).show()
         }
     }
-
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -210,7 +212,9 @@ fun CreditBookingScreen(
             Spacer(modifier = Modifier.height(15.dp))
 
             LabelText("Photo of address ")
-            ImagePickerBox()
+            ImagePickerBox(onImagePicked = { byteArray ->
+                selectedImageByteArray = byteArray
+            })
 
             Spacer(modifier = Modifier.height(15.dp))
 
