@@ -38,6 +38,7 @@ public class CreditBookingDataService {
         entity.setProduct(dto.getProduct());
         entity.setDeclaredValue(dto.getDeclaredValue());
         entity.setEwayBill(dto.getEwayBill());
+        entity.setPhotoOfAddress(dto.getPhotoOfAddress());
         return entity;
     }
 }
