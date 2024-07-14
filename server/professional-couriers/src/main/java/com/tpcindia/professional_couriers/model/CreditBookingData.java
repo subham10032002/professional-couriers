@@ -70,6 +70,10 @@ public class CreditBookingData {
     @Column(name = "ewayBill")
     private String ewayBill;
 
+    @Lob
+    @Column(name = "photoOfAddress")
+    private byte[] photoOfAddress;
+
     // Getters and setters
 
     public Long getId() {
@@ -238,5 +242,12 @@ public class CreditBookingData {
 
     public void setEwayBill(String ewayBill) {
         this.ewayBill = ewayBill;
+    }
+
+    public byte[] getPhotoOfAddress() {
+        return photoOfAddress;
+    }
+    public void setPhotoOfAddress(byte[] photoOfAddress) {
+        this.photoOfAddress = photoOfAddress;
     }
 }

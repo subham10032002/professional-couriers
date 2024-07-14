@@ -21,6 +21,7 @@ public class CreditBookingDataDTO {
     private String product;
     private String declaredValue;
     private String ewayBill;
+    private byte[] photoOfAddress;
 
     // Getters
     public String getCurrentDate() {
@@ -103,6 +104,8 @@ public class CreditBookingDataDTO {
         return ewayBill;
     }
 
+    public byte[] getPhotoOfAddress() { return photoOfAddress; }
+
     // Setters
     public void setCurrentDate(String currentDate) {
         this.currentDate = currentDate;
@@ -182,5 +185,9 @@ public class CreditBookingDataDTO {
 
     public void setEwayBill(String ewayBill) {
         this.ewayBill = ewayBill;
+    }
+
+    public void setPhotoOfAddress(byte[] photoOfAddress) {
+        this.photoOfAddress = photoOfAddress;
     }
 }
