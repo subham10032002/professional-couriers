@@ -27,7 +27,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private fun checkLoginState() {
         val savedUser = repository.getUser(getApplication())
         if (savedUser != null) {
-            _loginState.value = LoginState(isAuthenticated = true, name = "${savedUser.firstName} ${savedUser.lastName}", branch = savedUser.branchCode)
+            _loginState.value = LoginState(isAuthenticated = true, name = "${savedUser.firstName} ${savedUser.lastName}", branch = savedUser.branch)
         }
     }
 
@@ -46,7 +46,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     _loginState.value = LoginState(
                         isAuthenticated = true,
                         name = "${user.firstName} ${user.lastName}",
-                        branch = user.branchCode
+                        branch = user.branch
                     )
                 } else {
                     _loginState.value = LoginState(error = result.exceptionOrNull()?.message)

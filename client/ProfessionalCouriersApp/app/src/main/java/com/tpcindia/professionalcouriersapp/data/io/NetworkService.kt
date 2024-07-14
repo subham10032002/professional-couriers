@@ -39,9 +39,9 @@ class NetworkService {
         }
     }
 
-    fun getFirmNames(branchCode: String): Result<List<String>> {
+    fun getFirmNames(branch: String): Result<List<String>> {
         val json = JSONObject()
-        json.put("branchCode", branchCode)
+        json.put("branch", branch)
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
         val request = Request.Builder()

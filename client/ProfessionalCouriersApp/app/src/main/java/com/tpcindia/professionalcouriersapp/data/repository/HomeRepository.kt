@@ -7,9 +7,9 @@ import java.io.IOException
 
 class HomeRepository(private val networkService: NetworkService) {
 
-    fun getFirmNames(branchCode: String): Result<List<ClientDetails>> {
+    fun getFirmNames(branch: String): Result<List<ClientDetails>> {
         return try {
-            val result = networkService.getFirmNames(branchCode)
+            val result = networkService.getFirmNames(branch)
             if (result.isSuccess) {
                 val firmNames = result.getOrThrow().map { ClientDetails(it) }
                 Result.success(firmNames)

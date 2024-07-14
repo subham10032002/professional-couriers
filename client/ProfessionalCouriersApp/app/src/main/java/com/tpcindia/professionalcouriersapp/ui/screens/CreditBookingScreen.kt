@@ -27,7 +27,6 @@ import com.tpcindia.professionalcouriersapp.ui.components.InputTextField
 import com.tpcindia.professionalcouriersapp.ui.components.LabelText
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
-import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
 
@@ -36,20 +35,16 @@ fun CreditBookingScreen(
     viewModel: CreditBookingViewModel,
     navController: NavController,
     date: String,
-    consignmentNumber: String,
-    balanceStock: String = "",
-    clientName: String
+    clientName: List<String>
 ) {
     var selectedDate by remember { mutableStateOf("") }
     var currentDate by remember { mutableStateOf(date) }
-    var consignmentNumber by remember { mutableStateOf(consignmentNumber) }
-    var balanceStock by remember { mutableStateOf(balanceStock) }
     var consigneeName by remember { mutableStateOf("") }
     var mode by remember { mutableStateOf("") }
     var consigneeType by remember { mutableStateOf("") }
     var pincode by remember { mutableStateOf("") }
     var destination by remember { mutableStateOf("") }
-    var selectedClientName by remember { mutableStateOf(clientName) }
+    var selectedClientName by remember { mutableStateOf(clientName.first()) }
     var noOfPsc by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
@@ -81,8 +76,6 @@ fun CreditBookingScreen(
     fun areAllMandatoryFieldsFilled(): Boolean {
         return when {
             currentDate.isBlank() -> false
-            consignmentNumber.isBlank() -> false
-            balanceStock.isBlank() -> false
             selectedClientName.isBlank() -> false
             selectedDate.isBlank() -> false
             consigneeName.isBlank() -> false
@@ -100,8 +93,6 @@ fun CreditBookingScreen(
         if (areAllMandatoryFieldsFilled()) {
             val creditBookingData = CreditBookingData(
                 currentDate = currentDate,
-                consignmentNumber = consignmentNumber,
-                balanceStock = balanceStock,
                 consigneeName = consigneeName,
                 mode = mode,
                 consigneeType = consigneeType,
@@ -152,28 +143,10 @@ fun CreditBookingScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            LabelText("Consignment Number ")
-            InputTextField(
-                value = consignmentNumber,
-                onValueChange = { consignmentNumber = it },
-                label = "Ex- 1234567890"
-            )
-
-            Spacer(modifier = Modifier.height(15.dp))
-
-            LabelText("Balance Stock ")
-            InputTextField(
-                value = balanceStock,
-                onValueChange = { balanceStock = it },
-                label = "Ex- 123"
-            )
-
-            Spacer(modifier = Modifier.height(15.dp))
-
             LabelText("Client Name ")
             DropdownTextField(
                 label = "Select..",
-                options = mutableListOf("ab", "abcd"),
+                options = clientName,
                 selectedOption = selectedClientName,
                 onOptionSelected = { selectedClientName = it }
             )

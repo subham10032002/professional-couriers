@@ -6,7 +6,6 @@ import com.tpcindia.professionalcouriersapp.data.repository.HomeRepository
 import com.tpcindia.professionalcouriersapp.viewModel.uiState.HomeState
 import androidx.lifecycle.viewModelScope
 import com.tpcindia.professionalcouriersapp.data.model.response.ClientDetails
-import com.tpcindia.professionalcouriersapp.data.model.response.ConsignmentDetails
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,16 +22,17 @@ class HomeViewModel : ViewModel() {
 
     private val repository: HomeRepository = HomeRepository(NetworkService())
 
-    fun onBookingClick(branchCode: String) {
+    fun onBookingClick(branch: String) {
         _homeState.value = HomeState(isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val firmNameResult = fetchFirmNames(branchCode)
+                val firmNameResult = fetchFirmNames(branch)
                 if (firmNameResult.isSuccess) {
                     val firmNames = firmNameResult.getOrThrow()
                     if (firmNames.isNotEmpty()) {
-                        val firmName = firmNames.first().firmName
-                        fetchConsignmentDetails(firmName)
+                        updateStateWithDetails(firmNames = firmNames.map {
+                            it.firmName
+                        })
                     } else {
                         updateStateWithError("No firm names found")
                     }
@@ -45,27 +45,15 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    private fun fetchFirmNames(branchCode: String): Result<List<ClientDetails>> {
-        return repository.getFirmNames(branchCode)
+    private fun fetchFirmNames(branch: String): Result<List<ClientDetails>> {
+        return repository.getFirmNames(branch)
     }
 
-    private fun fetchConsignmentDetails(firmName: String) {
-        val consignmentDetailsResult = repository.getConsignmentDetails(firmName)
-        if (consignmentDetailsResult.isSuccess) {
-            val consignmentDetails = consignmentDetailsResult.getOrThrow()
-            updateStateWithDetails(consignmentDetails, firmName)
-        } else {
-            updateStateWithError("Failed to fetch consignment details")
-        }
-    }
-
-    private fun updateStateWithDetails(consignmentDetails: ConsignmentDetails, firmName: String) {
+    private fun updateStateWithDetails(firmNames: List<String>) {
         _homeState.value = HomeState(
             isLoading = false,
             isDataFetched = true,
-            consignmentNumber = consignmentDetails.consignmentNo,
-            balanceStock = consignmentDetails.balanceStock,
-            firmName = firmName
+            firmNames = firmNames
         )
     }
 
@@ -87,22 +75,16 @@ class HomeViewModel : ViewModel() {
     }
 
     // Function to create navigation route to CreditBooking
-    fun createLoginScreenRoute(): String? {
-        if (_homeState.value.firmName == null ||
-            _homeState.value.consignmentNumber == null ||
-            _homeState.value.balanceStock == null ) return null
+    fun createLoginScreenRoute(): String {
         val currentDate = getCurrentData()
         val (day, month, year) = currentDate.split("/")
 
         return Screen.CreditBooking.createRoute(
-            firmName = _homeState.value.firmName!!,
-            balanceStock = _homeState.value.balanceStock!!,
-            consignmentNumber = _homeState.value.consignmentNumber!!,
+            firmNames = _homeState.value.firmNames,
             day = day,
             month = month,
             year = year
         )
-
     }
 
 }
