@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val cbDimensionsViewModel: CBDimensionsViewModel by viewModels {
-        CBDimensionViewModelFactory()
+        CBDimensionViewModelFactory(application)
     }
 
     private val cbInfoViewModel: CBInfoViewModel by viewModels {

@@ -91,7 +91,8 @@ fun CreditBookingScreen(
         }
     }
 
-    fun navigateToCreditInfoScreen() {
+    fun navigateToCBDimensionScreen() {
+        viewModel.setLoading(true)
         if (areAllMandatoryFieldsFilled()) {
             val creditBookingData = CreditBookingData(
                 currentDate = currentDate,
@@ -110,6 +111,7 @@ fun CreditBookingScreen(
         } else {
             Toast.makeText(context, "Please fill all mandatory fields", Toast.LENGTH_SHORT).show()
         }
+        viewModel.setLoading(false)
     }
 
     Column(
@@ -247,7 +249,7 @@ fun CreditBookingScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             CustomButton(
-                onClick = {  navigateToCreditInfoScreen() },
+                onClick = {  navigateToCBDimensionScreen() },
                 horizontalPadding = 60.dp,
                 isFilled = true,
                 loginState = false,

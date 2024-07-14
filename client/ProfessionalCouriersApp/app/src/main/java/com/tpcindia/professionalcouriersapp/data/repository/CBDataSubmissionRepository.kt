@@ -11,7 +11,7 @@ import com.tpcindia.professionalcouriersapp.data.model.entity.PdfEntity
 import com.tpcindia.professionalcouriersapp.data.utils.PdfGenerator
 import java.io.IOException
 
-class CBInfoRepository(private val networkService: NetworkService) {
+class CBDataSubmissionRepository(private val networkService: NetworkService) {
 
     fun submitCreditBookingDetails(
         creditBookingData: CreditBookingData,
