@@ -11,7 +11,7 @@ import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
-import com.tpcindia.professionalcouriersapp.data.repository.CBInfoRepository
+import com.tpcindia.professionalcouriersapp.data.repository.CBDataSubmissionRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.viewModel.uiState.SubmitDetailsState
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +26,7 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
 
     private var job: Job? = null
 
-    private val repository = CBInfoRepository(NetworkService())
+    private val repository = CBDataSubmissionRepository(NetworkService())
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
 
     fun submitCreditBookingData(creditBookingData: CreditBookingData, cbDimensionData: CBDimensionData, cbInfoData: CBInfoData) {

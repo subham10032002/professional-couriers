@@ -14,9 +14,11 @@ import com.tpcindia.professionalcouriersapp.data.db.database.DatabaseProvider
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.model.entity.PdfEntity
 import com.tpcindia.professionalcouriersapp.data.repository.PdfRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 
@@ -34,42 +36,44 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     fun getAllPdfDocuments(branch: String, context: Context) {
         viewModelScope.launch {
             _isLoading.value = true
-                try {
-                    val pdfList = repository.getPDFs(branch, pdfDao)
-                    _pdfListState.value = pdfList
-                } catch (e: Exception) {
-                   Toast.makeText(context, "Error fetching PDF documents: ${e.message}", Toast.LENGTH_SHORT).show()
-                } finally {
-                    _isLoading.value = false
-                }
+            try {
+                val pdfList = repository.getPDFs(branch, pdfDao)
+                _pdfListState.value = pdfList
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error fetching PDF documents: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
     fun viewPdf(context: Context, pdf: PdfEntity) {
-        _isLoading.value = true
-        try {
-            val file = savePdfToTempFile(context, pdf)
-            if (file != null) {
-                openPdfFile(context, file)
-            } else {
-                Toast.makeText(context, "Failed to open PDF file.", Toast.LENGTH_SHORT).show()
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                val file = savePdfToTempFile(context, pdf)
+                if (file != null) {
+                    openPdfFile(context, file.absolutePath)
+                } else {
+                    Toast.makeText(context, "Failed to open PDF file.", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error opening PDF: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                _isLoading.value = false
             }
-        } catch (e: Exception) {
-            Toast.makeText(context, "Error opening PDF: ${e.message}", Toast.LENGTH_SHORT).show()
-        } finally {
-            _isLoading.value = false
         }
     }
 
-    private fun openPdfFile(context: Context, file: File) {
+    private fun openPdfFile(context: Context, filePath: String) {
         try {
+            val file = File(filePath)
             val uri: Uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
             val intent = Intent(Intent.ACTION_VIEW).apply {
                 setDataAndType(uri, "application/pdf")
                 flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             }
 
-            // Check if there is an app to handle this intent
             if (intent.resolveActivity(context.packageManager) != null) {
                 context.startActivity(Intent.createChooser(intent, "Open PDF with"))
             } else {
@@ -81,28 +85,35 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun savePdfToDownloads(context: Context, pdf: PdfEntity) {
-        _isLoading.value = true
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                 val file = File(downloadsDir, pdf.fileName)
-                FileOutputStream(file).use { fos ->
-                    fos.write(pdf.pdfData)
-                    fos.flush()
+                withContext(Dispatchers.IO) {
+                    FileOutputStream(file).use { fos ->
+                        fos.write(pdf.pdfData)
+                        fos.flush()
+                    }
                 }
                 Toast.makeText(context, "PDF saved to Downloads", Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error saving PDF to Downloads: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                _isLoading.value = false
             }
-        } catch (e: Exception) {
-            Toast.makeText(context, "Error saving PDF to Downloads: ${e.message}", Toast.LENGTH_SHORT).show()
-        } finally {
-            _isLoading.value = false
         }
     }
 
-    private fun savePdfToTempFile(context: Context, pdf: PdfEntity): File? {
+    private suspend fun savePdfToTempFile(context: Context, pdf: PdfEntity): File? {
         return try {
             val tempFile = File(context.cacheDir, pdf.fileName)
-            tempFile.writeBytes(pdf.pdfData)
+            withContext(Dispatchers.IO) {
+                FileOutputStream(tempFile).use { fos ->
+                    fos.write(pdf.pdfData)
+                    fos.flush()
+                }
+            }
             tempFile
         } catch (e: Exception) {
             null

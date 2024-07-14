@@ -53,6 +53,10 @@ class CreditBookingViewModel : ViewModel() {
         return Screen.CBDimensions.createRoute(bookingData)
     }
 
+    fun setLoading(isLoading: Boolean) {
+        _creditBookingState.value = _creditBookingState.value.copy(isLoading = isLoading)
+    }
+
     fun clearErrorMessage() {
         _creditBookingState.value = _creditBookingState.value.copy(error = null)
     }
