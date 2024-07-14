@@ -1,13 +1,13 @@
 package com.tpcindia.professional_couriers.dto;
 
 public class FirmNameDTO {
-    private String branchCode;
+    private String branch;
 
-    public String getBranchCode() {
-        return branchCode;
+    public String getBranch() {
+        return branch;
     }
 
-    public void setBranchCode(String branchCode) {
-        this.branchCode = branchCode;
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 }
