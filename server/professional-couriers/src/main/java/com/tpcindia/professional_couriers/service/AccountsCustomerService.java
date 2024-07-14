@@ -16,10 +16,19 @@ public class AccountsCustomerService {
     @Autowired
     private AccountsCustomerRepository accountsCustomerRepository;
 
-    public List<String> getFirmNamesByBranch(String branchCode) {
-        List<String> firmNames = accountsCustomerRepository.findFirmNamesByTypeAndBranch(branchCode);
+    public List<String> getFirmNamesByBranch(String branch) {
+        List<String> firmNames = accountsCustomerRepository.findFirmNamesByTypeAndBranch(branch);
         firmNames.replaceAll(String::trim);
         return firmNames;
+    }
+
+    public String findBranchByBranchCode(String branchCode) {
+        String branch = accountsCustomerRepository.findBranchByBranchCode(branchCode);
+        if (branch != null) {
+            return branch.trim();
+        } else {
+            return null;
+        }
     }
 
     public String findEmailByFirmName(String firmName) {

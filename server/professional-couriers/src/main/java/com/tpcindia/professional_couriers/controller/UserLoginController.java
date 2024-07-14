@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("api/users")
 public class UserLoginController {
@@ -20,12 +22,14 @@ public class UserLoginController {
     private UserLoginService userLoginService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO requestDTO) {
+    public ResponseEntity<Map<String, Object>> login(@RequestBody AuthenticationRequestDTO requestDTO) {
+
+        Map<String, Object> result = null;
         try {
-            UserLogin userLogin = userLoginService.authenticateUser(requestDTO.getLoginId(), requestDTO.getPassword());
-            return new ResponseEntity<>(userLogin, HttpStatus.OK);
-        } catch (InvalidCredentialsException e) {
-            return new ResponseEntity<>("Invalid credentials", HttpStatus.UNAUTHORIZED);
+            result = userLoginService.authenticateUser(requestDTO.getLoginId(), requestDTO.getPassword());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return ResponseEntity.ofNullable(result);
     }
 }

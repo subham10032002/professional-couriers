@@ -1,5 +1,6 @@
 package com.tpcindia.professional_couriers.controller;
 
+import com.tpcindia.professional_couriers.dto.BranchDTO;
 import com.tpcindia.professional_couriers.dto.BranchEmailDTO;
 import com.tpcindia.professional_couriers.dto.CustomerEmailDTO;
 import com.tpcindia.professional_couriers.dto.FirmNameDTO;
@@ -23,7 +24,17 @@ public class AccountsCustomerController {
 
     @PostMapping("/firmNames")
     public List<String> getFirmNames(@RequestBody FirmNameDTO firmNameDTO) {
-        return accountsCustomerService.getFirmNamesByBranch(firmNameDTO.getBranchCode());
+        return accountsCustomerService.getFirmNamesByBranch(firmNameDTO.getBranch());
+    }
+
+    @PostMapping("/branch")
+    public ResponseEntity<String> getBranch(@RequestBody BranchDTO branchDTO) {
+        String branch =  accountsCustomerService.findBranchByBranchCode(branchDTO.getBranchCode());
+        if (branch != null) {
+            return ResponseEntity.ok(branch);
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Branch not found");
+        }
     }
 
     @PostMapping("/customerEmail")
