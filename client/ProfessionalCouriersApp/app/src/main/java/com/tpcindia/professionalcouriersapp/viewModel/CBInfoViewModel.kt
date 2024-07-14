@@ -37,20 +37,28 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                 return@launch
             }
             try {
-                val result = repository.submitCreditBookingDetails(
-                    creditBookingData = creditBookingData,
-                    cbDimensionData = cbDimensionData,
-                    cbInfoData = cbInfoData
-                )
-                if (result.isSuccess) {
-                    _submitDetailsState.value = SubmitDetailsState(
-                        isLoading = false,
-                        isDataSubmitted = true,
-                        dataSubmissionMessage = result.getOrThrow()
+                val consignmentDetails = repository.getConsignmentDetails(creditBookingData.clientName)
+                if (consignmentDetails.isSuccess) {
+                    val result = repository.submitCreditBookingDetails(
+                        creditBookingData = creditBookingData,
+                        cbDimensionData = cbDimensionData,
+                        cbInfoData = cbInfoData
                     )
+                    if (result.isSuccess) {
+                        _submitDetailsState.value = SubmitDetailsState(
+                            isLoading = false,
+                            isDataSubmitted = true,
+                            dataSubmissionMessage = result.getOrThrow()
+                        )
+                    } else {
+                        _submitDetailsState.value = SubmitDetailsState(
+                            error = result.exceptionOrNull()?.message,
+                            isLoading = false
+                        )
+                    }
                 } else {
                     _submitDetailsState.value = SubmitDetailsState(
-                        error = result.exceptionOrNull()?.message,
+                        error = consignmentDetails.exceptionOrNull()?.message,
                         isLoading = false
                     )
                 }

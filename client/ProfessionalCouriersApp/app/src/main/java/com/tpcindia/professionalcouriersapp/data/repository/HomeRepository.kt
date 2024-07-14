@@ -20,30 +20,4 @@ class HomeRepository(private val networkService: NetworkService) {
             Result.failure(e)
         }
     }
-
-    fun getConsignmentDetails(firmName: String): Result<ConsignmentDetails> {
-        return try {
-            val result = networkService.getConsignmentDetails(firmName)
-            if (result.isSuccess) {
-                val consignmentDetails = parseConsignmentDetails(result.getOrThrow())
-                Result.success(consignmentDetails)
-            } else {
-                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch consignment details"))
-            }
-        } catch (e: IOException) {
-            Result.failure(e)
-        }
-    }
-
-    private fun parseConsignmentDetails(detailsMap: Map<String, Any>): ConsignmentDetails {
-        return try {
-            val startNo = detailsMap["startNo"].toString()
-            val accCode = detailsMap["accCode"].toString()
-            val consignmentNo = detailsMap["consignmentNo"].toString()
-            val balanceStock = detailsMap["balanceStock"].toString()
-            ConsignmentDetails(startNo, accCode, consignmentNo, balanceStock)
-        } catch (e: Exception) {
-            ConsignmentDetails()
-        }
-    }
 }
