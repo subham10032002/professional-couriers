@@ -35,7 +35,8 @@ fun CreditBookingScreen(
     viewModel: CreditBookingViewModel,
     navController: NavController,
     date: String,
-    clientName: List<String>
+    clientName: List<String>,
+    branch: String
 ) {
     var selectedDate by remember { mutableStateOf("") }
     var currentDate by remember { mutableStateOf(date) }
@@ -105,7 +106,8 @@ fun CreditBookingScreen(
                 noOfPsc = noOfPsc,
                 weight = weight,
                 bookingDate = selectedDate,
-                photoOfAddress = selectedImageByteArray
+                photoOfAddress = selectedImageByteArray,
+                branch = branch
             )
             navController.navigate(viewModel.createCBDimensionRoute(bookingData = creditBookingData))
         } else {

@@ -75,7 +75,7 @@ class HomeViewModel : ViewModel() {
     }
 
     // Function to create navigation route to CreditBooking
-    fun createLoginScreenRoute(): String {
+    fun createLoginScreenRoute(branch: String): String {
         val currentDate = getCurrentData()
         val (day, month, year) = currentDate.split("/")
 
@@ -83,7 +83,8 @@ class HomeViewModel : ViewModel() {
             firmNames = _homeState.value.firmNames,
             day = day,
             month = month,
-            year = year
+            year = year,
+            branch = branch
         )
     }
 
