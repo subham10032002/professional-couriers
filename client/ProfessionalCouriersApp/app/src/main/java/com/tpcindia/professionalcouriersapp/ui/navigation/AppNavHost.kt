@@ -1,6 +1,7 @@
 package com.tpcindia.professionalcouriersapp.ui.navigation
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
@@ -51,7 +52,7 @@ fun AppNavHost(
                 navController = navController,
                 name = name,
                 branch = branch,
-                bookings = listOf("Credit Booking", "Cash Booking")
+                bookings = listOf("Credit Booking")
             )
         }
 
@@ -81,6 +82,10 @@ fun AppNavHost(
                 clientName = firmNames,
                 branch = branch
             )
+
+            BackHandler {
+                navController.popBackStack()
+            }
         }
 
         composable(
@@ -118,6 +123,10 @@ fun AppNavHost(
         ) { backStackEntry ->
             val branch = backStackEntry.arguments?.getString("branch") ?: ""
             PdfScreen(branch = branch, viewModel = pdfViewModel)
+
+            BackHandler {
+                navController.popBackStack(route = Screen.Home.route, inclusive = false)
+            }
         }
     }
 }
