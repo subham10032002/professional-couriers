@@ -118,7 +118,7 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
                 return@launch
             }
             try {
-                val consignmentDetails = repository.getConsignmentDetails(creditBookingData.clientName)
+                val consignmentDetails = repository.getConsignmentDetails(creditBookingData.branch)
                 if (consignmentDetails.isSuccess) {
                     creditBookingData.balanceStock = consignmentDetails.getOrThrow().balanceStock
                     creditBookingData.consignmentNumber = consignmentDetails.getOrThrow().accCode +
