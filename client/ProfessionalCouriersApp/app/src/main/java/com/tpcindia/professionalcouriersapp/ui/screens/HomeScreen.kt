@@ -70,8 +70,10 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: Str
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            // Top rectangle with gradient and image
-            TopBanner()
+            TopBanner(showMenuIcon = true, onPDFsClick = {
+                val pdfScreenRoute = viewModel.createPDFScreenRoute(branch = branch)
+                navController.navigate(pdfScreenRoute)
+            })
 
             Spacer(modifier = Modifier.height(30.dp))
 
