@@ -62,12 +62,14 @@ fun AppNavHost(
                 navArgument("day") { type = NavType.StringType },
                 navArgument("month") { type = NavType.StringType },
                 navArgument("year") { type = NavType.StringType },
+                navArgument("branch") { type = NavType.StringType },
             )
         ) { backStackEntry ->
             val firmName = backStackEntry.arguments?.getString("firmName") ?: ""
             val day = backStackEntry.arguments?.getString("day") ?: ""
             val month = backStackEntry.arguments?.getString("month") ?: ""
             val year = backStackEntry.arguments?.getString("year") ?: ""
+            val branch = backStackEntry.arguments?.getString("branch") ?: ""
 
             val firmNames: List<String> = Gson().fromJson(Uri.decode(firmName), Array<String>::class.java).toList()
             val currentDate = "$day/$month/$year"
@@ -76,7 +78,8 @@ fun AppNavHost(
                 viewModel = creditBookingViewModel,
                 navController = navController,
                 date = currentDate,
-                clientName = firmNames
+                clientName = firmNames,
+                branch = branch
             )
         }
 

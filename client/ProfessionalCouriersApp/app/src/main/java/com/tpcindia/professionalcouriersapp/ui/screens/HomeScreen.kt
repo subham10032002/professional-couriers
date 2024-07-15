@@ -198,7 +198,7 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: Str
         }
 
         if (homeState.isDataFetched) {
-            val route = viewModel.createLoginScreenRoute()
+            val route = viewModel.createLoginScreenRoute(branch = branch)
             if (route != null) {
                 navController.navigate(route)
             }

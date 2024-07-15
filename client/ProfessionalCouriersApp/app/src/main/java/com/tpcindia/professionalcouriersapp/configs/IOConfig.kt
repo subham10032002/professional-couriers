@@ -39,5 +39,4 @@ object IOConfig {
     fun getSaveDataUrl(): String {
         return String.format("%s%s", BASE_URL, Endpoints.SAVE_DATA)
     }
-
 }

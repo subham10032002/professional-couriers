@@ -10,15 +10,16 @@ sealed class Screen(val route: String) {
     data object Home : Screen("home/{name}/{branch}") {
         fun createRoute(name: String, branch: String) = "home/$name/$branch"
     }
-    data object CreditBooking : Screen("credit_booking/{firmName}/{day}/{month}/{year}") {
+    data object CreditBooking : Screen("credit_booking/{firmName}/{day}/{month}/{year}/{branch}") {
         fun createRoute(
             firmNames: List<String>,
             day: String,
             month: String,
             year: String,
+            branch: String
         ): String {
             val jsonFirmNames = Uri.encode(Gson().toJson(firmNames))
-            return "credit_booking/$jsonFirmNames/$day/$month/$year"
+            return "credit_booking/$jsonFirmNames/$day/$month/$year/$branch"
         }
     }
     data object CBInfo : Screen("cb_info/{cbDimensionData}/{creditBookingData}") {
