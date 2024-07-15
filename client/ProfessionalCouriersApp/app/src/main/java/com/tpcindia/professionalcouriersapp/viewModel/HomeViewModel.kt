@@ -88,4 +88,8 @@ class HomeViewModel : ViewModel() {
         )
     }
 
+    fun createPDFScreenRoute(branch: String): String {
+        return Screen.PdfScreen.createRoute(branch)
+    }
+
 }
