@@ -1,20 +1,15 @@
 package com.tpcindia.professionalcouriersapp
 
-import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import android.Manifest
-import android.os.Build
-import androidx.core.content.ContextCompat
 import com.tpcindia.professionalcouriersapp.ui.navigation.AppNavHost
 import com.tpcindia.professionalcouriersapp.ui.theme.ProfessionalCouriersAppTheme
 import com.tpcindia.professionalcouriersapp.viewModel.CBDimensionsViewModel

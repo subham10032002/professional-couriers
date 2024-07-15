@@ -75,7 +75,7 @@ class HomeViewModel : ViewModel() {
     }
 
     // Function to create navigation route to CreditBooking
-    fun createLoginScreenRoute(branch: String): String {
+    fun createCreditBookingScreenRoute(branch: String): String {
         val currentDate = getCurrentData()
         val (day, month, year) = currentDate.split("/")
 
@@ -90,6 +90,10 @@ class HomeViewModel : ViewModel() {
 
     fun createPDFScreenRoute(branch: String): String {
         return Screen.PdfScreen.createRoute(branch)
+    }
+
+    fun clearState() {
+        _homeState.value = _homeState.value.copy(isDataFetched = false)
     }
 
 }
