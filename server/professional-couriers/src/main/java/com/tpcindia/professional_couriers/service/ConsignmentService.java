@@ -17,9 +17,9 @@ public class ConsignmentService {
     @Autowired
     private BookTransRepository bookTransRepository;
 
-    public Map<String, Object> getNextConsignmentNumber(String firmName) throws Exception {
-        String accCode = bookAllotRepository.findAccCodeByFirmName(firmName);
-        Long startNo = bookAllotRepository.findStartNoByFirmName(firmName);
+    public Map<String, Object> getNextConsignmentNumber(String branch) throws Exception {
+        String accCode = bookAllotRepository.findAccCodeByFirmName(branch);
+        Long startNo = bookAllotRepository.findStartNoByFirmName(branch);
 
         if (accCode == null || startNo == null) {
             throw new IllegalArgumentException("No book allotment found for the branch");
@@ -33,11 +33,11 @@ public class ConsignmentService {
             // Find the minimum unused consignment number
             lastUsedConsNo = bookTransRepository.findMinUnusedAccNoCredit(startNo);
         } else {
-            lastUsedConsNo++;
+            lastUsedConsNo += 1;
         }
 
         Map<String, Object> result = new HashMap<>();
-        result.put("startNo", lastUsedConsNo);
+        result.put("startNo", startNo);
         result.put("accCode", accCode);
         result.put("consignmentNo", lastUsedConsNo);
         result.put("balanceStock", balanceStock);
