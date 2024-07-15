@@ -22,7 +22,7 @@ public class ConsignmentController {
     public ResponseEntity<Map<String, Object>> getConsignmentNumber(@RequestBody ConsignmentRequestDTO requestDTO) {
         Map<String, Object> result = null;
         try {
-            result = consignmentService.getNextConsignmentNumber(requestDTO.getFirmName());
+            result = consignmentService.getNextConsignmentNumber(requestDTO.getBranch());
         } catch (Exception e) {
             e.printStackTrace();
         }
