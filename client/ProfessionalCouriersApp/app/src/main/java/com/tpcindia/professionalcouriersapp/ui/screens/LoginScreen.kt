@@ -107,7 +107,7 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
                 .height(56.dp),
             trailingIcon = {
                 val image = if (passwordVisible)
-                    painterResource(id = R.drawable.tpc_password_visibility_off)
+                    painterResource(id = R.drawable.tpc_open_eye)
                 else
                     painterResource(id = R.drawable.tpc_password_visibility_off)
 
