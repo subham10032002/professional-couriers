@@ -21,6 +21,7 @@ public class CreditBookingDataDTO {
     private String product;
     private String declaredValue;
     private String ewayBill;
+    private String branch;
     private byte[] photoOfAddress;
 
     // Getters
@@ -189,5 +190,13 @@ public class CreditBookingDataDTO {
 
     public void setPhotoOfAddress(byte[] photoOfAddress) {
         this.photoOfAddress = photoOfAddress;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 }

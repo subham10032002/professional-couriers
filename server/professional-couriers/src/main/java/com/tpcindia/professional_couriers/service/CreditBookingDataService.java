@@ -1,10 +1,14 @@
 package com.tpcindia.professional_couriers.service;
 
+import com.tpcindia.professional_couriers.dto.BranchDTO;
+import com.tpcindia.professional_couriers.dto.CBDataFetchDTO;
 import com.tpcindia.professional_couriers.dto.CreditBookingDataDTO;
 import com.tpcindia.professional_couriers.model.CreditBookingData;
 import com.tpcindia.professional_couriers.repository.CreditBookingDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CreditBookingDataService {
@@ -14,6 +18,10 @@ public class CreditBookingDataService {
 
     public void saveCreditBookingData(CreditBookingDataDTO dataDTO) {
         creditBookingDataRepository.save(mapToEntity(dataDTO));
+    }
+
+    public List<CreditBookingData> getCreditBookingData(String branch) {
+        return creditBookingDataRepository.findCreditBookingDataByBranch(branch);
     }
 
     private CreditBookingData mapToEntity(CreditBookingDataDTO dto) {
@@ -37,6 +45,7 @@ public class CreditBookingDataService {
         entity.setInvoiceNumber(dto.getInvoiceNumber());
         entity.setProduct(dto.getProduct());
         entity.setDeclaredValue(dto.getDeclaredValue());
+        entity.setBranch(dto.getBranch());
         entity.setEwayBill(dto.getEwayBill());
         entity.setPhotoOfAddress(dto.getPhotoOfAddress());
         return entity;

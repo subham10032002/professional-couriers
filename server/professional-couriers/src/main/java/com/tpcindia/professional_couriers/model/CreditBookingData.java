@@ -70,6 +70,9 @@ public class CreditBookingData {
     @Column(name = "ewayBill")
     private String ewayBill;
 
+    @Column(name = "branch")
+    private String branch;
+
     @Lob
     @Column(name = "photoOfAddress")
     private byte[] photoOfAddress;
@@ -249,5 +252,13 @@ public class CreditBookingData {
     }
     public void setPhotoOfAddress(byte[] photoOfAddress) {
         this.photoOfAddress = photoOfAddress;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 }
