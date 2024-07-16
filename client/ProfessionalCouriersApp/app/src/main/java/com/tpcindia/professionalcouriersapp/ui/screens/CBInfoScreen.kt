@@ -27,6 +27,7 @@ import com.tpcindia.professionalcouriersapp.ui.components.InputTextField
 import com.tpcindia.professionalcouriersapp.ui.components.LabelText
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
+import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 import com.tpcindia.professionalcouriersapp.viewModel.CBInfoViewModel
 
@@ -163,7 +164,11 @@ fun CBInfoScreen(
             val route = viewModel.createPDFScreenRoute(branch = creditBookingData.branch)
             route.let {
                 viewModel.clearState()
-                navController.navigate(it)
+                navController.navigate(route) {
+                    popUpTo(route = Screen.Home.route) {
+                        inclusive = false
+                    }
+                }
             }
         }
 

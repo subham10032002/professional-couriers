@@ -29,6 +29,7 @@ import com.tpcindia.professionalcouriersapp.ui.components.InputTextFieldWithSum
 import com.tpcindia.professionalcouriersapp.ui.components.LabelText
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
+import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientLeft
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
@@ -240,7 +241,11 @@ fun CBDimensionsScreen(
             val route = viewModel.createPDFScreenRoute(branch = creditBookingData.branch)
             route.let {
                 viewModel.clearState()
-                navController.navigate(it)
+                navController.navigate(it) {
+                    popUpTo(route = Screen.Home.route) {
+                        inclusive = false
+                    }
+                }
             }
         }
 
