@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -38,12 +39,12 @@ public class AccountsCustomerController {
     }
 
     @PostMapping("/customerEmail")
-    public ResponseEntity<String> getCustomerEmailId(@RequestBody CustomerEmailDTO emailDTO) {
-        String emailId = accountsCustomerService.findEmailByFirmName(emailDTO.getFirmName());
+    public ResponseEntity<List<String>> getCustomerEmailId(@RequestBody CustomerEmailDTO emailDTO) {
+        List<String> emailId = accountsCustomerService.findEmailByBranch(emailDTO.getBranch());
         if (emailId != null) {
             return ResponseEntity.ok(emailId);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonList("Email not found"));
         }
     }
 

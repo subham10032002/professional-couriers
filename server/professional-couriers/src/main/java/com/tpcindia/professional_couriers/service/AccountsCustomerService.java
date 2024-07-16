@@ -31,13 +31,10 @@ public class AccountsCustomerService {
         }
     }
 
-    public String findEmailByFirmName(String firmName) {
-        String email = accountsCustomerRepository.findEmailByFirmNameAndType(firmName);
-        if (email != null) {
-            return email.trim();
-        } else {
-            return null;
-        }
+    public List<String> findEmailByBranch(String branch) {
+        List<String> email = accountsCustomerRepository.findEmailByBranchAndType(branch);
+        email.replaceAll(String::trim);
+        return email;
     }
 
     public String findEmailByBranchCode(String branchCode) {

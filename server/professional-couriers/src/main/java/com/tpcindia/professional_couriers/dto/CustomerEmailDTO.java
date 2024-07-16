@@ -1,13 +1,13 @@
 package com.tpcindia.professional_couriers.dto;
 
 public class CustomerEmailDTO {
-    private String firmName;
+    private String branch;
 
-    public String getFirmName() {
-        return firmName;
+    public String getBranch() {
+        return branch;
     }
 
-    public void setFirmName(String firmName) {
-        this.firmName = firmName;
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 }
