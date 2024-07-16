@@ -162,6 +162,7 @@ fun CBInfoScreen(
         if (submitDetailsState.isPdfSaved) {
             val route = viewModel.createPDFScreenRoute(branch = creditBookingData.branch)
             route.let {
+                viewModel.clearState()
                 navController.navigate(it)
             }
         }

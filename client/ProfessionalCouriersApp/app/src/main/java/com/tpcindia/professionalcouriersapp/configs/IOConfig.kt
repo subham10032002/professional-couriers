@@ -14,6 +14,7 @@ object IOConfig {
         const val FIRM_NAMES = "/api/accountsCustomer/firmNames"
         const val DESTINATION = "/api/destination/cities"
         const val SAVE_DATA = "/api/credit-booking-data/save"
+        const val CREDIT_BOOKING_DATA = "/api/credit-booking-data/fetch"
     }
 
     fun getBaseUrl(): String {
@@ -38,5 +39,9 @@ object IOConfig {
 
     fun getSaveDataUrl(): String {
         return String.format("%s%s", BASE_URL, Endpoints.SAVE_DATA)
+    }
+
+    fun getCBDataFetchUrl() : String {
+        return String.format("%s%s", BASE_URL, Endpoints.CREDIT_BOOKING_DATA)
     }
 }

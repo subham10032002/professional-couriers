@@ -45,6 +45,17 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    fun fetchCreditBookingDetails(branch: String) {
+        _homeState.value = HomeState(isEmailSending = true)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+
+            } catch (e: Exception) {
+                updateStateWithError("Failed to fetch details: ${e.message}")
+            }
+        }
+    }
+
     private fun fetchFirmNames(branch: String): Result<List<ClientDetails>> {
         return repository.getFirmNames(branch)
     }
@@ -62,6 +73,7 @@ class HomeViewModel : ViewModel() {
             isLoading = false,
             error = errorMsg,
             isDataFetched = false,
+            isEmailSending = false
         )
     }
 
@@ -93,7 +105,7 @@ class HomeViewModel : ViewModel() {
     }
 
     fun clearState() {
-        _homeState.value = _homeState.value.copy(isDataFetched = false)
+        _homeState.value = HomeState()
     }
 
 }
