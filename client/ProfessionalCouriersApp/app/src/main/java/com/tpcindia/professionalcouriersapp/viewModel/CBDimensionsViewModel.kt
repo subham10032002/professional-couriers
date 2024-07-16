@@ -13,7 +13,6 @@ import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.repository.CBDataSubmissionRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
-import com.tpcindia.professionalcouriersapp.viewModel.uiState.SubmitDetailsState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +32,7 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
     private val _height = MutableStateFlow("")
     val height: StateFlow<String> = _height
 
-    private val _lengthSum = MutableStateFlow(0)
+    val _lengthSum = MutableStateFlow(0)
     val lengthSum: StateFlow<Int> = _lengthSum
 
     private val _widthSum = MutableStateFlow(0)
@@ -83,10 +82,10 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
             return Screen.CBInfo.createRoute(dimensionData, bookingData)
         } ?: run {
             return Screen.CBInfo.createRoute(CBDimensionData(
-                length = lengthSum.toString(),
-                width = widthSum.toString(),
-                height = heightSum.toString(),
-                unit = selectedUnit.toString()
+                length = lengthSum.value.toString(),
+                width = widthSum.value.toString(),
+                height = heightSum.value.toString(),
+                unit = selectedUnit.value
             ), bookingData)
         }
     }
@@ -147,8 +146,10 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    fun createPdf(context: Context) : ByteArray {
-        return repository.createPdf(context)
+    fun createPdf(context: Context, creditBookingData: CreditBookingData,
+                  cbDimensionData: CBDimensionData,
+                  cbInfoData: CBInfoData) : ByteArray {
+        return repository.createPdf(context, creditBookingData, cbDimensionData, cbInfoData)
     }
 
     fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {

@@ -175,8 +175,15 @@ fun CBInfoScreen(
         LaunchedEffect(submitDetailsState.isDataSubmitted) {
             if (submitDetailsState.isDataSubmitted) {
                 try {
-                    val byteArray = viewModel.createPdf(context)
-                    val fileName = "${creditBookingData.clientName}_CreditBooking_${System.currentTimeMillis()}.pdf"
+                    val byteArray = viewModel.createPdf(context, creditBookingData = creditBookingData,
+                        cbDimensionData = cbDimensionData,
+                        cbInfoData = CBInfoData(
+                            invoiceNumber,
+                            product,
+                            declaredValue,
+                            ewaybill
+                        ))
+                    val fileName = "${creditBookingData.consigneeName}_CreditBooking_${System.currentTimeMillis()}.pdf"
                     viewModel.savePdf(byteArray, fileName, branch = creditBookingData.branch)
                 } catch (e: Exception) {
                     // Handle Exception

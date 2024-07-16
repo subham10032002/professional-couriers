@@ -19,12 +19,19 @@ import com.itextpdf.layout.property.TextAlignment
 import com.itextpdf.layout.property.UnitValue
 import com.tpcindia.professionalcouriersapp.R
 import com.tpcindia.professionalcouriersapp.configs.UIConfig
+import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
+import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
+import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import java.io.InputStream
 
 class PdfGenerator {
 
     @SuppressLint("ResourceType")
-    fun createPdf(context: Context): ByteArray {
+    fun createPdf(context: Context,
+                  creditBookingData: CreditBookingData,
+                  cbDimensionData: CBDimensionData,
+                  cbInfoData: CBInfoData
+    ): ByteArray {
         val stream = ByteArrayOutputStream()
         val pdfWriter = PdfWriter(stream)
         val pdfDocument = PdfDocument(pdfWriter)
@@ -38,7 +45,6 @@ class PdfGenerator {
         val logoImage = Image(ImageDataFactory.create(logoByteArray))
         logoImage.setWidth(UnitValue.createPercentValue(30f))
         document.add(logoImage)
-
 
         // Add company address
         val companyAddress = UIConfig.COMPANY_ADDRESS
@@ -54,54 +60,73 @@ class PdfGenerator {
         // Add divider after header row
         table.addCell(createDividerCell(4))
 
-        // Add consignment number row
-        table.addCell(createCell("Consignment Number: XXXXXX", false, 4))
+        // Add consignment number and date rows
+        table.addCell(createCell("Consignment Number: ${creditBookingData.consignmentNumber}", false, 2))
+        table.addCell(createCell("Date: ${creditBookingData.currentDate}", false, 2))
 
-        // Add divider after consignment number row
+        // Add divider after consignment number and date rows
         table.addCell(createDividerCell(4))
 
-        // Add date row
-        table.addCell(createCell("Date: 01-07-2024 17:52:13", false, 4))
+        // Add booking date and branch row
+        table.addCell(createCell("Booking Date: ${creditBookingData.bookingDate}", false, 2))
+        table.addCell(createCell("Branch: ${creditBookingData.branch}", false, 2))
 
-        // Add divider after date row
+        // Add divider after booking date and branch row
         table.addCell(createDividerCell(4))
 
         // Add from section
-        table.addCell(createCell("From:", false))
-        table.addCell(createCell("Name: ABC", false))
-        table.addCell(createCell("Contact: 1234567890", false))
-        table.addCell(createCell("Address: XYZ", false))
+        table.addCell(createCell("From: ${creditBookingData.clientName}", false, 4))
 
         // Add divider after from section
         table.addCell(createDividerCell(4))
 
         // Add to section
-        table.addCell(createCell("To:", false))
-        table.addCell(createCell("Name: DEF", false))
-        table.addCell(createCell("Contact: 9876543210", false))
-        table.addCell(createCell("Address: UVW", false))
+        table.addCell(createCell("To: ${creditBookingData.consigneeName}", false, 2))
+        table.addCell(createCell("Pincode: ${creditBookingData.pincode}", false, 2))
+        table.addCell(createCell("Destination: ${creditBookingData.destination}", false, 4))
 
+        // Add divider after to section
         table.addCell(createDividerCell(4))
 
-//        val barcode = Barcode128(pdfDocument)
-//        barcode.setCode("barcodeCode") // Replace with your actual barcode data
-//        val barcodeImage = Image(barcode.createFormXObject(pdfDocument))
-//        barcodeImage.scaleToFit(150f, 50f)
-//        val barcodeCell = Cell(1, 4).add(barcodeImage)
-//        barcodeCell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER)
-//        barcodeCell.setTextAlignment(TextAlignment.CENTER)
-//        table.addCell(barcodeCell)
+        // Add consignee type and mode
+        table.addCell(createCell("Consignee Type: ${creditBookingData.consigneeType}", false, 2))
+        table.addCell(createCell("Mode: ${creditBookingData.mode}", false, 2))
 
-        // Add divider after barcode row
+        // Add divider after consignee type and mode
+        table.addCell(createDividerCell(4))
+
+        // Add content details
+        table.addCell(createCell("Content:", false, 1))
+        table.addCell(createCell("Pcs: ${creditBookingData.noOfPsc}", false, 1))
+        table.addCell(createCell("Weight: ${creditBookingData.weight}", false, 2))
+
+        // Add divider after content details
+        table.addCell(createDividerCell(4))
+
+        // Add dimensions details
+        table.addCell(createCell("Dimensions:", false, 1))
+        table.addCell(createCell("Unit: ${cbDimensionData.unit}", false, 2))
+        table.addCell(createCell("Length: ${cbDimensionData.length}", false, 2))
+        table.addCell(createCell("Width: ${cbDimensionData.width}", false, 2))
+        table.addCell(createCell("Height: ${cbDimensionData.height}", false, 2))
+
+        // Add divider after dimensions details
+        table.addCell(createDividerCell(4))
+
+        // Add info details
+        table.addCell(createCell("Info:", false, 1))
+        table.addCell(createCell("Invoice Number: ${cbInfoData.invoiceNumber}", false, 2))
+        table.addCell(createCell("Product: ${cbInfoData.product}", false, 2))
+        table.addCell(createCell("Declared Value: ${cbInfoData.declaredValue}", false, 2))
+        table.addCell(createCell("Eway Bill: ${cbInfoData.ewayBill}", false, 2))
+
         table.addCell(createDividerCell(4))
 
         // Add row for name, signature, phone, and date
-        table.addCell(createCell("Name:", false))
-        table.addCell(createCell("Signature:", false))
-        table.addCell(createCell("Phone:", false))
-        table.addCell(createCell("Date:", false))
-
-        table.addCell(createDividerCell(4))
+        table.addCell(createCell("Name:", false, 2))
+        table.addCell(createCell("Signature:", false, 2))
+        table.addCell(createCell("Phone:", false, 2))
+        table.addCell(createCell("Date:", false, 2))
 
         document.add(table)
 

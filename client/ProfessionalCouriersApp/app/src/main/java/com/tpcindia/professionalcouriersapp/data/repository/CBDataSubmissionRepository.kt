@@ -60,10 +60,12 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         }
     }
 
-    fun createPdf(context: Context): ByteArray {
+    fun createPdf(context: Context, creditBookingData: CreditBookingData,
+                  cbDimensionData: CBDimensionData,
+                  cbInfoData: CBInfoData): ByteArray {
         return try {
            val pdgGenerator = PdfGenerator()
-            pdgGenerator.createPdf(context)
+            pdgGenerator.createPdf(context, creditBookingData, cbDimensionData, cbInfoData)
         } catch (e: IOException) {
             ByteArray(0)
         }
