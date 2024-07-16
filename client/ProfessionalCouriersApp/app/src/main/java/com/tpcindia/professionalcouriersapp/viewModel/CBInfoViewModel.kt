@@ -40,6 +40,9 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
             try {
                 val consignmentDetails = repository.getConsignmentDetails(creditBookingData.branch)
                 if (consignmentDetails.isSuccess) {
+                    creditBookingData.balanceStock = consignmentDetails.getOrThrow().balanceStock
+                    creditBookingData.consignmentNumber = consignmentDetails.getOrThrow().accCode +
+                            consignmentDetails.getOrThrow().consignmentNo
                     val result = repository.submitCreditBookingDetails(
                         creditBookingData = creditBookingData,
                         cbDimensionData = cbDimensionData,
