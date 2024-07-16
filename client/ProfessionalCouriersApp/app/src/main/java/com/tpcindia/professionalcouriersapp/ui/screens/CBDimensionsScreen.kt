@@ -252,8 +252,13 @@ fun CBDimensionsScreen(
         LaunchedEffect(isDataSubmitted) {
             if (isDataSubmitted) {
                 try {
-                    val byteArray = viewModel.createPdf(context)
-                    val fileName = "${creditBookingData.clientName}_CreditBooking_${System.currentTimeMillis()}.pdf"
+                    val byteArray = viewModel.createPdf(context, creditBookingData, cbDimensionData = CBDimensionData(
+                        length = lengthSum.toString(),
+                        width = widthSum.toString(),
+                        height = heightSum.toString(),
+                        unit = selectedUnit
+                    ), cbInfoData = CBInfoData())
+                    val fileName = "${creditBookingData.consigneeName}_CreditBooking_${System.currentTimeMillis()}.pdf"
                     viewModel.savePdf(byteArray, fileName, branch = creditBookingData.branch)
                 } catch (e: Exception) {
                     // Handle Exception

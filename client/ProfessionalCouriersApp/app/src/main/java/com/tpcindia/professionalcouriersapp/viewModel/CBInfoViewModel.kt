@@ -72,8 +72,10 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun createPdf(context: Context) : ByteArray {
-        return repository.createPdf(context)
+    fun createPdf(context: Context, creditBookingData: CreditBookingData,
+                  cbDimensionData: CBDimensionData,
+                  cbInfoData: CBInfoData) : ByteArray {
+        return repository.createPdf(context, creditBookingData, cbDimensionData, cbInfoData)
     }
 
     fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {
