@@ -176,6 +176,7 @@ fun CBDimensionsScreen(
                     CustomButton(
                         onClick = {
                             if (selectedUnit.isNotBlank()) {
+                                viewModel.clearState()
                                 navController.navigate(viewModel.createCBInfoRoute(CBDimensionData(), bookingData = creditBookingData))
                             } else {
                                 Toast.makeText(context, "Please select unit.", Toast.LENGTH_SHORT).show()
@@ -196,6 +197,7 @@ fun CBDimensionsScreen(
                     CustomButton(
                         onClick = {
                             if (viewModel.validateEntries(length, width, height, creditBookingData.noOfPsc.toInt())) {
+                                viewModel.clearState()
                                 navController.navigate(viewModel.createCBInfoRoute(bookingData = creditBookingData))
                             } else {
                                 Toast.makeText(context, "Please enter exactly ${creditBookingData.noOfPsc} numbers in each field.", Toast.LENGTH_SHORT).show()
@@ -237,6 +239,7 @@ fun CBDimensionsScreen(
         if (isPdfSaved) {
             val route = viewModel.createPDFScreenRoute(branch = creditBookingData.branch)
             route.let {
+                viewModel.clearState()
                 navController.navigate(it)
             }
         }

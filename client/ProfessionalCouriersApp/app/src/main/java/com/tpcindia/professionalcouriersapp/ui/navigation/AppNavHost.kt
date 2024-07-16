@@ -82,10 +82,6 @@ fun AppNavHost(
                 clientName = firmNames,
                 branch = branch
             )
-
-            BackHandler {
-                navController.popBackStack()
-            }
         }
 
         composable(

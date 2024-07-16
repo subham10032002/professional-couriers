@@ -109,6 +109,7 @@ fun CreditBookingScreen(
                 photoOfAddress = selectedImageByteArray,
                 branch = branch
             )
+            viewModel.clearState()
             navController.navigate(viewModel.createCBDimensionRoute(bookingData = creditBookingData))
         } else {
             Toast.makeText(context, "Please fill all mandatory fields", Toast.LENGTH_SHORT).show()

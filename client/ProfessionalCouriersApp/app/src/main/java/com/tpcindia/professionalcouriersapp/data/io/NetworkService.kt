@@ -1,7 +1,6 @@
 package com.tpcindia.professionalcouriersapp.data.io
 
 import com.tpcindia.professionalcouriersapp.configs.IOConfig
-import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
@@ -9,7 +8,10 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.IOException
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
+import java.lang.reflect.Type
 
 class NetworkService {
 
@@ -153,6 +155,33 @@ class NetworkService {
             } else {
                 val responseBody = response.body?.string() ?: return Result.failure(Exception("Empty response"))
                 Result.failure(Exception(responseBody))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    fun fetchCreditBookingData(branch: String): Result<List<CreditBookingData>> {
+        val json = JSONObject()
+        json.put("branch", branch)
+        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(IOConfig.getCBDataFetchUrl())
+            .post(requestBody)
+            .build()
+
+        return try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+
+                val listType: Type? = object : TypeToken<List<CreditBookingData>>() {}.type
+                val bookingDataList: List<CreditBookingData> = Gson().fromJson(responseData, listType)
+
+                Result.success(bookingDataList)
+            } else {
+                Result.failure(Exception("Failed to fetch credit booking data"))
             }
         } catch (e: Exception) {
             Result.failure(e)

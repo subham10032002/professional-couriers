@@ -114,6 +114,8 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         mergedMap["declaredValue"] = cbInfoData.declaredValue
         mergedMap["ewayBill"] = cbInfoData.ewayBill
 
+        mergedMap["branch"] = creditBookingData.branch
+
         // Convert mergedMap to JSON string using Gson
         return Gson().toJson(mergedMap)
     }

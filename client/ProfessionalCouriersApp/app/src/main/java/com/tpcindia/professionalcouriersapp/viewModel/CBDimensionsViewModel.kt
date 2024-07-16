@@ -13,6 +13,7 @@ import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.repository.CBDataSubmissionRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
+import com.tpcindia.professionalcouriersapp.viewModel.uiState.SubmitDetailsState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -172,5 +173,11 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
 
     fun createPDFScreenRoute(branch: String): String {
         return Screen.PdfScreen.createRoute(branch)
+    }
+
+    fun clearState() {
+        _isPdfSaved.value = false
+        _isDataSubmitted.value = false
+        _isLoading.value = false
     }
 }

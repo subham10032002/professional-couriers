@@ -13,6 +13,7 @@ import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.repository.CBDataSubmissionRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
+import com.tpcindia.professionalcouriersapp.viewModel.uiState.CreditBookingState
 import com.tpcindia.professionalcouriersapp.viewModel.uiState.SubmitDetailsState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -98,5 +99,9 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
 
     fun clearDataSubmissionMessage() {
         _submitDetailsState.value = _submitDetailsState.value.copy(dataSubmissionMessage = null)
+    }
+
+    fun clearState() {
+        _submitDetailsState.value = SubmitDetailsState()
     }
 }

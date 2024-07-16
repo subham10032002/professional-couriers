@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.repository.CreditBookingRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
+import com.tpcindia.professionalcouriersapp.viewModel.uiState.HomeState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -59,6 +60,10 @@ class CreditBookingViewModel : ViewModel() {
 
     fun clearErrorMessage() {
         _creditBookingState.value = _creditBookingState.value.copy(error = null)
+    }
+
+    fun clearState() {
+        _creditBookingState.value = CreditBookingState()
     }
 
 }
