@@ -23,6 +23,7 @@ public class CreditBookingDataDTO {
     private String ewayBill;
     private String branch;
     private byte[] photoOfAddress;
+    private String branchCode;
 
     // Getters
     public String getCurrentDate() {
@@ -198,5 +199,13 @@ public class CreditBookingDataDTO {
 
     public void setBranch(String branch) {
         this.branch = branch;
+    }
+
+    public String getBranchCode() {
+        return branchCode;
+    }
+
+    public void setBranchCode(String branchCode) {
+        this.branchCode = branchCode;
     }
 }

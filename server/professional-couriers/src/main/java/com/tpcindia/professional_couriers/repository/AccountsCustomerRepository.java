@@ -19,7 +19,7 @@ public interface AccountsCustomerRepository extends JpaRepository<AccountsCustom
     String findBranchByBranchCode(@Param("branchCode") String branchCode);
 
     @Query("SELECT ac.emailId FROM AccountsCustomer ac WHERE ac.type = 'Cust' AND ac.custCode = :custCode AND ac.flag = 'Acti'")
-    String findEmailByBranchAndType(@Param("custCode") String custCode);
+    String findEmailByCustCodeAndType(@Param("custCode") String custCode);
 
     @Query("SELECT ac.emailId FROM AccountsCustomer ac WHERE ac.type = 'Bran' AND ac.custCode = :branchCode AND ac.flag = 'Acti'")
     String findEmailByBranchCodeAndType(@Param("branchCode") String branchCode);

@@ -76,6 +76,18 @@ public class CreditBookingData {
     @Column(name = "custCode")
     private String custCode;
 
+    @Column(name = "emailSent")
+    private String emailSent;
+
+    @Column(name = "dateOfEmailSent")
+    private String dataOfEmailSent;
+
+    @Column(name = "userName")
+    private String userName;
+
+    @Column(name = "sync")
+    private String sync;
+
     @Lob
     @Column(name = "photoOfAddress")
     private byte[] photoOfAddress;
@@ -271,5 +283,37 @@ public class CreditBookingData {
 
     public void setCustCode(String custCode) {
         this.custCode = custCode;
+    }
+
+    public String getDataOfEmailSent() {
+        return dataOfEmailSent;
+    }
+
+    public void setDataOfEmailSent(String dataOfEmailSent) {
+        this.dataOfEmailSent = dataOfEmailSent;
+    }
+
+    public String getEmailSent() {
+        return emailSent;
+    }
+
+    public void setEmailSent(String emailSent) {
+        this.emailSent = emailSent;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getSync() {
+        return sync;
+    }
+
+    public void setSync(String sync) {
+        this.sync = sync;
     }
 }
