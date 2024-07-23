@@ -73,6 +73,9 @@ public class CreditBookingData {
     @Column(name = "branch")
     private String branch;
 
+    @Column(name = "custCode")
+    private String custCode;
+
     @Lob
     @Column(name = "photoOfAddress")
     private byte[] photoOfAddress;
@@ -260,5 +263,13 @@ public class CreditBookingData {
 
     public void setBranch(String branch) {
         this.branch = branch;
+    }
+
+    public String getCustCode() {
+        return custCode;
+    }
+
+    public void setCustCode(String custCode) {
+        this.custCode = custCode;
     }
 }
