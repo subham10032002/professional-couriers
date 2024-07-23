@@ -54,6 +54,11 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
 
 		<!-- Testing Dependencies -->
 		<dependency>
@@ -71,7 +76,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<finalName>professional-couriers</finalName>
-					<mainClass>com.tpcindia.ApplicationClassName</mainClass> <!-- Replace with your main class -->
+					<mainClass>com.tpcindia.professional_couriers.ProfessionalCouriersApplication</mainClass> <!-- Replace with your main class -->
 				</configuration>
 			</plugin>
 		</plugins>
