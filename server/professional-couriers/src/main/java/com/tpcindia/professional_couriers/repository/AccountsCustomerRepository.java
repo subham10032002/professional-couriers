@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface AccountsCustomerRepository extends JpaRepository<AccountsCustomer, Long> {
-    // TODO:- Check the flag name before releasing
+
     @Query("SELECT ac.firmName FROM AccountsCustomer ac WHERE ac.type = 'Cust' AND ac.branch = :branch AND ac.flag = 'Acti' ORDER BY ac.firmName")
     List<String> findFirmNamesByTypeAndBranch(@Param("branch") String branch);
 
@@ -23,5 +23,8 @@ public interface AccountsCustomerRepository extends JpaRepository<AccountsCustom
 
     @Query("SELECT ac.emailId FROM AccountsCustomer ac WHERE ac.type = 'Bran' AND ac.custCode = :branchCode AND ac.flag = 'Acti'")
     String findEmailByBranchCodeAndType(@Param("branchCode") String branchCode);
+
+    @Query("SELECT ac.custCode FROM AccountsCustomer ac WHERE ac.type = 'Cust' AND ac.branch = :branch AND ac.flag = 'Acti' AND ac.firmName = :firmName ORDER BY ac.firmName")
+    String findCustCodeByFirmNameAndBranch(String branch, String firmName);
 
 }
