@@ -1,13 +1,13 @@
 package com.tpcindia.professional_couriers.dto;
 
 public class CustomerEmailDTO {
-    private String branch;
+    private String custCode;
 
-    public String getBranch() {
-        return branch;
+    public String getCustCode() {
+        return custCode;
     }
 
-    public void setBranch(String branch) {
-        this.branch = branch;
+    public void setCustCode(String custCode) {
+        this.custCode = custCode;
     }
 }

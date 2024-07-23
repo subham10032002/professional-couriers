@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -39,12 +37,12 @@ public class AccountsCustomerController {
     }
 
     @PostMapping("/customerEmail")
-    public ResponseEntity<List<String>> getCustomerEmailId(@RequestBody CustomerEmailDTO emailDTO) {
-        List<String> emailId = accountsCustomerService.findEmailByBranch(emailDTO.getBranch());
+    public ResponseEntity<String> getCustomerEmailId(@RequestBody CustomerEmailDTO emailDTO) {
+        String emailId = accountsCustomerService.findEmailByBranch(emailDTO.getCustCode());
         if (emailId != null) {
             return ResponseEntity.ok(emailId);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.singletonList("Email not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Branch email not found");
         }
     }
 
