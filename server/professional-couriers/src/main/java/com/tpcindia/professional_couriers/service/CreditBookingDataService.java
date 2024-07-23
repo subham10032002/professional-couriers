@@ -59,6 +59,10 @@ public class CreditBookingDataService {
         entity.setEwayBill(dto.getEwayBill());
         entity.setPhotoOfAddress(dto.getPhotoOfAddress());
         entity.setCustCode(custCode);
+        entity.setEmailSent("No");
+        entity.setUserName("");
+        entity.setDataOfEmailSent("");
+        entity.setSync("No");
         return entity;
     }
 }

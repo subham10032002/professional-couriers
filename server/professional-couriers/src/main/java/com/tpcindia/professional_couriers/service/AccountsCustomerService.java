@@ -1,14 +1,10 @@
 package com.tpcindia.professional_couriers.service;
 
-import com.tpcindia.professional_couriers.model.AccountsCustomer;
 import com.tpcindia.professional_couriers.repository.AccountsCustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.System.in;
 
 @Service
 public class AccountsCustomerService {
@@ -32,7 +28,7 @@ public class AccountsCustomerService {
     }
 
     public String findEmailByBranch(String custCode) {
-        String email = accountsCustomerRepository.findEmailByBranchAndType(custCode);
+        String email = accountsCustomerRepository.findEmailByCustCodeAndType(custCode);
         if (email != null) {
             return email.trim();
         } else {
