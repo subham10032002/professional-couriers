@@ -23,7 +23,7 @@ public class UserLoginService {
     private AccountsCustomerRepository accountsCustomerRepository;
 
     public Map<String, Object> authenticateUser(String loginId, String password) throws InvalidCredentialsException {
-        UserLogin userLogin = userLoginRepository.findByLoginIdAndPassword(loginId, password, "active");
+        UserLogin userLogin = userLoginRepository.findByLoginIdAndPassword(loginId, getEncryptedPassword(password), "active");
 
         if (userLogin == null) {
             throw new InvalidCredentialsException("Invalid Credentials");
@@ -43,8 +43,8 @@ public class UserLoginService {
         return result;
     }
 
-    private String getDecryptedPassword(String password) {
+    private String getEncryptedPassword(String password) {
         EncryptionUtils encryptionUtils = new EncryptionUtils();
-        return encryptionUtils.decrypt(password);
+        return encryptionUtils.encrypt(password);
     }
 }
