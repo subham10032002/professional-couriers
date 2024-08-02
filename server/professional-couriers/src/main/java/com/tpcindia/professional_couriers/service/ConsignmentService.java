@@ -25,21 +25,25 @@ public class ConsignmentService {
             throw new IllegalArgumentException("No book allotment found for the branch");
         }
 
+        Long finalConsignmentNumber = (long) 0;
         // Find the last used consignment number
         Long lastUsedConsNo = bookTransRepository.findMaxAccNoCredit(startNo);
         Integer balanceStock = bookTransRepository.countUnusedAccNosCredit(startNo);
 
         if (lastUsedConsNo == null || lastUsedConsNo == 0) {
-            // Find the minimum unused consignment number
             lastUsedConsNo = bookTransRepository.findMinUnusedAccNoCredit(startNo);
+        }
+
+        if (lastUsedConsNo == 0 || lastUsedConsNo == null) {
+            finalConsignmentNumber = startNo;
         } else {
-            lastUsedConsNo += 1;
+            finalConsignmentNumber = lastUsedConsNo + 1;
         }
 
         Map<String, Object> result = new HashMap<>();
         result.put("startNo", startNo);
         result.put("accCode", accCode);
-        result.put("consignmentNo", lastUsedConsNo);
+        result.put("consignmentNo", finalConsignmentNumber);
         result.put("balanceStock", balanceStock);
 
         return result;
