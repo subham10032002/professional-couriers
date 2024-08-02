@@ -20,7 +20,6 @@ import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.configs.UIConfig
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
-import com.tpcindia.professionalcouriersapp.ui.components.DatePickerInputField
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
 import com.tpcindia.professionalcouriersapp.ui.components.ImagePickerBox
 import com.tpcindia.professionalcouriersapp.ui.components.InputTextField
@@ -40,7 +39,7 @@ fun CreditBookingScreen(
     clientName: List<String>,
     branch: String
 ) {
-    var selectedDate by remember { mutableStateOf("") }
+    val selectedDate by remember { mutableStateOf("") }
     var currentDate by remember { mutableStateOf(date) }
     var consigneeName by remember { mutableStateOf("") }
     var mode by remember { mutableStateOf("") }
@@ -148,7 +147,8 @@ fun CreditBookingScreen(
             InputTextField(
                 value = currentDate,
                 onValueChange = { currentDate = it },
-                label = "Today's Date"
+                label = "Today's Date",
+                readOnly = true
             )
 
             Spacer(modifier = Modifier.height(15.dp))
@@ -164,10 +164,11 @@ fun CreditBookingScreen(
             Spacer(modifier = Modifier.height(15.dp))
 
             LabelText("Booking Date ")
-            DatePickerInputField(
-                label = "Ex- 15/07/2023",
-                selectedDate = selectedDate,
-                onDateSelected = { selectedDate = it }
+            InputTextField(
+                value = currentDate,
+                onValueChange = { currentDate = it },
+                label = "Booking Date",
+                readOnly = true
             )
 
             Spacer(modifier = Modifier.height(15.dp))
