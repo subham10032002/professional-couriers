@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 
@@ -12,7 +13,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.google.gson.Gson
 import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
-import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.screens.*
 import com.tpcindia.professionalcouriersapp.viewModel.CBDimensionsViewModel
@@ -21,6 +21,7 @@ import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.PdfViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.SharedViewModel
 
 @Composable
 fun AppNavHost(
@@ -34,6 +35,7 @@ fun AppNavHost(
     startDestination: String = Screen.Login.route
 ) {
     val navController = rememberNavController()
+    val sharedViewModel: SharedViewModel = viewModel()
     NavHost(navController = navController, startDestination = startDestination, modifier = modifier) {
         composable(Screen.Login.route) {
             LoginScreen(viewModel = loginViewModel, navController = navController)
@@ -42,16 +44,19 @@ fun AppNavHost(
             route = Screen.Home.route,
             arguments = listOf(
                 navArgument("name") { defaultValue = "" },
-                navArgument("branch") { defaultValue = "" }
+                navArgument("branch") { defaultValue = "" },
+                navArgument("branchCode") { defaultValue = "" }
             )
         ) { backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: ""
             val branch = backStackEntry.arguments?.getString("branch") ?: ""
+            val branchCode = backStackEntry.arguments?.getString("branchCode") ?: ""
             HomeScreen(
                 viewModel = homeViewModel,
                 navController = navController,
                 name = name,
                 branch = branch,
+                branchCode = branchCode,
                 bookings = listOf("Credit Booking")
             )
         }
@@ -77,6 +82,7 @@ fun AppNavHost(
 
             CreditBookingScreen(
                 viewModel = creditBookingViewModel,
+                sharedViewModel = sharedViewModel,
                 navController = navController,
                 date = currentDate,
                 clientName = firmNames,
@@ -85,29 +91,22 @@ fun AppNavHost(
         }
 
         composable(
-            route = Screen.CBDimensions.route,
-            arguments = listOf(navArgument("creditBookingData") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val json = backStackEntry.arguments?.getString("creditBookingData") ?: ""
-            val creditBookingData = Gson().fromJson(json, CreditBookingData::class.java)
-            CBDimensionsScreen(navController = navController, viewModel = cbDimensionViewModel, creditBookingData = creditBookingData)
+            route = Screen.CBDimensions.route
+        ) {
+            CBDimensionsScreen(
+                navController = navController,
+                viewModel = cbDimensionViewModel,
+                sharedViewModel = sharedViewModel
+            )
         }
 
         composable(
-            route = Screen.CBInfo.route,
-            arguments = listOf(navArgument("cbDimensionData") { type = NavType.StringType },
-                navArgument("creditBookingData") { type = NavType.StringType },
-            )
-        ) { backStackEntry ->
-            val dimensionData = backStackEntry.arguments?.getString("cbDimensionData") ?: ""
-            val bookingData = backStackEntry.arguments?.getString("creditBookingData") ?: ""
-            val cbDimensionData = Gson().fromJson(dimensionData, CBDimensionData::class.java)
-            val creditBookingData = Gson().fromJson(bookingData, CreditBookingData::class.java)
+            route = Screen.CBInfo.route
+        ) {
             CBInfoScreen(
                 viewModel = cbInfoViewModel,
                 navController = navController,
-                creditBookingData = creditBookingData,
-                cbDimensionData = cbDimensionData
+                sharedViewModel = sharedViewModel
             )
         }
 

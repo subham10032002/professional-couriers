@@ -5,5 +5,7 @@ data class HomeState(
     val error: String? = null,
     val firmNames: List<String> = emptyList(),
     val isDataFetched: Boolean = false,
-    val isEmailSending: Boolean = false
+    val isEmailSending: Boolean = false,
+    val emailSentSuccessfully: Boolean = false,
+    val emailSendingFailed: Boolean = false,
 )

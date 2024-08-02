@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -39,29 +38,47 @@ import com.tpcindia.professionalcouriersapp.R
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
-import com.tpcindia.professionalcouriersapp.viewModel.LoginViewModel
 import kotlinx.coroutines.delay
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: String, branch: String, bookings: List<String>) {
-
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    navController: NavController,
+    name: String,
+    branch: String,
+    branchCode: String,
+    bookings: List<String>
+) {
     var fabState by remember { mutableStateOf(FabState.Default) }
-    val isNetworkCallInProgress = fabState == FabState.Loading
     var rotation by remember { mutableFloatStateOf(0f) }
     val homeState by viewModel.homeState.collectAsState()
+    val context = LocalContext.current
 
     val fabIcon = when (fabState) {
         FabState.Default -> painterResource(id = R.drawable.tpc_outline_email_24)
-        FabState.Loading -> painterResource(id = R.drawable.tpc_progress_bar_mail)
         FabState.Success -> painterResource(id = R.drawable.tpc_verified)
-        FabState.Failure -> painterResource(id = R.drawable.tpc_verified)
+        else -> null
     }
 
     LaunchedEffect(fabState) {
-        while (isNetworkCallInProgress) {
-            rotation += 10f
-            delay(16L)
+        if (fabState == FabState.Loading) {
+            while (true) {
+                rotation += 10f
+                delay(16L)
+                if (fabState != FabState.Loading) break
+            }
+        } else if (fabState == FabState.Success) {
+            delay(1000)
+            fabState = FabState.Default
         }
+    }
+
+    fun onEmailButtonClicked() {
+        viewModel.sendEmails(
+            branch = branch,
+            branchCode = branchCode,
+            userName = name
+        )
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -139,17 +156,7 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: Str
 
         FloatingActionButton(
             onClick = {
-                if (!isNetworkCallInProgress) {
-//                        coroutineScope.launch {
-                    fabState = FabState.Loading
-                    // Do network call
-//                        delay(2000)
-                    val success = true
-                    fabState = if (success) FabState.Success else FabState.Failure
-//                        delay(3000) // Delay for some second and fallback to default state
-                    fabState = FabState.Default
-//                        }
-                }
+                onEmailButtonClicked()
             },
             containerColor = Color.Red,
             contentColor = Color.White,
@@ -163,18 +170,25 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: Str
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(horizontal = 24.dp)
             ) {
-                Icon(
-                    painter = fabIcon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .rotate(if (isNetworkCallInProgress) rotation else 0f)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Email",
-                    fontSize = 18.sp,
-                )
+                if (fabState == FabState.Loading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        modifier = Modifier.size(24.dp)
+                    )
+                } else {
+                    if (fabIcon != null) {
+                        Icon(
+                            painter = fabIcon,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Email",
+                        fontSize = 18.sp,
+                    )
+                }
             }
         }
 
@@ -199,19 +213,32 @@ fun HomeScreen(viewModel: HomeViewModel, navController: NavController, name: Str
             viewModel.clearErrorMessage()
         }
 
+        if (homeState.isEmailSending) {
+            fabState = FabState.Loading
+            Toast.makeText(context, "Sending email...\nPlease don't press anything", Toast.LENGTH_SHORT).show()
+            viewModel.clearState()
+        }
+        if (homeState.emailSentSuccessfully) {
+            fabState = FabState.Success
+            Toast.makeText(context, "Email sent successfully", Toast.LENGTH_SHORT).show()
+            viewModel.clearState()
+        }
+        if (homeState.emailSendingFailed) {
+            fabState = FabState.Default
+            viewModel.clearState()
+        }
+
         if (homeState.isDataFetched) {
             val route = viewModel.createCreditBookingScreenRoute(branch = branch)
-            if (route != null) {
-                viewModel.clearState()
-                navController.navigate(route)
-            }
+            viewModel.clearState()
+            navController.navigate(route)
 
         }
     }
 }
 
 enum class FabState {
-    Default, Loading, Success, Failure
+    Default, Loading, Success
 }
 
 

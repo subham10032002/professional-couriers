@@ -30,13 +30,13 @@ import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 import com.tpcindia.professionalcouriersapp.viewModel.CBInfoViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.SharedViewModel
 
 @Composable
 fun CBInfoScreen(
     viewModel: CBInfoViewModel,
     navController: NavController,
-    creditBookingData: CreditBookingData,
-    cbDimensionData: CBDimensionData
+    sharedViewModel: SharedViewModel
 ) {
     var invoiceNumber by remember { mutableStateOf("") }
     var product by remember { mutableStateOf("") }
@@ -45,6 +45,9 @@ fun CBInfoScreen(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val submitDetailsState by viewModel.submitDetailsState.collectAsState()
+
+    val creditBookingData by sharedViewModel.creditBookingData.collectAsState()
+    val cbDimensionData by sharedViewModel.cbDimensionData.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(

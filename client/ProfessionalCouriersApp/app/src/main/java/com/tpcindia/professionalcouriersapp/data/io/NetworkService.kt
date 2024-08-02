@@ -12,6 +12,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import java.lang.reflect.Type
+import java.util.concurrent.TimeUnit
 
 class NetworkService {
 
@@ -40,6 +41,40 @@ class NetworkService {
             Result.failure(e)
         }
     }
+
+    fun sendEmails(branch: String, branchCode: String, username: String) : Result<String> {
+        val json = JSONObject()
+        json.put("branch", branch)
+        json.put("branchCode", branchCode)
+        json.put("userName", username)
+
+        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        val request = Request.Builder()
+            .url(IOConfig.getEmailSendUrl())
+            .post(requestBody)
+            .build()
+
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        return try {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                val responseBody = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+                Result.success(responseBody)
+            } else if (response.code == 404) {
+                Result.failure(Exception("Branch not found"))
+            } else {
+                Result.failure(Exception(response.message))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
     fun getFirmNames(branch: String): Result<List<String>> {
         val json = JSONObject()

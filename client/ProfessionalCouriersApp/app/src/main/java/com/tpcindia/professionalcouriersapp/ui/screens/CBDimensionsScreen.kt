@@ -22,7 +22,6 @@ import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.configs.UIConfig
 import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
-import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
 import com.tpcindia.professionalcouriersapp.ui.components.InputTextFieldWithSum
@@ -34,11 +33,12 @@ import com.tpcindia.professionalcouriersapp.ui.theme.GradientLeft
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 import com.tpcindia.professionalcouriersapp.viewModel.CBDimensionsViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.SharedViewModel
 
 @Composable
 fun CBDimensionsScreen(
     navController: NavController,
-    creditBookingData: CreditBookingData,
+    sharedViewModel: SharedViewModel,
     viewModel: CBDimensionsViewModel
 ) {
     val selectedUnit by viewModel.selectedUnit.collectAsState()
@@ -52,6 +52,8 @@ fun CBDimensionsScreen(
     val isPdfSaved by viewModel.isPdfSaved.collectAsState()
     val isDataSubmitted by viewModel.isDataSubmitted.collectAsState()
     val error by viewModel.error.collectAsState()
+
+    val creditBookingData by sharedViewModel.creditBookingData.collectAsState()
 
     val context = LocalContext.current
 
@@ -178,7 +180,8 @@ fun CBDimensionsScreen(
                         onClick = {
                             if (selectedUnit.isNotBlank()) {
                                 viewModel.clearState()
-                                navController.navigate(viewModel.createCBInfoRoute(CBDimensionData(), bookingData = creditBookingData))
+                                sharedViewModel.setCreditBookingData(creditBookingData)
+                                navController.navigate(viewModel.createCBInfoRoute(sharedViewModel))
                             } else {
                                 Toast.makeText(context, "Please select unit.", Toast.LENGTH_SHORT).show()
                             }
@@ -199,7 +202,8 @@ fun CBDimensionsScreen(
                         onClick = {
                             if (viewModel.validateEntries(length, width, height, creditBookingData.noOfPsc.toInt())) {
                                 viewModel.clearState()
-                                navController.navigate(viewModel.createCBInfoRoute(bookingData = creditBookingData))
+                                sharedViewModel.setCreditBookingData(creditBookingData)
+                                navController.navigate(viewModel.createCBInfoRoute(sharedViewModel))
                             } else {
                                 Toast.makeText(context, "Please enter exactly ${creditBookingData.noOfPsc} numbers in each field.", Toast.LENGTH_SHORT).show()
                             }

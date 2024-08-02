@@ -77,17 +77,16 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
         calculateSum(value, _heightSum, maxEntries)
     }
 
-    fun createCBInfoRoute(dimensionData: CBDimensionData? = null, bookingData: CreditBookingData): String {
-        dimensionData?.let {
-            return Screen.CBInfo.createRoute(dimensionData, bookingData)
-        } ?: run {
-            return Screen.CBInfo.createRoute(CBDimensionData(
+    fun createCBInfoRoute(sharedViewModel: SharedViewModel): String {
+        sharedViewModel.setCBDimesionData(
+            CBDimensionData(
                 length = lengthSum.value.toString(),
                 width = widthSum.value.toString(),
                 height = heightSum.value.toString(),
                 unit = selectedUnit.value
-            ), bookingData)
-        }
+        )
+        )
+        return Screen.CBInfo.route
     }
 
     fun validateEntries(length: String, width: String, height: String, maxEntries: Int): Boolean {
@@ -177,6 +176,12 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun clearState() {
+        _selectedUnit.value = ""
+        _length.value = ""
+        _width.value = ""
+        _height.value = ""
+        _lengthSum.value = 0
+        _widthSum.value = 0
         _isPdfSaved.value = false
         _isDataSubmitted.value = false
         _isLoading.value = false

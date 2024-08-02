@@ -8,8 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.tpcindia.professionalcouriersapp.data.model.response.ClientDetails
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -21,6 +23,7 @@ class HomeViewModel : ViewModel() {
     val homeState: StateFlow<HomeState> = _homeState
 
     private val repository: HomeRepository = HomeRepository(NetworkService())
+    private var job : Job? = null
 
     fun onBookingClick(branch: String) {
         _homeState.value = HomeState(isLoading = true)
@@ -45,13 +48,35 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun fetchCreditBookingDetails(branch: String) {
-        _homeState.value = HomeState(isEmailSending = true)
-        viewModelScope.launch(Dispatchers.IO) {
+    fun sendEmails(branch: String, branchCode: String, userName: String) {
+        if (job?.isActive == true) {
+            job?.cancel()
+            updateEmailStateFailure(errorMsg = "Email sending in progress stopped")
+            return
+        }
+        job?.cancel()
+        _homeState.value = HomeState(
+            isEmailSending = true
+        )
+        job = viewModelScope.launch(Dispatchers.IO) {
             try {
-
-            } catch (e: Exception) {
-                updateStateWithError("Failed to fetch details: ${e.message}")
+                if (!isActive) {
+                    return@launch
+                }
+                val result = repository.sendEmails(
+                    branch = branch,
+                    branchCode = branchCode,
+                    userName = userName
+                )
+                if (result.isSuccess) {
+                    _homeState.value = HomeState(
+                        emailSentSuccessfully = true
+                    )
+                } else {
+                    updateEmailStateFailure(result.exceptionOrNull()?.message ?: "Failed to send emails")
+                }
+            } catch(e: Exception) {
+                updateEmailStateFailure("Failed to send emails: ${e.message}")
             }
         }
     }
@@ -74,6 +99,13 @@ class HomeViewModel : ViewModel() {
             error = errorMsg,
             isDataFetched = false,
             isEmailSending = false
+        )
+    }
+
+    private fun updateEmailStateFailure(errorMsg: String) {
+        _homeState.value = HomeState(
+            error = errorMsg,
+            emailSendingFailed = true,
         )
     }
 
