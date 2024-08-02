@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.tpcindia.professionalcouriersapp.R
+import com.tpcindia.professionalcouriersapp.data.model.MenuItem
 import com.tpcindia.professionalcouriersapp.data.model.entity.PdfEntity
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.viewModel.PdfViewModel
@@ -41,7 +42,17 @@ fun PdfScreen(branch: String, viewModel: PdfViewModel) {
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            TopBanner()
+            TopBanner(showMenuIcon = true,
+                menuItem = listOf(
+                    MenuItem(
+                        text = "Clear PDFs",
+                        onClick = {
+                            viewModel.clearAllPDFs(context)
+                            Toast.makeText(context, "PDFs cleared", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                )
+            )
 
             Spacer(modifier = Modifier.height(16.dp))
 

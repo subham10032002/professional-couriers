@@ -31,7 +31,7 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     val isLoading: StateFlow<Boolean> = _isLoading
 
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
-    private val repository: PdfRepository = PdfRepository(NetworkService())
+    private val repository: PdfRepository = PdfRepository()
 
     fun getAllPdfDocuments(branch: String, context: Context) {
         viewModelScope.launch {
@@ -41,6 +41,20 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
                 _pdfListState.value = pdfList
             } catch (e: Exception) {
                 Toast.makeText(context, "Error fetching PDF documents: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun clearAllPDFs(context: Context) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                repository.clearPDFs(pdfDao)
+                _pdfListState.value = emptyList()
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error clearing all the PDF documents: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
                 _isLoading.value = false
             }
