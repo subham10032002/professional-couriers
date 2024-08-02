@@ -17,11 +17,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.tpcindia.professionalcouriersapp.R
+import com.tpcindia.professionalcouriersapp.data.model.MenuItem
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientLeft
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
 
 @Composable
-fun TopBanner(showMenuIcon: Boolean = false, onPDFsClick: () -> Unit = {}) {
+fun TopBanner(showMenuIcon: Boolean = false, menuItem: List<MenuItem> = emptyList()) {
     var menuExpanded by remember { mutableStateOf(false) }
 
     Box(
@@ -64,13 +65,15 @@ fun TopBanner(showMenuIcon: Boolean = false, onPDFsClick: () -> Unit = {}) {
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false }
                 ) {
-                    DropdownMenuItem(
-                        onClick = {
-                            menuExpanded = false
-                            onPDFsClick()
-                        },
-                        text = { Text("PDFs") }
-                    )
+                    menuItem.forEach { menuItem ->
+                        DropdownMenuItem(
+                            onClick = {
+                                menuExpanded = false
+                                menuItem.onClick()
+                            },
+                            text = { Text(menuItem.text) }
+                        )
+                    }
                 }
             }
         }

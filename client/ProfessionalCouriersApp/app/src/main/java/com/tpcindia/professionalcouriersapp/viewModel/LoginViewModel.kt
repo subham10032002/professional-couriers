@@ -76,4 +76,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
             branchCode = branchCode
         )
     }
+
+    fun clearState() {
+        _loginState.value = LoginState()
+    }
 }

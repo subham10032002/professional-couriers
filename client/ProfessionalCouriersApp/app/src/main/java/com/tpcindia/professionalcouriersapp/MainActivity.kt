@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val homeViewModel: HomeViewModel by viewModels {
-        HomeViewModelFactory()
+        HomeViewModelFactory(application)
     }
 
     private val creditBookingViewModel: CreditBookingViewModel by viewModels {

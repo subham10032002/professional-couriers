@@ -1,11 +1,14 @@
 package com.tpcindia.professionalcouriersapp.viewModel
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.repository.HomeRepository
 import com.tpcindia.professionalcouriersapp.viewModel.uiState.HomeState
 import androidx.lifecycle.viewModelScope
 import com.tpcindia.professionalcouriersapp.data.model.response.ClientDetails
+import com.tpcindia.professionalcouriersapp.data.repository.LoginRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,12 +20,13 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _homeState = MutableStateFlow(HomeState())
     val homeState: StateFlow<HomeState> = _homeState
 
     private val repository: HomeRepository = HomeRepository(NetworkService())
+    private val loginRepository: LoginRepository = LoginRepository(NetworkService())
     private var job : Job? = null
 
     fun onBookingClick(branch: String) {
@@ -81,6 +85,10 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    fun logout() {
+        loginRepository.clearUser(context = getApplication())
+    }
+
     private fun fetchFirmNames(branch: String): Result<List<ClientDetails>> {
         return repository.getFirmNames(branch)
     }
@@ -130,6 +138,14 @@ class HomeViewModel : ViewModel() {
             year = year,
             branch = branch
         )
+    }
+
+    fun getLoginScreenRoute() : String {
+        return Screen.Login.route
+    }
+
+    fun getHomeScreenRoute() : String {
+        return Screen.Home.route
     }
 
     fun createPDFScreenRoute(branch: String): String {
