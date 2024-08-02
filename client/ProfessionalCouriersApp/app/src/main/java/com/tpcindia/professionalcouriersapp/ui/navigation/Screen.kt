@@ -27,20 +27,7 @@ sealed class Screen(val route: String) {
         }
     }
     data object CBInfo : Screen("cb_info")
-//    {
-//        fun createRoute(cbDimensionsData: CBDimensionData, bookingData: CreditBookingData) : String {
-//            val json1 = Uri.encode(Gson().toJson(cbDimensionsData))
-//            val json2 = Uri.encode(Gson().toJson(bookingData))
-//            return "cb_info/$json1/$json2"
-//        }
-//    }
     data object CBDimensions : Screen("cb_dimensions")
-//    {
-//        fun createRoute(creditBookingData: CreditBookingData): String {
-//            val json = Uri.encode(Gson().toJson(creditBookingData))
-//            return "cb_dimensions/$json"
-//        }
-//    }
     data object PdfScreen : Screen("pdf_screen/{branch}") {
         fun createRoute(branch: String) = "pdf_screen/$branch"
     }

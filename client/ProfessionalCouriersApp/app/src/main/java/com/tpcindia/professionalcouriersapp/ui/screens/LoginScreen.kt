@@ -48,7 +48,10 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController) {
         if (loginState.isAuthenticated) {
             val route = viewModel.createHomeScreenRoute()
             if (route != null) {
-                navController.navigate(route)
+                viewModel.clearState()
+                navController.navigate(route) {
+                    popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                }
             }
         }
     }

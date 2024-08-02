@@ -23,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +34,7 @@ import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.ui.components.BookingCard
 import com.tpcindia.professionalcouriersapp.ui.theme.*
 import com.tpcindia.professionalcouriersapp.R
+import com.tpcindia.professionalcouriersapp.data.model.MenuItem
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
@@ -87,10 +87,19 @@ fun HomeScreen(
                 .fillMaxSize()
                 .background(Color.White)
         ) {
-            TopBanner(showMenuIcon = true, onPDFsClick = {
-                val pdfScreenRoute = viewModel.createPDFScreenRoute(branch = branch)
-                navController.navigate(pdfScreenRoute)
-            })
+            TopBanner(showMenuIcon = true, menuItem = listOf(
+                MenuItem("PDFs") {
+                    val pdfScreenRoute = viewModel.createPDFScreenRoute(branch = branch)
+                    navController.navigate(pdfScreenRoute)
+                },
+                MenuItem("Logout") {
+                    viewModel.logout()
+                    val loginScreenRoute = viewModel.getLoginScreenRoute()
+                    navController.navigate(loginScreenRoute) {
+                        popUpTo(viewModel.getHomeScreenRoute()) { inclusive = true }
+                    }
+                })
+            )
 
             Spacer(modifier = Modifier.height(30.dp))
 
@@ -232,7 +241,6 @@ fun HomeScreen(
             val route = viewModel.createCreditBookingScreenRoute(branch = branch)
             viewModel.clearState()
             navController.navigate(route)
-
         }
     }
 }

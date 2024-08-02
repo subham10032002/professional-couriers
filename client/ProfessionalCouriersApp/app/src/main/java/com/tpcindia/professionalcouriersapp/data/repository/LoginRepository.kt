@@ -38,4 +38,8 @@ class LoginRepository(private val networkService: NetworkService) {
     fun getUser(context: Context): User? {
         return SharedPreferencesManager.getUser(context)
     }
+
+    fun clearUser(context: Context) {
+        SharedPreferencesManager.clearUser(context)
+    }
 }
