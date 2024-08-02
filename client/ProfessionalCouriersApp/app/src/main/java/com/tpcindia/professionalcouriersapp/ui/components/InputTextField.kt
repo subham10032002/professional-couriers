@@ -24,6 +24,7 @@ fun InputTextField(
     modifier: Modifier = Modifier,
     trailingIcon: @Composable (() -> Unit)? = null,
     maxLength: Int? = null,
+    readOnly: Boolean = false,
     keyboardType: KeyboardType = KeyboardType.Text
 ) {
     OutlinedTextField(
@@ -32,6 +33,7 @@ fun InputTextField(
         } else {
             value
         },
+        readOnly = if (readOnly) true else false,
         onValueChange = { newValue ->
             if (maxLength == null || newValue.length <= maxLength) {
                 onValueChange(newValue)
