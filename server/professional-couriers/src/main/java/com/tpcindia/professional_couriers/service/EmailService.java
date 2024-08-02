@@ -31,7 +31,7 @@ public class EmailService {
             List<CreditBookingData> bookings = creditBookingDataRepository.findCreditBookingDataByBranch(branch);
 
             if (bookings.isEmpty()) {
-                return new ResponseEntity<>("No credit booking data found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("There is no pending row left", HttpStatus.NOT_FOUND);
             }
 
             for (CreditBookingData booking : bookings) {
