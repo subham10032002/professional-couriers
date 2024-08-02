@@ -262,7 +262,7 @@ fun CBDimensionsScreen(
                         height = heightSum.toString(),
                         unit = selectedUnit
                     ), cbInfoData = CBInfoData())
-                    val fileName = "${creditBookingData.consigneeName}_CreditBooking_${System.currentTimeMillis()}.pdf"
+                    val fileName = "CreditBooking_${creditBookingData.consignmentNumber}_${creditBookingData.consigneeName}.pdf"
                     viewModel.savePdf(byteArray, fileName, branch = creditBookingData.branch)
                 } catch (e: Exception) {
                     // Handle Exception
