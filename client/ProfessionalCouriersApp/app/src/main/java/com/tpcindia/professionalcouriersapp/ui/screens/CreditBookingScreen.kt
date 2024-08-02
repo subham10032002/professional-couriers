@@ -29,10 +29,12 @@ import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.SharedViewModel
 
 @Composable
 fun CreditBookingScreen(
     viewModel: CreditBookingViewModel,
+    sharedViewModel: SharedViewModel,
     navController: NavController,
     date: String,
     clientName: List<String>,
@@ -110,7 +112,8 @@ fun CreditBookingScreen(
                 branch = branch
             )
             viewModel.clearState()
-            navController.navigate(viewModel.createCBDimensionRoute(bookingData = creditBookingData))
+            sharedViewModel.setCreditBookingData(creditBookingData)
+            navController.navigate(viewModel.createCBDimensionRoute())
         } else {
             Toast.makeText(context, "Please fill all mandatory fields", Toast.LENGTH_SHORT).show()
         }

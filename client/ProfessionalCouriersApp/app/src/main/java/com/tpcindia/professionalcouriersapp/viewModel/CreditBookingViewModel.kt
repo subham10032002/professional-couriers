@@ -50,8 +50,8 @@ class CreditBookingViewModel : ViewModel() {
         )
     }
 
-    fun createCBDimensionRoute(bookingData: CreditBookingData): String {
-        return Screen.CBDimensions.createRoute(bookingData)
+    fun createCBDimensionRoute(): String {
+        return Screen.CBDimensions.route
     }
 
     fun setLoading(isLoading: Boolean) {

@@ -5,5 +5,6 @@ data class LoginState(
     val error: String? = null,
     val isAuthenticated: Boolean = false,
     val name: String? = null,
-    val branch: String? = null
+    val branch: String? = null,
+    val branchCode: String? = null
 )

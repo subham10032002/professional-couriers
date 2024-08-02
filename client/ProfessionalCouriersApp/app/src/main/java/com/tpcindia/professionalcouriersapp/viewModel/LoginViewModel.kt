@@ -27,7 +27,12 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     private fun checkLoginState() {
         val savedUser = repository.getUser(getApplication())
         if (savedUser != null) {
-            _loginState.value = LoginState(isAuthenticated = true, name = "${savedUser.firstName} ${savedUser.lastName}", branch = savedUser.branch)
+            _loginState.value = LoginState(
+                isAuthenticated = true,
+                name = "${savedUser.firstName} ${savedUser.lastName}",
+                branch = savedUser.branch,
+                branchCode = savedUser.branchCode
+            )
         }
     }
 
@@ -46,7 +51,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                     _loginState.value = LoginState(
                         isAuthenticated = true,
                         name = "${user.firstName} ${user.lastName}",
-                        branch = user.branch
+                        branch = user.branch,
+                        branchCode = user.branchCode
                     )
                 } else {
                     _loginState.value = LoginState(error = result.exceptionOrNull()?.message)
@@ -57,12 +63,17 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Function to create navigation route to HomeScreen
     fun createHomeScreenRoute(): String? {
-        return _loginState.value.name?.let { name ->
-            _loginState.value.branch?.let { branch ->
-                Screen.Home.createRoute(name, branch)
-            }
+        val branch = _loginState.value.branch
+        val branchCode = _loginState.value.branchCode
+        val name = _loginState.value.name
+        if (branch == null || branchCode == null || name == null) {
+            return null
         }
+        return Screen.Home.createRoute(
+            name = name,
+            branch = branch,
+            branchCode = branchCode
+        )
     }
 }

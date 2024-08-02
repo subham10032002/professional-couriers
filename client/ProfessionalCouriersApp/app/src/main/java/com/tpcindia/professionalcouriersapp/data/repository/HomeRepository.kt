@@ -20,4 +20,17 @@ class HomeRepository(private val networkService: NetworkService) {
             Result.failure(e)
         }
     }
+
+    fun sendEmails(branch: String, branchCode: String, userName: String) : Result<String> {
+        return try {
+            val result = networkService.sendEmails(
+                branch = branch,
+                branchCode = branchCode,
+                username = userName
+            )
+            return result
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

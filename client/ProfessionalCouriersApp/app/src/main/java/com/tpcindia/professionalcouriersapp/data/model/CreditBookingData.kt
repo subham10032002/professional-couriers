@@ -5,20 +5,20 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CreditBookingData(
-    val currentDate: String,
+    val currentDate: String = "",
     var consignmentNumber: String = "",
     var balanceStock: String = "",
     val branch: String = "branch",
-    val clientName: String,
-    val bookingDate: String,
-    val pincode: String,
-    val destination: String,
-    val consigneeType: String,
-    val mode: String,
-    val consigneeName: String,
-    val noOfPsc: String,
+    val clientName: String = "",
+    val bookingDate: String = "",
+    val pincode: String = "",
+    val destination: String = "",
+    val consigneeType: String = "",
+    val mode: String = "",
+    val consigneeName: String = "",
+    val noOfPsc: String = "",
     val weight: String = "",
-    val photoOfAddress: ByteArray?
+    val photoOfAddress: ByteArray? = null
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
