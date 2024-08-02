@@ -13,4 +13,7 @@ interface PdfDao {
 
     @Query("SELECT * FROM pdf_table WHERE branch = :branch")
     suspend fun getAllPdfs(branch: String): List<PdfEntity>
+
+    @Query("DELETE FROM pdf_table")
+    suspend fun deleteAllPdfs()
 }
