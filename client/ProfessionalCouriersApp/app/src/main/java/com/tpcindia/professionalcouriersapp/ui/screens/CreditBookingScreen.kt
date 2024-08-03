@@ -39,7 +39,6 @@ fun CreditBookingScreen(
     clientName: List<String>,
     branch: String
 ) {
-    val selectedDate by remember { mutableStateOf("") }
     var currentDate by remember { mutableStateOf(date) }
     var consigneeName by remember { mutableStateOf("") }
     var mode by remember { mutableStateOf("") }
@@ -80,7 +79,6 @@ fun CreditBookingScreen(
         return when {
             currentDate.isBlank() -> false
             selectedClientName.isBlank() -> false
-            selectedDate.isBlank() -> false
             consigneeName.isBlank() -> false
             pincode.isBlank() -> false
             destination.isBlank() -> false
@@ -106,7 +104,7 @@ fun CreditBookingScreen(
                 clientName = selectedClientName,
                 noOfPsc = noOfPsc,
                 weight = weight,
-                bookingDate = selectedDate,
+                bookingDate = currentDate,
                 photoOfAddress = selectedImageByteArray,
                 branch = branch
             )
