@@ -53,8 +53,8 @@ public class EmailService {
 
                 if (emailSent) {
                     booking.setEmailSent("Yes");
-                    booking.setDataOfEmailSent(getCurrentDate());
-                    booking.setUserName(userName);
+                    booking.setDateOfEmailSent(getCurrentDate());
+                    booking.setEmailSenderUsername(userName);
                     creditBookingDataRepository.save(booking);
                 } else {
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email not sent");

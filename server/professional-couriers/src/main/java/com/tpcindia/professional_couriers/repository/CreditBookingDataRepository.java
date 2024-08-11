@@ -1,7 +1,6 @@
 package com.tpcindia.professional_couriers.repository;
 
 import com.tpcindia.professional_couriers.model.CreditBookingData;
-import com.tpcindia.professional_couriers.model.UserLogin;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
