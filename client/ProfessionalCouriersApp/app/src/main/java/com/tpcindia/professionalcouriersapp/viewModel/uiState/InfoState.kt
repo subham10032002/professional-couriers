@@ -1,9 +1,12 @@
 package com.tpcindia.professionalcouriersapp.viewModel.uiState
 
-data class SubmitDetailsState(
+data class InfoState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val isDataSubmitted: Boolean = false,
     val isPdfSaved: Boolean = false,
-    val dataSubmissionMessage: String? = null
+    val invoiceValue: String = "",
+    val invoiceNumber: String = "",
+    val product: String = "",
+    val ewaybill: String = ""
 )
