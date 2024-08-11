@@ -30,6 +30,9 @@ public class UserLoginService {
         }
 
         String branch = accountsCustomerRepository.findBranchByBranchCode(userLogin.getBranchCode());
+        if (branch == null) {
+            throw new InvalidCredentialsException("Branch not found");
+        }
         if (branch != null) {
             branch = branch.trim();
         }
