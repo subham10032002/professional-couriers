@@ -143,13 +143,9 @@ fun CBDimensionsScreen(
 
                 CustomButton(
                     onClick = {
-                        if (selectedUnit.isNotBlank()) {
-                            viewModel.clearState()
-                            sharedViewModel.setCreditBookingData(creditBookingData)
-                            navController.navigate(viewModel.createCBInfoRoute(sharedViewModel))
-                        } else {
-                            Toast.makeText(context, "Please select unit.", Toast.LENGTH_SHORT).show()
-                        }
+                        viewModel.clearState()
+                        sharedViewModel.setCreditBookingData(creditBookingData)
+                        navController.navigate(viewModel.createCBInfoRoute(sharedViewModel))
                     },
                     isFilled = true,
                     horizontalPadding = 0.dp,
