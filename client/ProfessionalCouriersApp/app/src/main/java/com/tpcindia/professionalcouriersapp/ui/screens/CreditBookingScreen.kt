@@ -161,16 +161,6 @@ fun CreditBookingScreen(
                 .verticalScroll(scrollState)
                 .fillMaxWidth()
         ) {
-            // Date * header
-            LabelText("Date ")
-            InputTextField(
-                value = currentDate,
-                onValueChange = { currentDate = it },
-                label = "Today's Date",
-                readOnly = true
-            )
-
-            Spacer(modifier = Modifier.height(15.dp))
 
             LabelText("Client Name ")
             DropdownTextField(
