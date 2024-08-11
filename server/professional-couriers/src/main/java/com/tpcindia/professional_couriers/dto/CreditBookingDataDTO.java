@@ -26,6 +26,8 @@ public class CreditBookingDataDTO {
     private String branchCode;
     private String username;
     private String userCode;
+    private String latitude;
+    private String longitude;
 
     // Getters
     public String getCurrentDate() {
@@ -225,5 +227,21 @@ public class CreditBookingDataDTO {
 
     public void setUserCode(String userCode) {
         this.userCode = userCode;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
     }
 }

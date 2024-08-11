@@ -65,6 +65,8 @@ public class CreditBookingDataService {
         entity.setEmailSenderUsername("");
         entity.setSync("No");
         entity.setUserCode(dto.getUserCode());
+        entity.setLongitude(dto.getLongitude());
+        entity.setLatitude(dto.getLatitude());
         return entity;
     }
 }
