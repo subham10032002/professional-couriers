@@ -4,5 +4,6 @@ data class User(
     val firstName: String,
     val lastName: String,
     val branchCode: String,
-    val branch: String
+    val branch: String,
+    val userCode: String
 )

@@ -7,24 +7,26 @@ import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 
 sealed class Screen(val route: String) {
     data object Login : Screen("login")
-    data object Home : Screen("home/{name}/{branch}/{branchCode}") {
+    data object Home : Screen("home/{name}/{branch}/{branchCode}/{userCode}") {
         fun createRoute(
             name: String,
             branch: String,
-            branchCode: String
-        ) = "home/$name/$branch/$branchCode"
+            branchCode: String,
+            userCode: String
+        ) = "home/$name/$branch/$branchCode/$userCode"
     }
-    data object CreditBooking : Screen("credit_booking/{firmName}/{day}/{month}/{year}/{branch}/{username}") {
+    data object CreditBooking : Screen("credit_booking/{firmName}/{day}/{month}/{year}/{branch}/{username}/{userCode}") {
         fun createRoute(
             firmNames: List<String>,
             day: String,
             month: String,
             year: String,
             branch: String,
-            username: String
+            username: String,
+            userCode: String
         ): String {
             val jsonFirmNames = Uri.encode(Gson().toJson(firmNames))
-            return "credit_booking/$jsonFirmNames/$day/$month/$year/$branch/$username"
+            return "credit_booking/$jsonFirmNames/$day/$month/$year/$branch/$username/$userCode"
         }
     }
     data object CBInfo : Screen("cb_info")

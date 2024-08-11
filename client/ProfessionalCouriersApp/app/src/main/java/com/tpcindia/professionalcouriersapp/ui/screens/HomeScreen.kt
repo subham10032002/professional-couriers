@@ -47,7 +47,8 @@ fun HomeScreen(
     name: String,
     branch: String,
     branchCode: String,
-    bookings: List<String>
+    bookings: List<String>,
+    userCode: String
 ) {
     var fabState by remember { mutableStateOf(FabState.Default) }
     var rotation by remember { mutableFloatStateOf(0f) }
@@ -238,7 +239,11 @@ fun HomeScreen(
         }
 
         if (homeState.isDataFetched) {
-            val route = viewModel.createCreditBookingScreenRoute(branch = branch, userName = name)
+            val route = viewModel.createCreditBookingScreenRoute(
+                branch = branch,
+                userName = name,
+                userCode = userCode
+            )
             viewModel.clearState()
             navController.navigate(route)
         }

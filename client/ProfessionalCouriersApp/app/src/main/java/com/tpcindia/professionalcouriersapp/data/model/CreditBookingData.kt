@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class CreditBookingData(
     val username: String = "",
+    val userCode: String = "",
     val currentDate: String = "",
     var consignmentNumber: String = "",
     var balanceStock: String = "",

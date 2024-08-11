@@ -45,19 +45,22 @@ fun AppNavHost(
             arguments = listOf(
                 navArgument("name") { defaultValue = "" },
                 navArgument("branch") { defaultValue = "" },
-                navArgument("branchCode") { defaultValue = "" }
+                navArgument("branchCode") { defaultValue = "" } ,
+                navArgument("userCode") { defaultValue = "" }
             )
         ) { backStackEntry ->
             val name = backStackEntry.arguments?.getString("name") ?: ""
             val branch = backStackEntry.arguments?.getString("branch") ?: ""
             val branchCode = backStackEntry.arguments?.getString("branchCode") ?: ""
+            val userCode = backStackEntry.arguments?.getString("userCode") ?: ""
             HomeScreen(
                 viewModel = homeViewModel,
                 navController = navController,
                 name = name,
                 branch = branch,
                 branchCode = branchCode,
-                bookings = listOf("Credit Booking")
+                bookings = listOf("Credit Booking"),
+                userCode = userCode
             )
         }
 
@@ -70,6 +73,7 @@ fun AppNavHost(
                 navArgument("year") { type = NavType.StringType },
                 navArgument("branch") { type = NavType.StringType },
                 navArgument("username") { type = NavType.StringType },
+                navArgument("userCode") { type = NavType.StringType },
             )
         ) { backStackEntry ->
             val firmName = backStackEntry.arguments?.getString("firmName") ?: ""
@@ -78,6 +82,7 @@ fun AppNavHost(
             val year = backStackEntry.arguments?.getString("year") ?: ""
             val branch = backStackEntry.arguments?.getString("branch") ?: ""
             val username = backStackEntry.arguments?.getString("username") ?: ""
+            val userCode = backStackEntry.arguments?.getString("userCode") ?: ""
 
             val firmNames: List<String> = Gson().fromJson(Uri.decode(firmName), Array<String>::class.java).toList()
             val currentDate = "$day/$month/$year"
@@ -89,7 +94,8 @@ fun AppNavHost(
                 date = currentDate,
                 clientName = firmNames,
                 branch = branch,
-                username = username
+                username = username,
+                userCode = userCode
             )
         }
 
