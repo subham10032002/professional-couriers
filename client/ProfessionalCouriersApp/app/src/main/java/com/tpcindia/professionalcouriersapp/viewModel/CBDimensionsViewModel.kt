@@ -1,20 +1,11 @@
 package com.tpcindia.professionalcouriersapp.viewModel
 
 import android.app.Application
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.tpcindia.professionalcouriersapp.data.db.dao.PdfDao
-import com.tpcindia.professionalcouriersapp.data.db.database.DatabaseProvider
-import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
-import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
-import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
-import com.tpcindia.professionalcouriersapp.data.repository.CBDataSubmissionRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -32,7 +23,7 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
     private val _height = MutableStateFlow("")
     val height: StateFlow<String> = _height
 
-    val _lengthSum = MutableStateFlow(0)
+    private val _lengthSum = MutableStateFlow(0)
     val lengthSum: StateFlow<Int> = _lengthSum
 
     private val _widthSum = MutableStateFlow(0)
@@ -44,19 +35,8 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _isDataSubmitted = MutableStateFlow(false)
-    val isDataSubmitted: StateFlow<Boolean> = _isDataSubmitted
-
-    private val _isPdfSaved = MutableStateFlow(false)
-    val isPdfSaved: StateFlow<Boolean> = _isPdfSaved
-
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error
-
-    private var job: Job? = null
-
-    private val repository = CBDataSubmissionRepository(NetworkService())
-    private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
 
     fun onUnitSelected(unit: String) {
         _selectedUnit.value = unit
@@ -109,70 +89,8 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    fun submitCreditBookingData(creditBookingData: CreditBookingData, cbDimensionData: CBDimensionData, cbInfoData: CBInfoData) {
-        _isLoading.value = true
-        job?.cancel()
-        job = viewModelScope.launch(Dispatchers.IO) {
-            if (job?.isActive == false) {
-                return@launch
-            }
-            try {
-                val consignmentDetails = repository.getConsignmentDetails(creditBookingData.branch)
-                if (consignmentDetails.isSuccess) {
-                    creditBookingData.balanceStock = consignmentDetails.getOrThrow().balanceStock
-                    creditBookingData.consignmentNumber = consignmentDetails.getOrThrow().accCode +
-                            consignmentDetails.getOrThrow().consignmentNo
-                    val result = repository.submitCreditBookingDetails(
-                        creditBookingData = creditBookingData,
-                        cbDimensionData = cbDimensionData,
-                        cbInfoData = cbInfoData
-                    )
-                    if (result.isSuccess) {
-                        _isLoading.value = false
-                        _isDataSubmitted.value = true
-                    } else {
-                        _error.value = result.exceptionOrNull()?.message
-                        _isLoading.value = false
-                    }
-                } else {
-                    _error.value = consignmentDetails.exceptionOrNull()?.message
-                    _isLoading.value = false
-                }
-            } catch (e: Exception) {
-                _error.value = e.message
-                _isLoading.value = false
-            }
-        }
-    }
-
-    fun createPdf(context: Context, creditBookingData: CreditBookingData,
-                  cbDimensionData: CBDimensionData,
-                  cbInfoData: CBInfoData) : ByteArray {
-        return repository.createPdf(context, creditBookingData, cbDimensionData, cbInfoData)
-    }
-
-    fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {
-        _isLoading.value = true
-        _isPdfSaved.value = false
-        viewModelScope.launch {
-            val isSaved = repository.savePdf(pdfData, fileName, branch, pdfDao)
-            if (isSaved) {
-                _isLoading.value = false
-                _isPdfSaved.value = true
-            } else {
-                _isLoading.value = false
-                _isPdfSaved.value = false
-                Toast.makeText(getApplication(), "Failed to save PDF", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     fun clearErrorMessage() {
         _error.value = null
-    }
-
-    fun createPDFScreenRoute(branch: String): String {
-        return Screen.PdfScreen.createRoute(branch)
     }
 
     fun clearState() {
@@ -182,8 +100,6 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
         _height.value = ""
         _lengthSum.value = 0
         _widthSum.value = 0
-        _isPdfSaved.value = false
-        _isDataSubmitted.value = false
         _isLoading.value = false
     }
 }

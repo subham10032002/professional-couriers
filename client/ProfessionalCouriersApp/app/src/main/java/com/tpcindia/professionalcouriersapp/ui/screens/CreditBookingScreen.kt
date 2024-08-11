@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.configs.UIConfig
+import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
+import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
@@ -26,6 +28,7 @@ import com.tpcindia.professionalcouriersapp.ui.components.InputTextField
 import com.tpcindia.professionalcouriersapp.ui.components.LabelText
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
+import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
 import com.tpcindia.professionalcouriersapp.viewModel.CreditBookingViewModel
 import com.tpcindia.professionalcouriersapp.viewModel.SharedViewModel
@@ -47,7 +50,6 @@ fun CreditBookingScreen(
     var destination by remember { mutableStateOf("") }
     var selectedClientName by remember { mutableStateOf(clientName.first()) }
     var noOfPsc by remember { mutableStateOf("") }
-    var weight by remember { mutableStateOf("") }
     var selectedImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
     val scrollState = rememberScrollState()
 
@@ -85,36 +87,53 @@ fun CreditBookingScreen(
             consigneeType.isBlank() -> false
             mode.isBlank() -> false
             consigneeName.isBlank() -> false
-            noOfPsc.isBlank() -> false
+            creditBookingState.weight.isBlank() -> false
             selectedImageByteArray?.isEmpty() == true -> false
             else -> true
         }
     }
 
+    fun getCreditBookingData(): CreditBookingData {
+        val creditBookingData = CreditBookingData(
+            currentDate = currentDate,
+            consigneeName = consigneeName,
+            mode = mode,
+            consigneeType = consigneeType,
+            pincode = pincode,
+            destination = destination,
+            clientName = selectedClientName,
+            noOfPsc = noOfPsc.substringBefore("."),
+            weight = creditBookingState.weight,
+            bookingDate = currentDate,
+            photoOfAddress = selectedImageByteArray,
+            branch = branch,
+            consignmentNumber = creditBookingState.consignmentNumber,
+            balanceStock = creditBookingState.balanceStock
+        )
+        return creditBookingData
+    }
+
     fun navigateToCBDimensionScreen() {
         viewModel.setLoading(true)
         if (areAllMandatoryFieldsFilled()) {
-            val creditBookingData = CreditBookingData(
-                currentDate = currentDate,
-                consigneeName = consigneeName,
-                mode = mode,
-                consigneeType = consigneeType,
-                pincode = pincode,
-                destination = destination,
-                clientName = selectedClientName,
-                noOfPsc = noOfPsc,
-                weight = weight,
-                bookingDate = currentDate,
-                photoOfAddress = selectedImageByteArray,
-                branch = branch
-            )
-            viewModel.clearState()
+            val creditBookingData = getCreditBookingData()
             sharedViewModel.setCreditBookingData(creditBookingData)
             navController.navigate(viewModel.createCBDimensionRoute())
+            viewModel.clearState()
         } else {
             Toast.makeText(context, "Please fill all mandatory fields", Toast.LENGTH_SHORT).show()
         }
         viewModel.setLoading(false)
+    }
+
+    fun submitCreditBookingData() {
+        if (areAllMandatoryFieldsFilled()) {
+            val creditBookingData = getCreditBookingData()
+            sharedViewModel.setCreditBookingData(creditBookingData)
+            viewModel.submitCreditBookingData(creditBookingData)
+        } else {
+            Toast.makeText(context, "Please fill all mandatory fields", Toast.LENGTH_SHORT).show()
+        }
     }
 
     Column(
@@ -234,7 +253,7 @@ fun CreditBookingScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            LabelText("No of Psc ")
+            LabelText("No of Psc ", false)
             InputTextField(
                 value = noOfPsc,
                 onValueChange = { noOfPsc = it },
@@ -244,21 +263,23 @@ fun CreditBookingScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            LabelText("Weight ", false)
+            LabelText("Weight ", true)
             InputTextField(
-                value = weight,
-                onValueChange = { weight = it },
-                label = "Ex- 10"
+                value = creditBookingState.weight,
+                onValueChange = { viewModel.onWeightChanged(it) },
+                label = "Ex- 10",
+                allowDecimals = 3,
+                keyboardType = KeyboardType.Number
             )
 
             Spacer(modifier = Modifier.height(20.dp))
 
             CustomButton(
-                onClick = {  navigateToCBDimensionScreen() },
+                onClick = { if (creditBookingState.submitEnabled) submitCreditBookingData() else  navigateToCBDimensionScreen() },
                 horizontalPadding = 60.dp,
                 isFilled = true,
                 loginState = false,
-                text = "Next",
+                text = if (creditBookingState.submitEnabled) "Submit" else "Next",
                 textColor = Color.White,
                 backgroundColor = Red
             )
@@ -266,25 +287,53 @@ fun CreditBookingScreen(
             Spacer(modifier = Modifier.height(20.dp))
         }
 
-        if (creditBookingState.isLoading) {
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0x80000000))
-            ) {
-                CircularProgressIndicator(color = Color.White)
-                Text(
-                    text = "Please wait, we're fetching details...",
-                    color = Color.White,
-                    modifier = Modifier.padding(top = 16.dp)
-                )
+        if (creditBookingState.isPdfSaved) {
+            val route = viewModel.createPDFScreenRoute(branch = branch)
+            route.let {
+                viewModel.clearState()
+                navController.navigate(route) {
+                    popUpTo(route = Screen.Home.route) {
+                        inclusive = false
+                    }
+                }
             }
         }
+
+
+        if (creditBookingState.isDataSubmitted) {
+            try {
+                val creditBookingData = getCreditBookingData()
+                val byteArray = viewModel.createPdf(context, creditBookingData = creditBookingData,
+                    cbDimensionData = CBDimensionData(),
+                    cbInfoData = CBInfoData()
+                )
+                val fileName = "CreditBooking_${creditBookingData.consignmentNumber}_${creditBookingData.consigneeName}.pdf"
+                viewModel.savePdf(byteArray, fileName, branch = branch)
+            } catch (e: Exception) {
+                // Handle Exception
+            }
+        }
+
 
         creditBookingState.error?.let { errorMessage ->
             ShowToastMessage(errorMessage)
             viewModel.clearErrorMessage()
+        }
+    }
+
+    if (creditBookingState.isLoading) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0x80000000))
+        ) {
+            CircularProgressIndicator(color = Color.White)
+            Text(
+                text = "Please wait, we're processing...",
+                color = Color.White,
+                modifier = Modifier.padding(top = 16.dp)
+            )
         }
     }
 }
