@@ -1,12 +1,9 @@
 package com.tpcindia.professional_couriers.controller;
 
-import com.tpcindia.professional_couriers.dto.AuthenticationRequestDTO;
 import com.tpcindia.professional_couriers.dto.CBDataFetchDTO;
 import com.tpcindia.professional_couriers.dto.CreditBookingDataDTO;
 import com.tpcindia.professional_couriers.model.CreditBookingData;
-import com.tpcindia.professional_couriers.model.UserLogin;
 import com.tpcindia.professional_couriers.service.CreditBookingDataService;
-import com.tpcindia.professional_couriers.utils.exceptions.InvalidCredentialsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

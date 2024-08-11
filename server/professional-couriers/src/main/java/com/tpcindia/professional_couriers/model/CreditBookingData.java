@@ -80,10 +80,13 @@ public class CreditBookingData {
     private String emailSent;
 
     @Column(name = "dateOfEmailSent")
-    private String dataOfEmailSent;
+    private String dateOfEmailSent;
 
     @Column(name = "userName")
     private String userName;
+
+    @Column(name = "emailSenderUsername")
+    private String emailSenderUsername;
 
     @Column(name = "sync")
     private String sync;
@@ -285,12 +288,12 @@ public class CreditBookingData {
         this.custCode = custCode;
     }
 
-    public String getDataOfEmailSent() {
-        return dataOfEmailSent;
+    public String getDateOfEmailSent() {
+        return dateOfEmailSent;
     }
 
-    public void setDataOfEmailSent(String dataOfEmailSent) {
-        this.dataOfEmailSent = dataOfEmailSent;
+    public void setDateOfEmailSent(String dateOfEmailSent) {
+        this.dateOfEmailSent = dateOfEmailSent;
     }
 
     public String getEmailSent() {
@@ -307,6 +310,14 @@ public class CreditBookingData {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getEmailSenderUserName() {
+        return emailSenderUsername;
+    }
+
+    public void setEmailSenderUsername(String userName) {
+        this.emailSenderUsername = userName;
     }
 
     public String getSync() {
