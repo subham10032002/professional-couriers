@@ -3,7 +3,6 @@ package com.tpcindia.professionalcouriersapp.data.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import com.itextpdf.kernel.colors.DeviceGray
-import com.itextpdf.barcodes.Barcode128
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.io.source.ByteArrayOutputStream
 import com.itextpdf.kernel.pdf.PdfDocument
@@ -15,7 +14,6 @@ import com.itextpdf.layout.element.Cell
 import com.itextpdf.layout.element.Image
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.element.Table
-import com.itextpdf.layout.property.TextAlignment
 import com.itextpdf.layout.property.UnitValue
 import com.tpcindia.professionalcouriersapp.R
 import com.tpcindia.professionalcouriersapp.configs.UIConfig
@@ -27,10 +25,11 @@ import java.io.InputStream
 class PdfGenerator {
 
     @SuppressLint("ResourceType")
-    fun createPdf(context: Context,
-                  creditBookingData: CreditBookingData,
-                  cbDimensionData: CBDimensionData,
-                  cbInfoData: CBInfoData
+    fun createPdf(
+        context: Context,
+        creditBookingData: CreditBookingData,
+        cbDimensionData: CBDimensionData,
+        cbInfoData: CBInfoData
     ): ByteArray {
         val stream = ByteArrayOutputStream()
         val pdfWriter = PdfWriter(stream)
@@ -44,92 +43,86 @@ class PdfGenerator {
 
         val logoImage = Image(ImageDataFactory.create(logoByteArray))
         logoImage.setWidth(UnitValue.createPercentValue(30f))
-        document.add(logoImage)
+
+        // Add logo at the top of the document (optional)
+         document.add(logoImage)
 
         // Add company address
         val companyAddress = UIConfig.COMPANY_ADDRESS
         document.add(Paragraph(companyAddress))
 
         // Create table for main content
-        val table = Table(UnitValue.createPercentArray(floatArrayOf(1f, 1f, 1f, 1f)))
+        val table = Table(UnitValue.createPercentArray(floatArrayOf(3f, 5f, 3f, 6f, 4f, 4f, 10f, 6f)))
         table.setWidth(UnitValue.createPercentValue(100f))
 
         // Add header row
-        table.addCell(createCell("Credit Payment", true, 4))
+        table.addCell(createCell("Shipper", true, 1))
+        table.addCell(createCell(creditBookingData.branch, false, 1))
+        table.addCell(createCell("Date: ${creditBookingData.bookingDate}", true, 2))
+        table.addCell(createCell("Consignee ", true, 1))
+        table.addCell(createCell("Destination ", false, 1))
+        table.addCell(createCell(creditBookingData.destination, false, 1))
+        table.addCell(createCell(creditBookingData.mode, false, 1))
 
         // Add divider after header row
-        table.addCell(createDividerCell(4))
+        table.addCell(createDividerCell(8))
 
-        // Add consignment number and date rows
-        table.addCell(createCell("Consignment Number: ${creditBookingData.consignmentNumber}", false, 2))
-        table.addCell(createCell("Date: ${creditBookingData.currentDate}", false, 2))
+        // Add second row
+        table.addCell(createCell("From :\n ${creditBookingData.clientName}", false, 4))
+        table.addCell(createCell("To :\n ${creditBookingData.consigneeName}", false, 3))
+        table.addCell(createCell("Weight : ${creditBookingData.weight}", false, 1))
+        table.addCell(createDividerCell(8))
 
-        // Add divider after consignment number and date rows
-        table.addCell(createDividerCell(4))
+        table.addCell(createCell("Add Shipper addr: ", true, 4))
+        table.addCell(createCell("Add Consignee addr: ${creditBookingData.pincode}", false, 3))
+        table.addCell(createCell("Pcs : ${creditBookingData.noOfPsc}", false, 1))
+        table.addCell(createDividerCell(8))
 
-        // Add booking date and branch row
-        table.addCell(createCell("Booking Date: ${creditBookingData.bookingDate}", false, 2))
-        table.addCell(createCell("Branch: ${creditBookingData.branch}", false, 2))
+        table.addCell(createCell("Add Shipper contact: ", false, 4))
+        table.addCell(createCell("Add Consignee contact", false, 3))
+        table.addCell(createCell(" ", false, 1))
+        table.addCell(createDividerCell(8))
 
-        // Add divider after booking date and branch row
-        table.addCell(createDividerCell(4))
+        val details = """
+            Invoice No: ${cbInfoData.invoiceNumber}
+            Product: ${cbInfoData.product}
+            Value: ${cbInfoData.declaredValue}
+            Eway Bill: ${cbInfoData.ewayBill}
+        """.trimIndent()
+        table.addCell(createCell(details, false, 4))
+        table.addCell(createCell("Add Barcode ", true, 3))
+        table.addCell(createCell("Mode: ${creditBookingData.mode}", false, 1))
+        table.addCell(createDividerCell(8))
 
-        // Add from section
-        table.addCell(createCell("From: ${creditBookingData.clientName}", false, 4))
+        val details2 = """
+            This is a Non-negotiable consignment note subject to standard conditions of carriage.
+            Carrier's liability limited to Rs.100 Only.
+        """.trimIndent()
+        table.addCell(createCell("Awb No: ${creditBookingData.consignmentNumber}", false, 4))
+        table.addCell(createCell(details2, false, 3))
+        table.addCell(createCell("Credit Booking ", true, 1))
+        table.addCell(createDividerCell(8))
 
-        // Add divider after from section
-        table.addCell(createDividerCell(4))
+        val details3 = """
+            Received by consignee in good order/condition.
+            No Claims/Complaints will be accepted after 30 days of booking.
+        """.trimIndent()
 
-        // Add to section
-        table.addCell(createCell("To: ${creditBookingData.consigneeName}", false, 2))
-        table.addCell(createCell("Pincode: ${creditBookingData.pincode}", false, 2))
-        table.addCell(createCell("Destination: ${creditBookingData.destination}", false, 4))
+        // Add the logo in the "Add logo:" section
+        val logoCell = Cell(1, 4)
+        logoImage.setWidth(UnitValue.createPercentValue(30f))
+        logoCell.add(logoImage)
+        logoCell.setPadding(5f)
+        logoCell.setBorder(Border.NO_BORDER)
+        table.addCell(logoCell)
 
-        // Add divider after to section
-        table.addCell(createDividerCell(4))
+        table.addCell(createCell(details3, true, 4))
+        table.addCell(createDividerCell(8))
 
-        // Add consignee type and mode
-        table.addCell(createCell("Consignee Type: ${creditBookingData.consigneeType}", false, 2))
-        table.addCell(createCell("Mode: ${creditBookingData.mode}", false, 2))
-
-        // Add divider after consignee type and mode
-        table.addCell(createDividerCell(4))
-
-        // Add content details
-        table.addCell(createCell("Content:", false, 1))
-        table.addCell(createCell("Pcs: ${creditBookingData.noOfPsc}", false, 1))
-        table.addCell(createCell("Weight: ${creditBookingData.weight}", false, 2))
-
-        // Add divider after content details
-        table.addCell(createDividerCell(4))
-
-        // Add dimensions details
-        table.addCell(createCell("Dimensions:", false, 1))
-        table.addCell(createCell("Unit: ${cbDimensionData.unit}", false, 2))
-        table.addCell(createCell("Length: ${cbDimensionData.length}", false, 2))
-        table.addCell(createCell("Width: ${cbDimensionData.width}", false, 2))
-        table.addCell(createCell("Height: ${cbDimensionData.height}", false, 2))
-
-        // Add divider after dimensions details
-        table.addCell(createDividerCell(4))
-
-        // Add info details
-        table.addCell(createCell("Info:", false, 1))
-        table.addCell(createCell("Invoice Number: ${cbInfoData.invoiceNumber}", false, 2))
-        table.addCell(createCell("Product: ${cbInfoData.product}", false, 2))
-        table.addCell(createCell("Declared Value: ${cbInfoData.declaredValue}", false, 2))
-        table.addCell(createCell("Eway Bill: ${cbInfoData.ewayBill}", false, 2))
-
-        table.addCell(createDividerCell(4))
-
-        // Add row for name, signature, phone, and date
-        table.addCell(createCell("Name:", false, 2))
-        table.addCell(createCell("Signature:", false, 2))
-        table.addCell(createCell("Phone:", false, 2))
-        table.addCell(createCell("Date:", false, 2))
+        val details4 = "Name:                                   Phone:"
+        table.addCell(createCell(details4, false, 8))
 
         document.add(table)
-
         document.close()
         return stream.toByteArray()
     }
