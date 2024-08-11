@@ -31,11 +31,11 @@ class NetworkService {
 
         return try {
             val response = client.newCall(request).execute()
+            val responseBody = response.body?.string() ?: return Result.failure(Exception("Empty response"))
             if (response.isSuccessful) {
-                val responseBody = response.body?.string() ?: return Result.failure(Exception("Empty response"))
                 Result.success(responseBody)
             } else {
-                Result.failure(Exception("Authentication failed"))
+                Result.failure(Exception(responseBody))
             }
         } catch (e: Exception) {
             Result.failure(e)
