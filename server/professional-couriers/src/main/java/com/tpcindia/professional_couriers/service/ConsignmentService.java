@@ -17,7 +17,7 @@ public class ConsignmentService {
     @Autowired
     private BookTransRepository bookTransRepository;
 
-    public Map<String, Object> getNextConsignmentNumber(String branch) throws Exception {
+    public Map<String, Object> getNextConsignmentNumber(String branch) throws IllegalArgumentException {
         String accCode = bookAllotRepository.findAccCodeByFirmName(branch);
         Long startNo = bookAllotRepository.findStartNoByFirmName(branch);
 
@@ -34,7 +34,7 @@ public class ConsignmentService {
             lastUsedConsNo = bookTransRepository.findMinUnusedAccNoCredit(startNo);
         }
 
-        if (lastUsedConsNo == 0 || lastUsedConsNo == null) {
+        if (lastUsedConsNo == null || lastUsedConsNo == 0) {
             finalConsignmentNumber = startNo;
         } else {
             finalConsignmentNumber = lastUsedConsNo + 1;

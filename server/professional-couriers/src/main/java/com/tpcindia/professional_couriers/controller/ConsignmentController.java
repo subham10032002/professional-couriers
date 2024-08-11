@@ -3,6 +3,7 @@ package com.tpcindia.professional_couriers.controller;
 import com.tpcindia.professional_couriers.dto.ConsignmentRequestDTO;
 import com.tpcindia.professional_couriers.service.ConsignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,12 +20,13 @@ public class ConsignmentController {
     private ConsignmentService consignmentService;
 
     @PostMapping("/consignment")
-    public ResponseEntity<Map<String, Object>> getConsignmentNumber(@RequestBody ConsignmentRequestDTO requestDTO) {
+    public ResponseEntity<?> getConsignmentNumber(@RequestBody ConsignmentRequestDTO requestDTO) {
         Map<String, Object> result = null;
         try {
             result = consignmentService.getNextConsignmentNumber(requestDTO.getBranch());
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ofNullable(result);
     }

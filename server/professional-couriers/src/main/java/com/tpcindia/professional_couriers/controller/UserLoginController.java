@@ -28,7 +28,7 @@ public class UserLoginController {
             result = userLoginService.authenticateUser(requestDTO.getLoginId(), requestDTO.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ofNullable(result);
     }
