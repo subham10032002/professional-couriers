@@ -127,7 +127,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Function to create navigation route to CreditBooking
-    fun createCreditBookingScreenRoute(branch: String, userName: String): String {
+    fun createCreditBookingScreenRoute(branch: String, userName: String, userCode: String): String {
         val currentDate = getCurrentData()
         val (day, month, year) = currentDate.split("/")
 
@@ -137,7 +137,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             month = month,
             year = year,
             branch = branch,
-            username = userName
+            username = userName,
+            userCode = userCode
         )
     }
 

@@ -31,7 +31,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                 isAuthenticated = true,
                 name = "${savedUser.firstName} ${savedUser.lastName}",
                 branch = savedUser.branch,
-                branchCode = savedUser.branchCode
+                branchCode = savedUser.branchCode,
+                userCode = savedUser.userCode
             )
         }
     }
@@ -52,7 +53,8 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         isAuthenticated = true,
                         name = "${user.firstName} ${user.lastName}",
                         branch = user.branch,
-                        branchCode = user.branchCode
+                        branchCode = user.branchCode,
+                        userCode = user.userCode
                     )
                 } else {
                     _loginState.value = LoginState(error = result.exceptionOrNull()?.message)
@@ -67,13 +69,15 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         val branch = _loginState.value.branch
         val branchCode = _loginState.value.branchCode
         val name = _loginState.value.name
-        if (branch == null || branchCode == null || name == null) {
+        val userCode = _loginState.value.userCode
+        if (branch == null || branchCode == null || name == null || userCode == null) {
             return null
         }
         return Screen.Home.createRoute(
             name = name,
             branch = branch,
-            branchCode = branchCode
+            branchCode = branchCode,
+            userCode = userCode
         )
     }
 
