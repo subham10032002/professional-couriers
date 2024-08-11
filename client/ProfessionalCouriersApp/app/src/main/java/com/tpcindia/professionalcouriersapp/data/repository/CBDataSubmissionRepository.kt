@@ -115,7 +115,7 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         // Add CBInfoData fields
         mergedMap["invoiceNumber"] = cbInfoData.invoiceNumber
         mergedMap["product"] = cbInfoData.product
-        mergedMap["declaredValue"] = cbInfoData.declaredValue
+        mergedMap["declaredValue"] = cbInfoData.invoiceValue
         mergedMap["ewayBill"] = cbInfoData.ewayBill
 
         mergedMap["branch"] = creditBookingData.branch

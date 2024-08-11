@@ -13,8 +13,7 @@ import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.repository.CBDataSubmissionRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
-import com.tpcindia.professionalcouriersapp.viewModel.uiState.CreditBookingState
-import com.tpcindia.professionalcouriersapp.viewModel.uiState.SubmitDetailsState
+import com.tpcindia.professionalcouriersapp.viewModel.uiState.InfoState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,16 +21,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CBInfoViewModel(application: Application) : AndroidViewModel(application) {
-    private val _submitDetailsState = MutableStateFlow(SubmitDetailsState())
-    val submitDetailsState: StateFlow<SubmitDetailsState> = _submitDetailsState
+    private val _infoState = MutableStateFlow(InfoState())
+    val infoState: StateFlow<InfoState> = _infoState
 
     private var job: Job? = null
 
     private val repository = CBDataSubmissionRepository(NetworkService())
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
 
-    fun submitCreditBookingData(creditBookingData: CreditBookingData, cbDimensionData: CBDimensionData, cbInfoData: CBInfoData) {
-        _submitDetailsState.value = SubmitDetailsState(isLoading = true)
+    private fun submitCreditBookingData(
+        creditBookingData: CreditBookingData,
+        cbDimensionData: CBDimensionData
+    ) {
+        _infoState.value =  _infoState.value.copy(isLoading = true)
         job?.cancel()
         job = viewModelScope.launch(Dispatchers.IO) {
             if (job?.isActive == false) {
@@ -46,28 +48,27 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                     val result = repository.submitCreditBookingDetails(
                         creditBookingData = creditBookingData,
                         cbDimensionData = cbDimensionData,
-                        cbInfoData = cbInfoData
+                        cbInfoData = getCreditInfoData()
                     )
                     if (result.isSuccess) {
-                        _submitDetailsState.value = SubmitDetailsState(
+                        _infoState.value =  _infoState.value.copy(
                             isLoading = false,
-                            isDataSubmitted = true,
-                            dataSubmissionMessage = result.getOrThrow()
+                            isDataSubmitted = true
                         )
                     } else {
-                        _submitDetailsState.value = SubmitDetailsState(
+                        _infoState.value =  _infoState.value.copy(
                             error = result.exceptionOrNull()?.message,
                             isLoading = false
                         )
                     }
                 } else {
-                    _submitDetailsState.value = SubmitDetailsState(
+                    _infoState.value =  _infoState.value.copy(
                         error = consignmentDetails.exceptionOrNull()?.message,
                         isLoading = false
                     )
                 }
             } catch (e: Exception) {
-                _submitDetailsState.value = SubmitDetailsState(
+                _infoState.value =  _infoState.value.copy(
                     error = e.message,
                     isLoading = false
                 )
@@ -75,23 +76,76 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
         }
     }
 
-    fun createPdf(context: Context, creditBookingData: CreditBookingData,
-                  cbDimensionData: CBDimensionData,
-                  cbInfoData: CBInfoData) : ByteArray {
-        return repository.createPdf(context, creditBookingData, cbDimensionData, cbInfoData)
+    fun createPdf(
+        context: Context,
+        creditBookingData: CreditBookingData,
+        cbDimensionData: CBDimensionData
+    ) : ByteArray {
+        return repository.createPdf(context, creditBookingData, cbDimensionData, getCreditInfoData())
     }
 
     fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {
-        _submitDetailsState.value = SubmitDetailsState(isLoading = true, isPdfSaved = false)
+        _infoState.value =  _infoState.value.copy(isLoading = true, isPdfSaved = false)
         viewModelScope.launch {
             val isSaved = repository.savePdf(pdfData, fileName, branch, pdfDao)
             if (isSaved) {
-                _submitDetailsState.value = SubmitDetailsState(isLoading = false, isPdfSaved = true)
+                _infoState.value =  _infoState.value.copy(isLoading = false, isPdfSaved = true)
             } else {
-                _submitDetailsState.value = SubmitDetailsState(isLoading = false, isPdfSaved = false)
+                _infoState.value =  _infoState.value.copy(isLoading = false, isPdfSaved = false)
                 Toast.makeText(getApplication(), "Failed to save PDF", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    fun onButtonClicked(creditBookingData: CreditBookingData, cbDimensionData: CBDimensionData) {
+        if (!_infoState.value.isLoading) {
+            val updateInvoiceValue = _infoState.value.invoiceValue.toIntOrNull()
+            if (updateInvoiceValue != null && updateInvoiceValue >= 50000 && isMandatoryFieldBlank()) {
+                _infoState.value = _infoState.value.copy(error = "Please fill the mandatory fields")
+                return
+            }
+            submitCreditBookingData(
+                creditBookingData = creditBookingData,
+                cbDimensionData = cbDimensionData
+            )
+        } else {
+            _infoState.value = _infoState.value.copy(error = "Please wait we're submitting the data")
+        }
+    }
+
+    private fun isMandatoryFieldBlank() : Boolean {
+        return when {
+            _infoState.value.product.isBlank() -> true
+            _infoState.value.ewaybill.isBlank() -> true
+            _infoState.value.invoiceValue.isBlank() -> true
+            _infoState.value.invoiceNumber.isBlank() -> true
+            else -> false
+        }
+    }
+
+    private fun getCreditInfoData() : CBInfoData {
+        return CBInfoData(
+            invoiceNumber = _infoState.value.invoiceNumber,
+            product = _infoState.value.product,
+            invoiceValue = _infoState.value.invoiceValue,
+            ewayBill = _infoState.value.ewaybill
+        )
+    }
+
+    fun setProductValue(value: String) {
+        _infoState.value = _infoState.value.copy(product = value)
+    }
+
+    fun setEwaybillValue(value: String) {
+        _infoState.value = _infoState.value.copy(ewaybill = value)
+    }
+
+    fun setInvoiceValue(value: String) {
+        _infoState.value = _infoState.value.copy(invoiceValue = value)
+    }
+
+    fun setInvoiceNumberValue(value: String) {
+        _infoState.value = _infoState.value.copy(invoiceNumber = value)
     }
 
     fun createPDFScreenRoute(branch: String): String {
@@ -99,14 +153,18 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun clearErrorMessage() {
-        _submitDetailsState.value = _submitDetailsState.value.copy(error = null)
+        _infoState.value = _infoState.value.copy(error = null)
     }
 
-    fun clearDataSubmissionMessage() {
-        _submitDetailsState.value = _submitDetailsState.value.copy(dataSubmissionMessage = null)
+    fun clearDataSubmitted() {
+        _infoState.value = _infoState.value.copy(isDataSubmitted = false)
+    }
+
+    fun clearPDFSavedState() {
+        _infoState.value = _infoState.value.copy(isPdfSaved = false)
     }
 
     fun clearState() {
-        _submitDetailsState.value = SubmitDetailsState()
+        _infoState.value = InfoState()
     }
 }

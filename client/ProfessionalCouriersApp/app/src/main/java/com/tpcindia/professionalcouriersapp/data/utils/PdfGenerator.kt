@@ -86,7 +86,7 @@ class PdfGenerator {
         val details = """
             Invoice No: ${cbInfoData.invoiceNumber}
             Product: ${cbInfoData.product}
-            Value: ${cbInfoData.declaredValue}
+            Value: ${cbInfoData.invoiceValue}
             Eway Bill: ${cbInfoData.ewayBill}
         """.trimIndent()
         table.addCell(createCell(details, false, 4))

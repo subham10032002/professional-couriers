@@ -15,13 +15,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
-import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
-import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
 import com.tpcindia.professionalcouriersapp.ui.components.InputTextField
 import com.tpcindia.professionalcouriersapp.ui.components.LabelText
@@ -38,16 +35,13 @@ fun CBInfoScreen(
     navController: NavController,
     sharedViewModel: SharedViewModel
 ) {
-    var invoiceNumber by remember { mutableStateOf("") }
-    var product by remember { mutableStateOf("") }
-    var ewaybill by remember { mutableStateOf("") }
-    var declaredValue by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
     val context = LocalContext.current
-    val submitDetailsState by viewModel.submitDetailsState.collectAsState()
+    val infoState by viewModel.infoState.collectAsState()
 
     val creditBookingData by sharedViewModel.creditBookingData.collectAsState()
     val cbDimensionData by sharedViewModel.cbDimensionData.collectAsState()
+    val updateInvoiceValue = infoState.invoiceValue.toIntOrNull()
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -73,37 +67,53 @@ fun CBInfoScreen(
                     .verticalScroll(scrollState)
                     .fillMaxWidth()
             ) {
-                LabelText("Invoice Number ", false)
+
+                LabelText(
+                    text = "Invoice Value ",
+                    showAsterisk = updateInvoiceValue != null && updateInvoiceValue >= 50000
+                )
                 InputTextField(
-                    value = invoiceNumber,
-                    onValueChange = { invoiceNumber = it },
+                    value = infoState.invoiceValue,
+                    onValueChange = { viewModel.setInvoiceValue(it) },
+                    label = "Ex- 560049",
+                    keyboardType = KeyboardType.Number
+                )
+
+                Spacer(modifier = Modifier.height(15.dp))
+
+                LabelText(
+                    text = "Invoice Number ",
+                    showAsterisk = updateInvoiceValue != null && updateInvoiceValue >= 50000
+                )
+                InputTextField(
+                    value = infoState.invoiceNumber,
+                    onValueChange = { viewModel.setInvoiceNumberValue(it) },
                     label = "Ex- 1234567890"
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                LabelText("Product ", false)
+                LabelText(
+                    text = "E-waybill ",
+                    showAsterisk = updateInvoiceValue != null && updateInvoiceValue >= 50000
+                )
                 InputTextField(
-                    value = product,
-                    onValueChange = { product = it },
-                    label = "Ex- 1234567890"
+                    value = infoState.ewaybill,
+                    onValueChange = { viewModel.setEwaybillValue(it) },
+                    label = "Ex- 1234567890",
+                    maxLength = 12,
+                    keyboardType = KeyboardType.Number
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
 
-                LabelText("Declared Value ", false)
-                InputTextField(
-                    value = declaredValue,
-                    onValueChange = { declaredValue = it },
-                    label = "Ex- 560049"
+                LabelText(
+                    text = "Product ",
+                    showAsterisk = updateInvoiceValue != null && updateInvoiceValue >= 50000
                 )
-
-                Spacer(modifier = Modifier.height(15.dp))
-
-                LabelText("Ewaybill ", false)
                 InputTextField(
-                    value = ewaybill,
-                    onValueChange = { ewaybill = it },
+                    value = infoState.product,
+                    onValueChange = { viewModel.setProductValue(it) },
                     label = "Ex- 1234567890"
                 )
 
@@ -111,24 +121,10 @@ fun CBInfoScreen(
 
                 CustomButton(
                     onClick = {
-                        if (!submitDetailsState.isLoading) {
-                            viewModel.submitCreditBookingData(
-                                creditBookingData = creditBookingData,
-                                cbDimensionData = cbDimensionData,
-                                cbInfoData = CBInfoData(
-                                    invoiceNumber,
-                                    product,
-                                    declaredValue,
-                                    ewaybill
-                                )
-                            )
-                        } else {
-                            Toast.makeText(
-                                context,
-                                "Please wait we're submitting the data",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        viewModel.onButtonClicked(
+                            creditBookingData = creditBookingData,
+                            cbDimensionData = cbDimensionData
+                        )
                     },
                     horizontalPadding = 60.dp,
                     isFilled = true,
@@ -142,7 +138,7 @@ fun CBInfoScreen(
             }
         }
 
-        if (submitDetailsState.isLoading) {
+        if (infoState.isLoading) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -158,12 +154,13 @@ fun CBInfoScreen(
             }
         }
 
-        submitDetailsState.error?.let { errorMessage ->
+        infoState.error?.let { errorMessage ->
             ShowToastMessage(errorMessage)
             viewModel.clearErrorMessage()
         }
 
-        if (submitDetailsState.isPdfSaved) {
+        if (infoState.isPdfSaved) {
+            viewModel.clearPDFSavedState()
             val route = viewModel.createPDFScreenRoute(branch = creditBookingData.branch)
             route.let {
                 viewModel.clearState()
@@ -175,17 +172,15 @@ fun CBInfoScreen(
             }
         }
 
-        LaunchedEffect(submitDetailsState.isDataSubmitted) {
-            if (submitDetailsState.isDataSubmitted) {
+        LaunchedEffect(infoState.isDataSubmitted) {
+            if (infoState.isDataSubmitted) {
+                viewModel.clearDataSubmitted()
                 try {
-                    val byteArray = viewModel.createPdf(context, creditBookingData = creditBookingData,
-                        cbDimensionData = cbDimensionData,
-                        cbInfoData = CBInfoData(
-                            invoiceNumber,
-                            product,
-                            declaredValue,
-                            ewaybill
-                        ))
+                    val byteArray = viewModel.createPdf(
+                        context = context,
+                        creditBookingData = creditBookingData,
+                        cbDimensionData = cbDimensionData
+                    )
                     val fileName = "CreditBooking_${creditBookingData.consignmentNumber}_${creditBookingData.consigneeName}.pdf"
                     viewModel.savePdf(byteArray, fileName, branch = creditBookingData.branch)
                 } catch (e: Exception) {
