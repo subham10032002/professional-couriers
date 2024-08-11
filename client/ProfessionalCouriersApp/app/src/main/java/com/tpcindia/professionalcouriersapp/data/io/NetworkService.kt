@@ -118,24 +118,18 @@ class NetworkService {
             .build()
 
         return try {
-//            val response = client.newCall(request).execute()
-//            if (response.isSuccessful) {
-//                val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
-//                val jsonResponse = JSONObject(responseData)
-//                val details = mutableMapOf<String, Any>()
-//                jsonResponse.keys().forEach {
-//                    details[it] = jsonResponse[it]
-//                }
-//                Result.success(details)
-//            } else {
-//                Result.failure(Exception("Failed to fetch consignment details"))
-//            }
-            val details = mutableMapOf<String, Any>()
-            details.put("startNo", "123")
-            details.put("accCode", "ABC")
-            details.put("consignmentNo", "12345")
-            details.put("balanceStock", "100")
-            Result.success(details)
+            val response = client.newCall(request).execute()
+            val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+            if (response.isSuccessful) {
+                val jsonResponse = JSONObject(responseData)
+                val details = mutableMapOf<String, Any>()
+                jsonResponse.keys().forEach {
+                    details[it] = jsonResponse[it]
+                }
+                Result.success(details)
+            } else {
+                Result.failure(Exception(responseData))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

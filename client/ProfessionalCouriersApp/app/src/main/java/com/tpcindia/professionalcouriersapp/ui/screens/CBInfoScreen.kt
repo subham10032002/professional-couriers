@@ -181,7 +181,7 @@ fun CBInfoScreen(
                         creditBookingData = creditBookingData,
                         cbDimensionData = cbDimensionData
                     )
-                    val fileName = "CreditBooking_${creditBookingData.consignmentNumber}_${creditBookingData.consigneeName}.pdf"
+                    val fileName = "${creditBookingData.consignmentNumber}.pdf"
                     viewModel.savePdf(byteArray, fileName, branch = creditBookingData.branch)
                 } catch (e: Exception) {
                     // Handle Exception
