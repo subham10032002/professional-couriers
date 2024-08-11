@@ -64,6 +64,7 @@ public class CreditBookingDataService {
         entity.setDateOfEmailSent("");
         entity.setEmailSenderUsername("");
         entity.setSync("No");
+        entity.setUserCode(dto.getUserCode());
         return entity;
     }
 }

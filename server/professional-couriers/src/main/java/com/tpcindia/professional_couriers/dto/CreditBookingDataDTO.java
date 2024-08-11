@@ -25,6 +25,7 @@ public class CreditBookingDataDTO {
     private byte[] photoOfAddress;
     private String branchCode;
     private String username;
+    private String userCode;
 
     // Getters
     public String getCurrentDate() {
@@ -216,5 +217,13 @@ public class CreditBookingDataDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
     }
 }

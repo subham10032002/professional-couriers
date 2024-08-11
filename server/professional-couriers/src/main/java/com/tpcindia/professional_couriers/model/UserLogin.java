@@ -78,4 +78,12 @@ public class UserLogin {
     public void setBranchCode(String branchCode) {
         this.branchCode = branchCode;
     }
+
+    public String getUserCode() {
+        return code;
+    }
+
+    public void setUserCode(String code) {
+        this.code = code;
+    }
 }

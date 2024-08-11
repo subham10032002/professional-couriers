@@ -91,6 +91,9 @@ public class CreditBookingData {
     @Column(name = "sync")
     private String sync;
 
+    @Column(name = "userCode")
+    private String userCode;
+
     @Lob
     @Column(name = "photoOfAddress")
     private byte[] photoOfAddress;
@@ -326,5 +329,13 @@ public class CreditBookingData {
 
     public void setSync(String sync) {
         this.sync = sync;
+    }
+
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String code) {
+        this.userCode = code;
     }
 }

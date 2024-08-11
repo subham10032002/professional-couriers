@@ -39,6 +39,7 @@ public class UserLoginService {
         result.put("lastName", userLogin.getLastName());
         result.put("branchCode", userLogin.getBranchCode());
         result.put("branch", branch);
+        result.put("userCode", userLogin.getUserCode());
 
         return result;
     }
