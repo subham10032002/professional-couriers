@@ -20,15 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.tpcindia.professionalcouriersapp.configs.UIConfig
-import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
-import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
 import com.tpcindia.professionalcouriersapp.ui.components.InputTextFieldWithSum
 import com.tpcindia.professionalcouriersapp.ui.components.LabelText
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
-import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientLeft
 import com.tpcindia.professionalcouriersapp.ui.theme.GradientRight
 import com.tpcindia.professionalcouriersapp.ui.theme.Red
@@ -49,11 +46,11 @@ fun CBDimensionsScreen(
     val widthSum by viewModel.widthSum.collectAsState()
     val heightSum by viewModel.heightSum.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
-    val isPdfSaved by viewModel.isPdfSaved.collectAsState()
-    val isDataSubmitted by viewModel.isDataSubmitted.collectAsState()
     val error by viewModel.error.collectAsState()
 
     val creditBookingData by sharedViewModel.creditBookingData.collectAsState()
+
+    val noOfPsc = creditBookingData.noOfPsc.toIntOrNull() ?: 0
 
     val context = LocalContext.current
 
@@ -79,7 +76,7 @@ fun CBDimensionsScreen(
                 text = buildAnnotatedString {
                     append("No of psc selected was: ")
                     withStyle(style = SpanStyle(color = Color.Red)) {
-                        append(creditBookingData.noOfPsc)
+                        append(if (noOfPsc == 0) "0" else creditBookingData.noOfPsc)
                     }
                 },
                 fontSize = 16.sp,
@@ -108,10 +105,10 @@ fun CBDimensionsScreen(
                 LabelText("Length ", false)
                 InputTextFieldWithSum(
                     value = length,
-                    onValueChange = { viewModel.onLengthChanged(it, creditBookingData.noOfPsc.toInt()) },
+                    onValueChange = { viewModel.onLengthChanged(it, noOfPsc) },
                     label = "Ex- 10,20,30",
                     sum = lengthSum,
-                    maxEntries = creditBookingData.noOfPsc.toInt()
+                    maxEntries = noOfPsc
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
@@ -119,10 +116,10 @@ fun CBDimensionsScreen(
                 LabelText("Width ", false)
                 InputTextFieldWithSum(
                     value = width,
-                    onValueChange = { viewModel.onWidthChanged(it, creditBookingData.noOfPsc.toInt()) },
+                    onValueChange = { viewModel.onWidthChanged(it, noOfPsc) },
                     label = "Ex- 10,20,30",
                     sum = widthSum,
-                    maxEntries = creditBookingData.noOfPsc.toInt()
+                    maxEntries = noOfPsc
                 )
 
                 Spacer(modifier = Modifier.height(15.dp))
@@ -130,95 +127,63 @@ fun CBDimensionsScreen(
                 LabelText("Height ", false)
                 InputTextFieldWithSum(
                     value = height,
-                    onValueChange = { viewModel.onHeightChanged(it, creditBookingData.noOfPsc.toInt()) },
+                    onValueChange = { viewModel.onHeightChanged(it, noOfPsc) },
                     label = "Ex- 10,20,30",
                     sum = heightSum,
-                    maxEntries = creditBookingData.noOfPsc.toInt()
+                    maxEntries = noOfPsc
                 )
             }
 
-            if (creditBookingData.consigneeType == "Dox") {
-                Spacer(modifier = Modifier.height(20.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
                 CustomButton(
                     onClick = {
-                        if (!isLoading) {
-                            viewModel.submitCreditBookingData(
-                                creditBookingData = creditBookingData,
-                                cbDimensionData = CBDimensionData(
-                                    length = lengthSum.toString(),
-                                    width = widthSum.toString(),
-                                    height = heightSum.toString(),
-                                    unit = selectedUnit
-                                ),
-                                cbInfoData = CBInfoData()
-                            )
+                        if (selectedUnit.isNotBlank()) {
+                            viewModel.clearState()
+                            sharedViewModel.setCreditBookingData(creditBookingData)
+                            navController.navigate(viewModel.createCBInfoRoute(sharedViewModel))
                         } else {
-                            Toast.makeText(
-                                context,
-                                "Please wait we're submitting the data",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(context, "Please select unit.", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    horizontalPadding = 60.dp,
                     isFilled = true,
+                    horizontalPadding = 0.dp,
+                    modifier = Modifier.weight(1f),
                     loginState = false,
-                    text = "Submit",
+                    text = "Skip",
+                    textColor = Color.Black,
+                    backgroundColor = Color.White,
+                    gradientColors = mutableListOf(GradientLeft, GradientRight)
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                CustomButton(
+                    onClick = {
+                        if (viewModel.validateEntries(length, width, height, noOfPsc)) {
+                            viewModel.clearState()
+                            sharedViewModel.setCreditBookingData(creditBookingData)
+                            navController.navigate(viewModel.createCBInfoRoute(sharedViewModel))
+                        } else {
+                            Toast.makeText(context, "Please enter exactly ${creditBookingData.noOfPsc} numbers in each field.", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    horizontalPadding = 0.dp,
+                    isFilled = true,
+                    modifier = Modifier.weight(1f),
+                    loginState = false,
+                    text = "Next",
                     textColor = Color.White,
                     backgroundColor = Red
                 )
-                Spacer(modifier = Modifier.height(20.dp))
-            } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-
-                    CustomButton(
-                        onClick = {
-                            if (selectedUnit.isNotBlank()) {
-                                viewModel.clearState()
-                                sharedViewModel.setCreditBookingData(creditBookingData)
-                                navController.navigate(viewModel.createCBInfoRoute(sharedViewModel))
-                            } else {
-                                Toast.makeText(context, "Please select unit.", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        isFilled = true,
-                        horizontalPadding = 0.dp,
-                        modifier = Modifier.weight(1f),
-                        loginState = false,
-                        text = "Skip",
-                        textColor = Color.Black,
-                        backgroundColor = Color.White,
-                        gradientColors = mutableListOf(GradientLeft, GradientRight)
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    CustomButton(
-                        onClick = {
-                            if (viewModel.validateEntries(length, width, height, creditBookingData.noOfPsc.toInt())) {
-                                viewModel.clearState()
-                                sharedViewModel.setCreditBookingData(creditBookingData)
-                                navController.navigate(viewModel.createCBInfoRoute(sharedViewModel))
-                            } else {
-                                Toast.makeText(context, "Please enter exactly ${creditBookingData.noOfPsc} numbers in each field.", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        horizontalPadding = 0.dp,
-                        isFilled = true,
-                        modifier = Modifier.weight(1f),
-                        loginState = false,
-                        text = "Next",
-                        textColor = Color.White,
-                        backgroundColor = Red
-                    )
-                }
             }
         }
+
 
         if (isLoading) {
             Box(
@@ -239,35 +204,6 @@ fun CBDimensionsScreen(
         error?.let { errorMessage ->
             ShowToastMessage(errorMessage)
             viewModel.clearErrorMessage()
-        }
-
-        if (isPdfSaved) {
-            val route = viewModel.createPDFScreenRoute(branch = creditBookingData.branch)
-            route.let {
-                viewModel.clearState()
-                navController.navigate(it) {
-                    popUpTo(route = Screen.Home.route) {
-                        inclusive = false
-                    }
-                }
-            }
-        }
-
-        LaunchedEffect(isDataSubmitted) {
-            if (isDataSubmitted) {
-                try {
-                    val byteArray = viewModel.createPdf(context, creditBookingData, cbDimensionData = CBDimensionData(
-                        length = lengthSum.toString(),
-                        width = widthSum.toString(),
-                        height = heightSum.toString(),
-                        unit = selectedUnit
-                    ), cbInfoData = CBInfoData())
-                    val fileName = "CreditBooking_${creditBookingData.consignmentNumber}_${creditBookingData.consigneeName}.pdf"
-                    viewModel.savePdf(byteArray, fileName, branch = creditBookingData.branch)
-                } catch (e: Exception) {
-                    // Handle Exception
-                }
-            }
         }
     }
 }

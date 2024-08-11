@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private val creditBookingViewModel: CreditBookingViewModel by viewModels {
-        CreditBookingViewModelFactory()
+        CreditBookingViewModelFactory(application)
     }
 
     private val cbDimensionsViewModel: CBDimensionsViewModel by viewModels {
