@@ -20,6 +20,8 @@ data class CreditBookingData(
     val consigneeName: String = "",
     val noOfPsc: String = "",
     val weight: String = "",
+    var longitude: String = "",
+    var latitude: String = "",
     val photoOfAddress: ByteArray? = null
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
@@ -29,6 +31,7 @@ data class CreditBookingData(
         other as CreditBookingData
 
         if (username != other.username) return false
+        if (userCode != other.userCode) return false
         if (currentDate != other.currentDate) return false
         if (consignmentNumber != other.consignmentNumber) return false
         if (balanceStock != other.balanceStock) return false
@@ -42,6 +45,8 @@ data class CreditBookingData(
         if (consigneeName != other.consigneeName) return false
         if (noOfPsc != other.noOfPsc) return false
         if (weight != other.weight) return false
+        if (longitude != other.longitude) return false
+        if (latitude != other.latitude) return false
         if (photoOfAddress != null) {
             if (other.photoOfAddress == null) return false
             if (!photoOfAddress.contentEquals(other.photoOfAddress)) return false
@@ -52,6 +57,7 @@ data class CreditBookingData(
 
     override fun hashCode(): Int {
         var result = username.hashCode()
+        result = 31 * result + userCode.hashCode()
         result = 31 * result + currentDate.hashCode()
         result = 31 * result + consignmentNumber.hashCode()
         result = 31 * result + balanceStock.hashCode()
@@ -65,6 +71,8 @@ data class CreditBookingData(
         result = 31 * result + consigneeName.hashCode()
         result = 31 * result + noOfPsc.hashCode()
         result = 31 * result + weight.hashCode()
+        result = 31 * result + longitude.hashCode()
+        result = 31 * result + latitude.hashCode()
         result = 31 * result + (photoOfAddress?.contentHashCode() ?: 0)
         return result
     }

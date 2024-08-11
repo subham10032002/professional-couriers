@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.coil.compose)
     implementation libs.gson
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation libs.play.services.location
 
     //Pdf
     implementation libs.itext7.core

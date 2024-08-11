@@ -8,4 +8,5 @@ data class HomeState(
     val isEmailSending: Boolean = false,
     val emailSentSuccessfully: Boolean = false,
     val emailSendingFailed: Boolean = false,
+    val isBookingCardClicked: Boolean = false
 )

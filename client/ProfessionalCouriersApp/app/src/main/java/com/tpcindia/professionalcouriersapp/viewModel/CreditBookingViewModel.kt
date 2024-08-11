@@ -16,9 +16,11 @@ import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.repository.CBDataSubmissionRepository
 import com.tpcindia.professionalcouriersapp.data.repository.CreditBookingRepository
+import com.tpcindia.professionalcouriersapp.data.repository.LocationRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class CreditBookingViewModel(application: Application) : AndroidViewModel(application) {
@@ -27,6 +29,7 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
 
     private val repository: CreditBookingRepository = CreditBookingRepository(NetworkService())
     private val dataSubmissionRepository: CBDataSubmissionRepository = CBDataSubmissionRepository(NetworkService())
+    private val locationRepository = LocationRepository(application)
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
     private var job: Job? = null
 
@@ -62,6 +65,10 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                 return@launch
             }
             try {
+                val currentLocation = locationRepository.getLocation()
+                creditBookingData.longitude = currentLocation.longitude.toString()
+                creditBookingData.latitude = currentLocation.latitude.toString()
+
                 val consignmentDetails = dataSubmissionRepository.getConsignmentDetails(creditBookingData.branch)
                 if (consignmentDetails.isSuccess) {
                     val balanceStock = consignmentDetails.getOrThrow().balanceStock
