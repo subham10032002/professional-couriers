@@ -3,12 +3,14 @@ package com.tpcindia.professional_couriers.controller;
 import com.tpcindia.professional_couriers.dto.AuthenticationRequestDTO;
 import com.tpcindia.professional_couriers.service.UserLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -19,13 +21,14 @@ public class UserLoginController {
     private UserLoginService userLoginService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody AuthenticationRequestDTO requestDTO) {
+    public ResponseEntity<?> login(@RequestBody AuthenticationRequestDTO requestDTO) {
 
-        Map<String, Object> result = null;
+        Map<String, Object> result = new HashMap<>();
         try {
             result = userLoginService.authenticateUser(requestDTO.getLoginId(), requestDTO.getPassword());
         } catch (Exception e) {
             e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         return ResponseEntity.ofNullable(result);
     }
