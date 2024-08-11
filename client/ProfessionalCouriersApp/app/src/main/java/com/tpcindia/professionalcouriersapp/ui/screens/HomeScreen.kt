@@ -35,6 +35,7 @@ import com.tpcindia.professionalcouriersapp.ui.components.BookingCard
 import com.tpcindia.professionalcouriersapp.ui.theme.*
 import com.tpcindia.professionalcouriersapp.R
 import com.tpcindia.professionalcouriersapp.data.model.MenuItem
+import com.tpcindia.professionalcouriersapp.ui.components.LocationSelectionDialog
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
@@ -157,7 +158,7 @@ fun HomeScreen(
             ) {
                 bookings.forEach { booking ->
                     BookingCard(booking = booking, onClick = {
-                        viewModel.onBookingClick(branch = branch)
+                        viewModel.onBookingCardClicked()
                     })
                     Spacer(modifier = Modifier.height(4.dp))
                 }
@@ -216,6 +217,19 @@ fun HomeScreen(
                     modifier = Modifier.padding(top = 16.dp)
                 )
             }
+        }
+
+        if (homeState.isBookingCardClicked) {
+            viewModel.clearBookingCardClicked()
+            LocationSelectionDialog(
+                onLocationSelected = { hasLocationPermission ->
+                    if (hasLocationPermission) {
+                        viewModel.onBookingClick(branch = branch)
+                    } else {
+                        Toast.makeText(context, "Location permission is required", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
         }
 
         homeState.error?.let { errorMessage ->

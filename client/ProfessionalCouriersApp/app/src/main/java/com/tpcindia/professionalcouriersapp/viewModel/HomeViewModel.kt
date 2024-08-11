@@ -52,6 +52,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun onBookingCardClicked() {
+        _homeState.value = _homeState.value.copy(isBookingCardClicked = true)
+    }
+
     fun sendEmails(branch: String, branchCode: String, userName: String) {
         if (job?.isActive == true) {
             job?.cancel()
@@ -152,6 +156,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun createPDFScreenRoute(branch: String): String {
         return Screen.PdfScreen.createRoute(branch)
+    }
+
+    fun clearBookingCardClicked() {
+        _homeState.value = _homeState.value.copy(isBookingCardClicked = false)
     }
 
     fun clearState() {
