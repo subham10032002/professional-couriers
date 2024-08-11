@@ -238,7 +238,7 @@ fun HomeScreen(
         }
 
         if (homeState.isDataFetched) {
-            val route = viewModel.createCreditBookingScreenRoute(branch = branch)
+            val route = viewModel.createCreditBookingScreenRoute(branch = branch, userName = name)
             viewModel.clearState()
             navController.navigate(route)
         }

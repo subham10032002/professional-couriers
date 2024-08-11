@@ -40,7 +40,8 @@ fun CreditBookingScreen(
     navController: NavController,
     date: String,
     clientName: List<String>,
-    branch: String
+    branch: String,
+    username: String
 ) {
     var currentDate by remember { mutableStateOf(date) }
     var consigneeName by remember { mutableStateOf("") }
@@ -95,6 +96,7 @@ fun CreditBookingScreen(
 
     fun getCreditBookingData(): CreditBookingData {
         val creditBookingData = CreditBookingData(
+            username = username,
             currentDate = currentDate,
             consigneeName = consigneeName,
             mode = mode,

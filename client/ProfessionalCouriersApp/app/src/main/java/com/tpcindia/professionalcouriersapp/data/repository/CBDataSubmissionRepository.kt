@@ -103,6 +103,7 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         mergedMap["noOfPsc"] = creditBookingData.noOfPsc
         mergedMap["weight"] = creditBookingData.weight
         mergedMap["photoOfAddress"] = creditBookingData.photoOfAddress
+        mergedMap["username"] = creditBookingData.username
 
         // Add CBDimensionData fields
         mergedMap["unit"] = cbDimensionData.unit

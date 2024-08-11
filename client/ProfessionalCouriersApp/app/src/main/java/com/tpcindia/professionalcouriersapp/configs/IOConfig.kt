@@ -3,9 +3,10 @@ package com.tpcindia.professionalcouriersapp.configs
 object IOConfig {
 
     private const val PROTOCOL = "http"
-//    private const val HOST = "10.0.2.2"
-    private const val HOST = "106.51.61.94"
-    private const val PORT = "8083"
+    private const val HOST = "10.0.2.2"
+//    private const val HOST = "106.51.61.94"
+    private const val PORT = "8080"
+//    private const val PORT = "8083"
     private const val ROOT_PATH = "professional-couriers"
 
     private var BASE_URL = String.format("%s://%s:%s/%s", PROTOCOL, HOST, PORT, ROOT_PATH)

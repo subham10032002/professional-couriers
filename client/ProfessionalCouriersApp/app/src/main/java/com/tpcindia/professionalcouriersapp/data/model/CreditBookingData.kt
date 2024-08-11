@@ -5,6 +5,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CreditBookingData(
+    val username: String = "",
     val currentDate: String = "",
     var consignmentNumber: String = "",
     var balanceStock: String = "",
@@ -26,6 +27,7 @@ data class CreditBookingData(
 
         other as CreditBookingData
 
+        if (username != other.username) return false
         if (currentDate != other.currentDate) return false
         if (consignmentNumber != other.consignmentNumber) return false
         if (balanceStock != other.balanceStock) return false
@@ -48,7 +50,8 @@ data class CreditBookingData(
     }
 
     override fun hashCode(): Int {
-        var result = currentDate.hashCode()
+        var result = username.hashCode()
+        result = 31 * result + currentDate.hashCode()
         result = 31 * result + consignmentNumber.hashCode()
         result = 31 * result + balanceStock.hashCode()
         result = 31 * result + branch.hashCode()
