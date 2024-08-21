@@ -37,12 +37,15 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
     fun getConsignmentDetails(branch: String): Result<ConsignmentDetails> {
         return try {
             val result = networkService.getConsignmentDetails(branch)
-            if (result.isSuccess) {
-                val consignmentDetails = parseConsignmentDetails(result.getOrThrow())
-                Result.success(consignmentDetails)
-            } else {
-                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch consignment details"))
-            }
+//            if (result.isSuccess) {
+//                val consignmentDetails = parseConsignmentDetails(result.getOrThrow())
+//                Result.success(consignmentDetails)
+//            } else {
+//                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch consignment details"))
+//            }
+            Result.success(ConsignmentDetails(
+                "dwdw", "dwfd", "dwf", "wfw"
+            ))
         } catch (e: IOException) {
             Result.failure(e)
         }
