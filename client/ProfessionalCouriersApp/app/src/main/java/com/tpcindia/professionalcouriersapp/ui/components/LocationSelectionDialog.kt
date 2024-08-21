@@ -1,6 +1,7 @@
 package com.tpcindia.professionalcouriersapp.ui.components
 
 import android.Manifest
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ fun LocationSelectionDialog(
         if (hasLocationPermission) {
             onLocationSelected(true)
         } else {
+            Toast.makeText(context, "Required location access to fetch current location", Toast.LENGTH_SHORT).show()
             locationLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,

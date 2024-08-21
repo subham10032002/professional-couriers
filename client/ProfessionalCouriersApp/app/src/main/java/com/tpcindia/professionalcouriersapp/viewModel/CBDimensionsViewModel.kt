@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CBDimensionsViewModel(application: Application) : AndroidViewModel(application) {
-    private val _selectedUnit = MutableStateFlow("")
+    private val _selectedUnit = MutableStateFlow("KG")
     val selectedUnit: StateFlow<String> = _selectedUnit
 
     private val _length = MutableStateFlow("")
@@ -70,9 +70,9 @@ class CBDimensionsViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun validateEntries(length: String, width: String, height: String, maxEntries: Int): Boolean {
-        val lengthCount = length.split(",").size
-        val widthCount = width.split(",").size
-        val heightCount = height.split(",").size
+        val lengthCount = if (length.isEmpty()) 0 else length.split(",").size
+        val widthCount = if (width.isEmpty()) 0 else width.split(",").size
+        val heightCount = if (height.isEmpty()) 0 else height.split(",").size
         return lengthCount == maxEntries && widthCount == maxEntries && heightCount == maxEntries
     }
 
