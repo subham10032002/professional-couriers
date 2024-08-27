@@ -4,6 +4,7 @@ import com.tpcindia.professional_couriers.dto.BranchDTO;
 import com.tpcindia.professional_couriers.dto.BranchEmailDTO;
 import com.tpcindia.professional_couriers.dto.CustomerEmailDTO;
 import com.tpcindia.professional_couriers.dto.FirmNameDTO;
+import com.tpcindia.professional_couriers.dto.responsedto.FirmDetailsDTO;
 import com.tpcindia.professional_couriers.service.AccountsCustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,8 +23,8 @@ public class AccountsCustomerController {
     private AccountsCustomerService accountsCustomerService;
 
     @PostMapping("/firmNames")
-    public List<String> getFirmNames(@RequestBody FirmNameDTO firmNameDTO) {
-        return accountsCustomerService.getFirmNamesByBranch(firmNameDTO.getBranch());
+    public List<FirmDetailsDTO> getFirmDetails(@RequestBody FirmNameDTO firmNameDTO) {
+        return accountsCustomerService.getFirmDetailsByBranch(firmNameDTO.getBranch());
     }
 
     @PostMapping("/branch")

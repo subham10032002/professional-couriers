@@ -1,5 +1,6 @@
 package com.tpcindia.professional_couriers.repository;
 
+import com.tpcindia.professional_couriers.dto.responsedto.FirmDetailsDTO;
 import com.tpcindia.professional_couriers.model.AccountsCustomer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,8 +12,8 @@ import java.util.List;
 @Repository
 public interface AccountsCustomerRepository extends JpaRepository<AccountsCustomer, Long> {
 
-    @Query("SELECT ac.firmName FROM AccountsCustomer ac WHERE ac.type = 'Cust' AND ac.branch = :branch AND ac.flag = 'Acti' ORDER BY ac.firmName")
-    List<String> findFirmNamesByTypeAndBranch(@Param("branch") String branch);
+    @Query("SELECT new com.tpcindia.professional_couriers.dto.responsedto.FirmDetailsDTO(ac.firmName, TRIM(ac.address), TRIM(ac.contactNo)) FROM AccountsCustomer ac WHERE ac.type = 'Cust' AND ac.branch = :branch AND ac.flag = 'Acti' ORDER BY ac.firmName")
+    List<FirmDetailsDTO> findFirmDetailsByTypeAndBranch(@Param("branch") String branch);
 
     @Query("SELECT ac.branch FROM AccountsCustomer ac WHERE ac.custCode = :branchCode AND ac.flag = 'Acti'")
     String findBranchByBranchCode(@Param("branchCode") String branchCode);

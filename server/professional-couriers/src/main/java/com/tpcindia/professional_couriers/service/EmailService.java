@@ -49,7 +49,9 @@ public class EmailService {
                     return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerEmail and branchEmail are missing");
                 }
 
-                boolean emailSent = sendEmail(customerEmail, branchEmail, booking);
+                // boolean emailSent = sendEmail(customerEmail, branchEmail, booking);
+
+                boolean emailSent = sendEmail("Epod@atlantglobalindia.com", "Epod@atlantglobalindia.com", booking);
 
                 if (emailSent) {
                     booking.setEmailSent("Yes");
@@ -71,7 +73,7 @@ public class EmailService {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
-            message.setCc(cc);
+            // message.setCc(cc);
             message.setSubject("Subject");
             message.setText("Booking details: " + data.toString());
             javaMailSender.send(message);

@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface DestinationRepository extends JpaRepository<Destination, Long> {
 
-    @Query("SELECT d.city FROM Destination d WHERE d.pincode = :pinCode ORDER BY d.city")
-    List<String> findCitiesByPinCode(String pinCode);
+    @Query("SELECT d FROM Destination d WHERE d.pincode = :pinCode ORDER BY d.city")
+    List<Destination> findDestinaionsByPinCode(String pinCode);
 
 }
