@@ -39,11 +39,13 @@ import com.tpcindia.professionalcouriersapp.ui.components.LocationSelectionDialo
 import com.tpcindia.professionalcouriersapp.ui.components.ShowToastMessage
 import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.viewModel.HomeViewModel
+import com.tpcindia.professionalcouriersapp.viewModel.SharedViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel,
+    sharedViewModel: SharedViewModel,
     navController: NavController,
     name: String,
     branch: String,
@@ -256,7 +258,8 @@ fun HomeScreen(
             val route = viewModel.createCreditBookingScreenRoute(
                 branch = branch,
                 userName = name,
-                userCode = userCode
+                userCode = userCode,
+                sharedViewModel = sharedViewModel
             )
             viewModel.clearState()
             navController.navigate(route)

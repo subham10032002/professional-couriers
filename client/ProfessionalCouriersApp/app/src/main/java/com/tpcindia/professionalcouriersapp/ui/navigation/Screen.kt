@@ -15,20 +15,7 @@ sealed class Screen(val route: String) {
             userCode: String
         ) = "home/$name/$branch/$branchCode/$userCode"
     }
-    data object CreditBooking : Screen("credit_booking/{firmName}/{day}/{month}/{year}/{branch}/{username}/{userCode}") {
-        fun createRoute(
-            firmNames: List<String>,
-            day: String,
-            month: String,
-            year: String,
-            branch: String,
-            username: String,
-            userCode: String
-        ): String {
-            val jsonFirmNames = Uri.encode(Gson().toJson(firmNames))
-            return "credit_booking/$jsonFirmNames/$day/$month/$year/$branch/$username/$userCode"
-        }
-    }
+    data object CreditBooking : Screen("credit_booking")
     data object CBInfo : Screen("cb_info")
     data object CBDimensions : Screen("cb_dimensions")
     data object PdfScreen : Screen("pdf_screen/{branch}") {

@@ -10,10 +10,12 @@ class CreditBookingRepository(private val networkService: NetworkService) {
         return try {
             val result = networkService.getDestination(pincode)
             if (result.isSuccess) {
-                val firmNames = result.getOrThrow().map { DestinationDetails(it) }
-                Result.success(firmNames)
+                val destinations = result.getOrThrow().map { (key, value) ->
+                    DestinationDetails(key, value.toString())
+                }.toList()
+                Result.success(destinations)
             } else {
-                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch firm names"))
+                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch destinations"))
             }
         } catch (e: IOException) {
             Result.failure(e)

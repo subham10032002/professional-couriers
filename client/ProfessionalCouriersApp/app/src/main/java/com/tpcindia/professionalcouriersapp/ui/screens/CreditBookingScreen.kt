@@ -37,20 +37,14 @@ import com.tpcindia.professionalcouriersapp.viewModel.SharedViewModel
 fun CreditBookingScreen(
     viewModel: CreditBookingViewModel,
     sharedViewModel: SharedViewModel,
-    navController: NavController,
-    date: String,
-    clientName: List<String>,
-    branch: String,
-    username: String,
-    userCode: String
+    navController: NavController
 ) {
-    var currentDate by remember { mutableStateOf(date) }
     var consigneeName by remember { mutableStateOf("") }
     var mode by remember { mutableStateOf("") }
     var consigneeType by remember { mutableStateOf("") }
     var pincode by remember { mutableStateOf("") }
     var destination by remember { mutableStateOf("") }
-    var selectedClientName by remember { mutableStateOf(clientName.first()) }
+    var destCode by remember { mutableStateOf("") }
     var noOfPsc by remember { mutableStateOf("") }
     var selectedImageByteArray by remember { mutableStateOf<ByteArray?>(null) }
     val scrollState = rememberScrollState()
@@ -58,6 +52,11 @@ fun CreditBookingScreen(
     val context = LocalContext.current
 
     val creditBookingState by viewModel.creditBookingState.collectAsState()
+    val homeScreenData by sharedViewModel.homeScreenData.collectAsState()
+
+    var currentDate = homeScreenData.currentDate
+    val clientDetailsList = homeScreenData.clientDetails
+    var selectedClientDetails by remember { mutableStateOf(clientDetailsList.first()) }
 
     val options = remember { mutableStateListOf<String>() }
     val selectedOption = remember { mutableStateOf("") }
@@ -74,6 +73,7 @@ fun CreditBookingScreen(
             } else {
                 selectedOption.value = options.firstOrNull() ?: ""
                 destination = selectedOption.value // Ensure destination state is updated
+                destCode = creditBookingState.destinationOptions.firstOrNull { it.cities == selectedOption.value }?.destCode ?: ""
             }
         }
     }
@@ -82,7 +82,7 @@ fun CreditBookingScreen(
     fun areAllMandatoryFieldsFilled(): Boolean {
         return when {
             currentDate.isBlank() -> false
-            selectedClientName.isBlank() -> false
+            selectedClientDetails.firmName.isBlank() -> false
             consigneeName.isBlank() -> false
             pincode.isBlank() -> false
             destination.isBlank() -> false
@@ -97,20 +97,23 @@ fun CreditBookingScreen(
 
     fun getCreditBookingData(): CreditBookingData {
         val creditBookingData = CreditBookingData(
-            username = username,
-            userCode = userCode,
+            username = homeScreenData.username,
+            userCode = homeScreenData.userCode,
             currentDate = currentDate,
             consigneeName = consigneeName,
             mode = mode,
             consigneeType = consigneeType,
             pincode = pincode,
             destination = destination,
-            clientName = selectedClientName,
+            destCode = destCode,
+            clientName = selectedClientDetails.firmName,
+            clientAddress = selectedClientDetails.clientAddress,
+            clientContact = selectedClientDetails.clientContactNo,
             noOfPsc = noOfPsc.substringBefore("."),
             weight = creditBookingState.weight,
             bookingDate = currentDate,
             photoOfAddress = selectedImageByteArray,
-            branch = branch,
+            branch = homeScreenData.branch,
             consignmentNumber = creditBookingState.consignmentNumber,
             balanceStock = creditBookingState.balanceStock
         )
@@ -167,9 +170,11 @@ fun CreditBookingScreen(
             LabelText("Client Name ")
             DropdownTextField(
                 label = "Select..",
-                options = clientName,
-                selectedOption = selectedClientName,
-                onOptionSelected = { selectedClientName = it }
+                options = clientDetailsList.map { it.firmName },
+                selectedOption = selectedClientDetails.firmName,
+                onOptionSelected = { selectedFirmName ->
+                    selectedClientDetails = clientDetailsList.first { it.firmName == selectedFirmName }
+                }
             )
 
             Spacer(modifier = Modifier.height(15.dp))
@@ -282,7 +287,7 @@ fun CreditBookingScreen(
         }
 
         if (creditBookingState.isPdfSaved) {
-            val route = viewModel.createPDFScreenRoute(branch = branch)
+            val route = viewModel.createPDFScreenRoute(branch = homeScreenData.branch)
             route.let {
                 viewModel.clearState()
                 navController.navigate(route) {
@@ -302,7 +307,7 @@ fun CreditBookingScreen(
                     cbInfoData = CBInfoData()
                 )
                 val fileName = "${creditBookingData.consignmentNumber}.pdf"
-                viewModel.savePdf(byteArray, fileName, branch = branch)
+                viewModel.savePdf(byteArray, fileName, branch = homeScreenData.branch)
             } catch (e: Exception) {
                 // Handle Exception
             }

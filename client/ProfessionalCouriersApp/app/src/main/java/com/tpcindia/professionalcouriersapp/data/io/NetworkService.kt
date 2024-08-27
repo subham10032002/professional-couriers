@@ -76,7 +76,7 @@ class NetworkService {
     }
 
 
-    fun getFirmNames(branch: String): Result<List<String>> {
+    fun getClientDetails(branch: String): Result<String> {
         val json = JSONObject()
         json.put("branch", branch)
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
@@ -90,15 +90,7 @@ class NetworkService {
             val response = client.newCall(request).execute()
             if (response.isSuccessful) {
                 val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
-                val jsonArray = JSONArray(responseData)
-                val firmNames = mutableListOf<String>()
-                for (i in 0 until jsonArray.length()) {
-                    val element = jsonArray.get(i)
-                    if (element is String) {
-                        firmNames.add(element)
-                    }
-                }
-                Result.success(firmNames)
+                Result.success(responseData)
             } else {
                 Result.failure(Exception("Failed to fetch firm names"))
             }
@@ -135,7 +127,7 @@ class NetworkService {
         }
     }
 
-    fun getDestination(pincode: String): Result<List<String>> {
+    fun getDestination(pincode: String): Result<Map<String, Any>> {
         val baseUrl = IOConfig.getDestinationUrl()
         val url = baseUrl.toHttpUrlOrNull()?.newBuilder()
             ?.addQueryParameter("pinCode", pincode)
@@ -150,19 +142,16 @@ class NetworkService {
 
         return try {
             val response = request?.let { client.newCall(it).execute() }
-            if (response?.isSuccessful == true) {
-                val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
-                val jsonArray = JSONArray(responseData)
-                val destinations = mutableListOf<String>()
-                for (i in 0 until jsonArray.length()) {
-                    val element = jsonArray.get(i)
-                    if (element is String) {
-                        destinations.add(element)
-                    }
+            val responseData = response?.body?.string() ?: return Result.failure(Exception("Empty response"))
+            if (response.isSuccessful) {
+                val jsonResponse = JSONObject(responseData)
+                val details = mutableMapOf<String, Any>()
+                jsonResponse.keys().forEach {
+                    details[it] = jsonResponse[it]
                 }
-                Result.success(destinations)
+                Result.success(details)
             } else {
-                Result.failure(Exception("Failed to fetch destinations"))
+                Result.failure(Exception(responseData))
             }
         } catch (e: Exception) {
             Result.failure(e)
