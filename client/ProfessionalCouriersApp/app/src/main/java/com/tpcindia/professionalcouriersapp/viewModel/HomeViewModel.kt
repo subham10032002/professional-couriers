@@ -7,6 +7,8 @@ import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.repository.HomeRepository
 import com.tpcindia.professionalcouriersapp.viewModel.uiState.HomeState
 import androidx.lifecycle.viewModelScope
+import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
+import com.tpcindia.professionalcouriersapp.data.model.HomeScreenData
 import com.tpcindia.professionalcouriersapp.data.model.response.ClientDetails
 import com.tpcindia.professionalcouriersapp.data.repository.LoginRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
@@ -33,13 +35,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _homeState.value = HomeState(isLoading = true)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val firmNameResult = fetchFirmNames(branch)
-                if (firmNameResult.isSuccess) {
-                    val firmNames = firmNameResult.getOrThrow()
-                    if (firmNames.isNotEmpty()) {
-                        updateStateWithDetails(firmNames = firmNames.map {
-                            it.firmName
-                        })
+                val clientDetailsResult = fetchClientDetails(branch)
+                if (clientDetailsResult.isSuccess) {
+                    val clientDetails = clientDetailsResult.getOrThrow()
+                    if (clientDetails.isNotEmpty()) {
+                        updateStateWithDetails(clientDetails = clientDetails)
                     } else {
                         updateStateWithError("No firm names found")
                     }
@@ -93,15 +93,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         loginRepository.clearUser(context = getApplication())
     }
 
-    private fun fetchFirmNames(branch: String): Result<List<ClientDetails>> {
-        return repository.getFirmNames(branch)
+    private fun fetchClientDetails(branch: String): Result<List<ClientDetails>> {
+        return repository.getClientDetails(branch)
     }
 
-    private fun updateStateWithDetails(firmNames: List<String>) {
+    private fun updateStateWithDetails(clientDetails: List<ClientDetails>) {
         _homeState.value = HomeState(
             isLoading = false,
             isDataFetched = true,
-            firmNames = firmNames
+            clientDetails = clientDetails
         )
     }
 
@@ -131,19 +131,24 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Function to create navigation route to CreditBooking
-    fun createCreditBookingScreenRoute(branch: String, userName: String, userCode: String): String {
+    fun createCreditBookingScreenRoute(
+        branch: String,
+        userName: String,
+        userCode: String,
+        sharedViewModel: SharedViewModel
+    ): String {
         val currentDate = getCurrentData()
-        val (day, month, year) = currentDate.split("/")
 
-        return Screen.CreditBooking.createRoute(
-            firmNames = _homeState.value.firmNames,
-            day = day,
-            month = month,
-            year = year,
-            branch = branch,
-            username = userName,
-            userCode = userCode
+        sharedViewModel.setHomeScreenData(
+            HomeScreenData(
+                clientDetails = _homeState.value.clientDetails,
+                currentDate = currentDate,
+                branch = branch,
+                username = userName,
+                userCode = userCode
+            )
         )
+        return Screen.CreditBooking.route
     }
 
     fun getLoginScreenRoute() : String {

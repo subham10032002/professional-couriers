@@ -55,6 +55,7 @@ fun AppNavHost(
             val userCode = backStackEntry.arguments?.getString("userCode") ?: ""
             HomeScreen(
                 viewModel = homeViewModel,
+                sharedViewModel = sharedViewModel,
                 navController = navController,
                 name = name,
                 branch = branch,
@@ -66,36 +67,11 @@ fun AppNavHost(
 
         composable(
             route = Screen.CreditBooking.route,
-            arguments = listOf(
-                navArgument("firmName") { type = NavType.StringType },
-                navArgument("day") { type = NavType.StringType },
-                navArgument("month") { type = NavType.StringType },
-                navArgument("year") { type = NavType.StringType },
-                navArgument("branch") { type = NavType.StringType },
-                navArgument("username") { type = NavType.StringType },
-                navArgument("userCode") { type = NavType.StringType },
-            )
-        ) { backStackEntry ->
-            val firmName = backStackEntry.arguments?.getString("firmName") ?: ""
-            val day = backStackEntry.arguments?.getString("day") ?: ""
-            val month = backStackEntry.arguments?.getString("month") ?: ""
-            val year = backStackEntry.arguments?.getString("year") ?: ""
-            val branch = backStackEntry.arguments?.getString("branch") ?: ""
-            val username = backStackEntry.arguments?.getString("username") ?: ""
-            val userCode = backStackEntry.arguments?.getString("userCode") ?: ""
-
-            val firmNames: List<String> = Gson().fromJson(Uri.decode(firmName), Array<String>::class.java).toList()
-            val currentDate = "$day/$month/$year"
-
+        ) {
             CreditBookingScreen(
                 viewModel = creditBookingViewModel,
                 sharedViewModel = sharedViewModel,
-                navController = navController,
-                date = currentDate,
-                clientName = firmNames,
-                branch = branch,
-                username = username,
-                userCode = userCode
+                navController = navController
             )
         }
 

@@ -56,7 +56,7 @@ class PdfGenerator {
             padding,
             a4Height - a4Height / 3 - padding - 50,
             a4Width - 2 * padding,
-            a4Height / 3 - padding + 70
+            a4Height / 3 - padding + 80
         )
         val canvas = PdfCanvas(pdfDoc.addNewPage())
         canvas.rectangle(contentRectangle)
@@ -72,7 +72,7 @@ class PdfGenerator {
         table.addCell(Cell().add(Paragraph("Date: ${creditBookingData.bookingDate}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Consignee").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Destination").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph("BLR/RRRR").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
+        table.addCell(Cell().add(Paragraph(creditBookingData.destCode).setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("POD").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
 
         val rowHeight = 40f
@@ -88,27 +88,29 @@ class PdfGenerator {
         canvas.setLineWidth(1f)
         canvas.stroke()
 
-        val addressSectionHeight = 100f
+        val addressSectionHeight = 110f
         val verticalSpacing = 5f
 
         val fromAddressX = contentRectangle.left + 5f
         val toAddressX = verticalDividerX + 5f
 
-        val fromAddressParagraph = Paragraph("From Address: \n${creditBookingData.clientName} \n\n ffeeffe\n efeff\n eefef")
+        val fromAddressParagraph = Paragraph("From: \n${creditBookingData.clientName} \n\n${creditBookingData.clientAddress} \n Contact:${creditBookingData.clientContact}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(9f)
             .setTextAlignment(TextAlignment.LEFT)
             .setWidth(verticalDividerX - fromAddressX - 10f)
 
         val toAddressParagraph = Paragraph("To Address: \n${creditBookingData.consigneeName} \n\n${creditBookingData.destination}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(9f)
             .setTextAlignment(TextAlignment.LEFT)
             .setWidth(contentRectangle.right - toAddressX - 10f)
 
-        val fromAddressPositionY = tableTop - verticalSpacing - addressSectionHeight
+        val fromAddressPositionY = tableTop - verticalSpacing - addressSectionHeight + 20f
+        val toAddressPositionY = tableTop - verticalSpacing - addressSectionHeight + 55f
+
         document.add(fromAddressParagraph.setFixedPosition(fromAddressX, fromAddressPositionY, verticalDividerX - fromAddressX - 10f))
-        document.add(toAddressParagraph.setFixedPosition(toAddressX, fromAddressPositionY, contentRectangle.right - toAddressX - 10f))
+        document.add(toAddressParagraph.setFixedPosition(toAddressX, toAddressPositionY, contentRectangle.right - toAddressX - 10f))
 
         var horizontalDividerY = fromAddressPositionY - 10f
         canvas.moveTo(contentRectangle.left.toDouble(), horizontalDividerY.toDouble())
