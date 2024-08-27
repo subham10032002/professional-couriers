@@ -25,8 +25,18 @@ public class AccountsCustomer {
     @Column(name = "Branch")
     private String branch;
 
+    @Column(name = "Address")
+    private String address;
+
+    @Column(name = "ContactNo")
+    private String contactNo;
+
     public String getEmailId() {
         return emailId;
+    }
+
+    public String getAddress() {
+        return address;
     }
 
 }

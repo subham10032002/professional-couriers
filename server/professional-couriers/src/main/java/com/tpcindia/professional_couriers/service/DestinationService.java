@@ -1,9 +1,12 @@
 package com.tpcindia.professional_couriers.service;
 
+import com.tpcindia.professional_couriers.model.Destination;
 import com.tpcindia.professional_couriers.repository.DestinationRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DestinationService {
@@ -14,9 +17,12 @@ public class DestinationService {
         this.destinationRepository = repository;
     }
 
-    public List<String> getCitiesByPinCode(String pinCode) {
-        List<String> cities = destinationRepository.findCitiesByPinCode(pinCode);
-        cities.replaceAll(String::trim);
-        return cities;
+    public Map<String, Object> getDestinationsByPinCode(String pinCode) {
+        List<Destination> destinations = destinationRepository.findDestinaionsByPinCode(pinCode);
+        Map<String, Object> result = new HashMap<>();
+        for (Destination destination: destinations) {
+            result.put(destination.getCity().trim(), destination.getDestCode().trim());
+        }
+        return result;
     }
 }
