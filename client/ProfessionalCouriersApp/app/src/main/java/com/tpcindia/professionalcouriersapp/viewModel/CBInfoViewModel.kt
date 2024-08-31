@@ -3,7 +3,6 @@ package com.tpcindia.professionalcouriersapp.viewModel
 import android.app.Application
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tpcindia.professionalcouriersapp.data.db.dao.PdfDao
@@ -18,6 +17,7 @@ import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import com.tpcindia.professionalcouriersapp.viewModel.uiState.InfoState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -47,11 +47,19 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                 creditBookingData.longitude = currentLocation.longitude.toString()
                 creditBookingData.latitude = currentLocation.latitude.toString()
 
-                val consignmentDetails = repository.getConsignmentDetails(creditBookingData.branch)
-                if (consignmentDetails.isSuccess) {
-                    creditBookingData.balanceStock = consignmentDetails.getOrThrow().balanceStock
-                    creditBookingData.consignmentNumber = consignmentDetails.getOrThrow().accCode +
-                            consignmentDetails.getOrThrow().consignmentNo
+                // Launch network calls concurrently
+                val masterAddressDeferred = async { repository.getMasterAddressDetails(creditBookingData.masterCompanyCode) }
+                val consignmentDeferred = async { repository.getConsignmentDetails(creditBookingData.branch) }
+
+                // Await both results
+                val masterAddressResult = masterAddressDeferred.await()
+                val consignmentResult = consignmentDeferred.await()
+
+                if (consignmentResult.isSuccess && consignmentResult.isSuccess) {
+                    creditBookingData.balanceStock = consignmentResult.getOrThrow().balanceStock
+                    creditBookingData.consignmentNumber = consignmentResult.getOrThrow().accCode +
+                            consignmentResult.getOrThrow().consignmentNo
+                    creditBookingData.masterAddressDetails = masterAddressResult.getOrThrow()
                     val result = repository.submitCreditBookingDetails(
                         creditBookingData = creditBookingData,
                         cbDimensionData = cbDimensionData,
@@ -70,7 +78,7 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                     }
                 } else {
                     _infoState.value =  _infoState.value.copy(
-                        error = consignmentDetails.exceptionOrNull()?.message,
+                        error = consignmentResult.exceptionOrNull()?.message,
                         isLoading = false
                     )
                 }

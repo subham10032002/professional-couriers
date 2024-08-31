@@ -9,7 +9,11 @@ import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.model.entity.PdfEntity
 import com.tpcindia.professionalcouriersapp.data.model.response.ConsignmentDetails
+import com.tpcindia.professionalcouriersapp.data.model.response.DestinationDetails
+import com.tpcindia.professionalcouriersapp.data.model.response.MasterAddressDetails
 import com.tpcindia.professionalcouriersapp.data.utils.PdfGenerator
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.IOException
 
 class CBDataSubmissionRepository(private val networkService: NetworkService) {
@@ -37,15 +41,12 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
     fun getConsignmentDetails(branch: String): Result<ConsignmentDetails> {
         return try {
             val result = networkService.getConsignmentDetails(branch)
-//            if (result.isSuccess) {
-//                val consignmentDetails = parseConsignmentDetails(result.getOrThrow())
-//                Result.success(consignmentDetails)
-//            } else {
-//                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch consignment details"))
-//            }
-            Result.success(ConsignmentDetails(
-                "dwdw", "dwfd", "dwf", "wfw"
-            ))
+            if (result.isSuccess) {
+                val consignmentDetails = parseConsignmentDetails(result.getOrThrow())
+                Result.success(consignmentDetails)
+            } else {
+                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch consignment details"))
+            }
         } catch (e: IOException) {
             Result.failure(e)
         }
@@ -61,6 +62,37 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         } catch (e: Exception) {
             ConsignmentDetails()
         }
+    }
+
+    fun getMasterAddressDetails(code: String) : Result<MasterAddressDetails> {
+        return try {
+            val result = networkService.getMasterAddressDetails(code)
+            if (result.isSuccess) {
+                val addressDetails = result.getOrThrow()
+                val jsonObject = JSONObject(addressDetails)
+                Result.success(parseMasterAddressDetails(jsonObject))
+            } else {
+                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch master address details"))
+            }
+        } catch (e: IOException) {
+            Result.failure(e)
+        }
+    }
+
+    private fun parseMasterAddressDetails(jsonObject: JSONObject) : MasterAddressDetails {
+        val code = jsonObject.getString("code")
+        val address = jsonObject.getString("address")
+        val contactNo = jsonObject.getString("contactNo")
+        val gstNo = jsonObject.getString("gstNo")
+
+        val masterAddressDetails = MasterAddressDetails(
+            code = code,
+            address = address,
+            contactNo = contactNo,
+            gstNo = gstNo
+        )
+
+        return masterAddressDetails
     }
 
     fun createPdf(context: Context, creditBookingData: CreditBookingData,
