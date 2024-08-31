@@ -7,8 +7,6 @@ import com.tpcindia.professional_couriers.repository.CreditBookingDataRepository
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class CreditBookingDataService {
 
@@ -28,10 +26,6 @@ public class CreditBookingDataService {
             return true;
         }
         return false;
-    }
-
-    public List<CreditBookingData> getCreditBookingData(String branch) {
-        return creditBookingDataRepository.findCreditBookingDataByBranch(branch);
     }
 
     private CreditBookingData mapToEntity(String custCode, CreditBookingDataDTO dto) {
