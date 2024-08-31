@@ -21,6 +21,7 @@ import com.tpcindia.professionalcouriersapp.configs.UIConfig
 import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
+import com.tpcindia.professionalcouriersapp.data.model.response.DestinationDetails
 import com.tpcindia.professionalcouriersapp.ui.components.CustomButton
 import com.tpcindia.professionalcouriersapp.ui.components.DropdownTextField
 import com.tpcindia.professionalcouriersapp.ui.components.ImagePickerBox
@@ -58,24 +59,11 @@ fun CreditBookingScreen(
     val clientDetailsList = homeScreenData.clientDetails
     var selectedClientDetails by remember { mutableStateOf(clientDetailsList.first()) }
 
-    val options = remember { mutableStateListOf<String>() }
-    val selectedOption = remember { mutableStateOf("") }
+    val destinationCities = creditBookingState.destinationOptions.map { it.city }.toMutableList()
+    var selectedDestination by remember { mutableStateOf<DestinationDetails?>(null) }
 
-    // Effect to update options and selectedOption when creditBookingState changes
-    LaunchedEffect(creditBookingState.destinationOptions) {
-        if (creditBookingState.destinationOptions.isNotEmpty()) {
-            options.clear()
-            options.addAll(creditBookingState.destinationOptions.map { it.cities })
-
-            // Select the first option if available
-            if (options.contains(destination)) {
-                selectedOption.value = destination
-            } else {
-                selectedOption.value = options.firstOrNull() ?: ""
-                destination = selectedOption.value // Ensure destination state is updated
-                destCode = creditBookingState.destinationOptions.firstOrNull { it.cities == selectedOption.value }?.destCode ?: ""
-            }
-        }
+    LaunchedEffect(true) {
+        viewModel.clearState()
     }
 
     // Function to check if all mandatory fields are filled
@@ -105,17 +93,19 @@ fun CreditBookingScreen(
             consigneeType = consigneeType,
             pincode = pincode,
             destination = destination,
-            destCode = destCode,
+            destDetails = selectedDestination ?: DestinationDetails(),
             clientName = selectedClientDetails.firmName,
             clientAddress = selectedClientDetails.clientAddress,
             clientContact = selectedClientDetails.clientContactNo,
+            masterCompanyCode = selectedClientDetails.masterCompanyCode,
             noOfPsc = noOfPsc.substringBefore("."),
             weight = creditBookingState.weight,
             bookingDate = currentDate,
             photoOfAddress = selectedImageByteArray,
             branch = homeScreenData.branch,
             consignmentNumber = creditBookingState.consignmentNumber,
-            balanceStock = creditBookingState.balanceStock
+            balanceStock = creditBookingState.balanceStock,
+            masterAddressDetails = creditBookingState.masterAddressDetails
         )
         return creditBookingData
     }
@@ -209,9 +199,14 @@ fun CreditBookingScreen(
             LabelText("Destination ")
             DropdownTextField(
                 label = "Select..",
-                options = options,
-                selectedOption = selectedOption.value,
-                onOptionSelected = { destination = it }
+                options = destinationCities,
+                selectedOption = destination,
+                onOptionSelected = {
+                    destination = it
+                    selectedDestination = creditBookingState.destinationOptions.firstOrNull { destDetails ->
+                        destDetails.city == destination
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(15.dp))

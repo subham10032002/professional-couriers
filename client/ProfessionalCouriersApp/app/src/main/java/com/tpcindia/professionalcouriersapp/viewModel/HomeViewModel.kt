@@ -56,7 +56,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _homeState.value = _homeState.value.copy(isBookingCardClicked = true)
     }
 
-    fun sendEmails(branch: String, branchCode: String, userName: String) {
+    fun sendEmails(branch: String, branchCode: String, userName: String, usercode: String) {
         if (job?.isActive == true) {
             job?.cancel()
             updateEmailStateFailure(errorMsg = "Email sending in progress stopped")
@@ -74,7 +74,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 val result = repository.sendEmails(
                     branch = branch,
                     branchCode = branchCode,
-                    userName = userName
+                    userName = userName,
+                    usercode = usercode
                 )
                 if (result.isSuccess) {
                     _homeState.value = HomeState(
