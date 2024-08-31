@@ -17,7 +17,12 @@ public class EmailController {
     private EmailService emailService;
 
     @PostMapping("/send")
-    public ResponseEntity<String> sendEmails(@RequestBody EmailDTO emailDTO) {
-        return emailService.sendEmails(emailDTO.getBranch(), emailDTO.getUserName(), emailDTO.getBranchCode());
+    public ResponseEntity<?> sendEmails(@RequestBody EmailDTO emailDTO) {
+        return emailService.sendEmails(
+            emailDTO.getBranch(), 
+            emailDTO.getUserName(), 
+            emailDTO.getBranchCode(),
+            emailDTO.getUsercode()
+        );
     }
 }
