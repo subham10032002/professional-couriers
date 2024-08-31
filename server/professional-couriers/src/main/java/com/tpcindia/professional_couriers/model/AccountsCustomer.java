@@ -31,6 +31,9 @@ public class AccountsCustomer {
     @Column(name = "ContactNo")
     private String contactNo;
 
+    @Column(name = "MasterCompanyCode")
+    private String masterCompanyCode;
+
     public String getEmailId() {
         return emailId;
     }

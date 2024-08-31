@@ -22,7 +22,7 @@ public class AccountsCustomerController {
     @Autowired
     private AccountsCustomerService accountsCustomerService;
 
-    @PostMapping("/firmNames")
+    @PostMapping("/firmDetails")
     public List<FirmDetailsDTO> getFirmDetails(@RequestBody FirmNameDTO firmNameDTO) {
         return accountsCustomerService.getFirmDetailsByBranch(firmNameDTO.getBranch());
     }
