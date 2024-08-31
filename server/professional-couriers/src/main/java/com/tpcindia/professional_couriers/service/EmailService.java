@@ -3,16 +3,30 @@ package com.tpcindia.professional_couriers.service;
 import com.tpcindia.professional_couriers.model.CreditBookingData;
 import com.tpcindia.professional_couriers.repository.AccountsCustomerRepository;
 import com.tpcindia.professional_couriers.repository.CreditBookingDataRepository;
+
+import jakarta.mail.internet.MimeMessage;
+
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 @Service
 public class EmailService {
@@ -26,56 +40,120 @@ public class EmailService {
     @Autowired
     private CreditBookingDataRepository creditBookingDataRepository;
 
-    public ResponseEntity<String> sendEmails(String branch, String userName, String branchCode) {
+    public ResponseEntity<?> sendEmails(String branch, String userName, String branchCode, String userCode) {
         try {
-            List<CreditBookingData> bookings = creditBookingDataRepository.findCreditBookingDataByBranch(branch);
+            List<CreditBookingData> bookings = creditBookingDataRepository.findCreditBookingDataByBranch(branch, userCode, getCurrentDate());
 
             if (bookings.isEmpty()) {
                 return new ResponseEntity<>("There is no pending row left", HttpStatus.NOT_FOUND);
             }
 
-            for (CreditBookingData booking : bookings) {
-                String custCode = booking.getCustCode();
-                String customerEmail = null;
-                String branchEmail = null;
-                if (custCode != null && !custCode.isEmpty()) {
-                    customerEmail = accountsCustomerRepository.findEmailByCustCodeAndType(custCode);
-                }
-                if (branchCode != null && !branchCode.isEmpty()) {
-                    branchEmail = accountsCustomerRepository.findEmailByBranchCodeAndType(branchCode);
-                }
+            // Group by firmName
+        Map<String, List<CreditBookingData>> groupedByFirmName = bookings.stream()
+                .collect(Collectors.groupingBy(CreditBookingData::getClientName));
 
-                if (customerEmail == null || branchEmail == null) {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("customerEmail and branchEmail are missing");
-                }
+        // Iterate through each group, create an Excel file, and send it via email
+        for (Map.Entry<String, List<CreditBookingData>> entry : groupedByFirmName.entrySet()) {
+            String firmName = entry.getKey();
+            List<CreditBookingData> firmBookings = entry.getValue();
 
-                // boolean emailSent = sendEmail(customerEmail, branchEmail, booking);
+            String custCode = firmBookings.get(0).getCustCode(); // Assuming custCode is the same for the entire firm
 
-                boolean emailSent = sendEmail("Epod@atlantglobalindia.com", "Epod@atlantglobalindia.com", booking);
+            String customerEmail = null;
+            String branchEmail = null;
 
-                if (emailSent) {
+            if (custCode != null && !custCode.isEmpty()) {
+                customerEmail = accountsCustomerRepository.findEmailByCustCodeAndType(custCode);
+            }
+            if (branchCode != null && !branchCode.isEmpty()) {
+                branchEmail = accountsCustomerRepository.findEmailByBranchCodeAndType(branchCode);
+            }
+
+            if (customerEmail == null || branchEmail == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer email and/or branch email are missing for firm: " + firmName);
+            }
+
+
+            // Create a new Excel workbook and sheet
+            Workbook workbook = new XSSFWorkbook();
+            Sheet sheet = workbook.createSheet("Bookings");
+
+            // Write header row
+            Row headerRow = sheet.createRow(0);
+            headerRow.createCell(0).setCellValue("Booking Date");
+            headerRow.createCell(1).setCellValue("Consignment Number");
+            headerRow.createCell(2).setCellValue("Destination");
+            headerRow.createCell(3).setCellValue("Consignee");
+            headerRow.createCell(4).setCellValue("Psc");
+            headerRow.createCell(5).setCellValue("Weight");
+
+            // Write data rows
+            int rowNum = 1;
+            for (CreditBookingData booking : firmBookings) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(booking.getBookingDate().toString());
+                row.createCell(1).setCellValue(booking.getConsignmentNumber());
+                row.createCell(2).setCellValue(booking.getDestination());
+                row.createCell(4).setCellValue(booking.getNoOfPsc());
+                row.createCell(5).setCellValue(booking.getWeight());
+            }
+
+            // Adjust column widths
+            for (int i = 0; i < 6; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            // Save the Excel file with the firmName as the filename
+            String fileName = firmName + ".xlsx";
+            File excelFile = new File(fileName);
+            try (FileOutputStream fileOut = new FileOutputStream(excelFile)) {
+                workbook.write(fileOut);
+            }
+
+            // Close the workbook
+            workbook.close();
+
+            // Send the Excel file via email
+            // boolean emailSent = sendEmail(customerEmail, branchEmail, firmName, excelFile);
+            boolean emailSent = sendEmail("Epod@atlantglobalindia.com", "Epod@atlantglobalindia.com", excelFile, firmName);
+            // boolean emailSent = sendEmail("subhamsahu270@gmail.com", "subhamsahu270@gmail.com", excelFile, firmName);
+
+            if (emailSent) {
+                for (CreditBookingData booking : firmBookings) {
                     booking.setEmailSent("Yes");
                     booking.setDateOfEmailSent(getCurrentDate());
                     booking.setEmailSenderUsername(userName);
                     creditBookingDataRepository.save(booking);
-                } else {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email not sent");
                 }
+            } else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email not sent for firm: " + firmName);
             }
-            return ResponseEntity.status(HttpStatus.OK).body("Mail sent successfully");
+
+            // Optionally delete the file after sending the email
+            excelFile.delete();
+        }
+
+        return ResponseEntity.ok("Emails sent successfully for all firms.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
 
     }
 
-    private boolean sendEmail(String to, String cc, CreditBookingData data) {
+    private boolean sendEmail(String to, String cc, File file, String clientName) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
-            // message.setCc(cc);
-            message.setSubject("Subject");
-            message.setText("Booking details: " + data.toString());
+
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            // helper.setCc(cc);
+            helper.setSubject("Credit Auto booking  - " + clientName + " - "  + getCurrentDate());
+            helper.setText("Dear Customer, \nAttached here are the bookings done using mobile app");
+
+            FileSystemResource fileResource = new FileSystemResource(file);
+            helper.addAttachment(file.getName(), fileResource);
+
             javaMailSender.send(message);
             return true;
         } catch (Exception e) {
