@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface CreditBookingDataRepository extends JpaRepository<CreditBookingData, Long> {
 
-    @Query("SELECT u FROM CreditBookingData u WHERE u.branch = :branch AND u.emailSent = 'No'")
-    List<CreditBookingData> findCreditBookingDataByBranch(String branch);
+    @Query("SELECT u FROM CreditBookingData u WHERE u.branch = :branch AND u.emailSent = 'No' AND u.userCode = :userCode AND u.bookingDate = :bookingDate ORDER BY u.clientName")
+    List<CreditBookingData> findCreditBookingDataByBranch(String branch, String userCode, String bookingDate);
 }
