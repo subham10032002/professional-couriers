@@ -28,6 +28,8 @@ import com.tpcindia.professionalcouriersapp.configs.UIConfig
 import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
+import com.tpcindia.professionalcouriersapp.data.model.response.DestinationDetails
+import com.tpcindia.professionalcouriersapp.data.model.response.MasterAddressDetails
 import java.io.ByteArrayOutputStream
 
 class PdfGenerator {
@@ -72,7 +74,7 @@ class PdfGenerator {
         table.addCell(Cell().add(Paragraph("Date: ${creditBookingData.bookingDate}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Consignee").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Destination").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph(creditBookingData.destCode).setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
+        table.addCell(Cell().add(Paragraph(getDestination(creditBookingData.destDetails)).setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("POD").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
 
         val rowHeight = 40f
@@ -92,25 +94,36 @@ class PdfGenerator {
         val verticalSpacing = 5f
 
         val fromAddressX = contentRectangle.left + 5f
-        val toAddressX = verticalDividerX + 5f
+        var toAddressX = verticalDividerX + 5f
 
-        val fromAddressParagraph = Paragraph("From: \n${creditBookingData.clientName} \n\n${creditBookingData.clientAddress} \n Contact:${creditBookingData.clientContact}")
+        val fromAddressParagraph = Paragraph("From: \n${creditBookingData.clientName} \n${creditBookingData.clientAddress} \n Contact:${creditBookingData.clientContact}")
             .setFont(font)
             .setFontSize(9f)
             .setTextAlignment(TextAlignment.LEFT)
             .setWidth(verticalDividerX - fromAddressX - 10f)
 
-        val toAddressParagraph = Paragraph("To Address: \n${creditBookingData.consigneeName} \n\n${creditBookingData.destination}")
+        val toAddressParagraph = Paragraph("To Address: \n${creditBookingData.consigneeName} \n${creditBookingData.destination}")
             .setFont(font)
             .setFontSize(9f)
             .setTextAlignment(TextAlignment.LEFT)
             .setWidth(contentRectangle.right - toAddressX - 10f)
 
-        val fromAddressPositionY = tableTop - verticalSpacing - addressSectionHeight + 20f
-        val toAddressPositionY = tableTop - verticalSpacing - addressSectionHeight + 55f
+        val fromAddressPositionY = 690f
+        var toAddressPositionY = 710f
 
         document.add(fromAddressParagraph.setFixedPosition(fromAddressX, fromAddressPositionY, verticalDividerX - fromAddressX - 10f))
         document.add(toAddressParagraph.setFixedPosition(toAddressX, toAddressPositionY, contentRectangle.right - toAddressX - 10f))
+
+        toAddressX += 90f
+        toAddressPositionY -= 20f
+
+        val consigneeAddressTagPara = Paragraph(getConsigneeDestCode(creditBookingData.destDetails))
+            .setFontSize(12f)
+            .setFont(boldFont)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setWidth(contentRectangle.right - toAddressX - 10f)
+
+        document.add(consigneeAddressTagPara.setFixedPosition(toAddressX, toAddressPositionY, contentRectangle.right - toAddressX - 10f))
 
         var horizontalDividerY = fromAddressPositionY - 10f
         canvas.moveTo(contentRectangle.left.toDouble(), horizontalDividerY.toDouble())
@@ -230,15 +243,15 @@ class PdfGenerator {
         canvas.setLineWidth(1f)
         canvas.stroke()
 
-        var finalPositionY = horizontalDividerY - 55f
-        var finalPositionX = contentRectangle.left - 18f
+        var finalPositionY = horizontalDividerY - 75f
+        var finalPositionX = contentRectangle.left - 3f
 
-        val address = Paragraph(UIConfig.COMPANY_ADDRESS)
+        val address = Paragraph(getMasterAddress(creditBookingData.masterAddressDetails))
             .setFont(font)
-            .setFontSize(9f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.CENTER)
 
-        document.add(address.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2))
+        document.add(address.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2 - 33f))
 
         finalPositionY = horizontalDividerY - 30f
         finalPositionX = verticalDividerX + 5f
@@ -307,5 +320,29 @@ class PdfGenerator {
             }
         }
         return bmp
+    }
+
+    private fun getDestination(destinationDetails: DestinationDetails) : String {
+        if (destinationDetails.destn?.isNotBlank() == true) return destinationDetails.destn
+        if (destinationDetails.areaCode?.isNotBlank() == true) return destinationDetails.areaCode
+        if (destinationDetails.hub?.isNotBlank() == true) return destinationDetails.hub
+        return ""
+    }
+
+    private fun getConsigneeDestCode(destinationDetails: DestinationDetails) : String {
+        val stringBuilder = StringBuilder()
+        if (destinationDetails.state?.isNotBlank() == true) stringBuilder.append("/").append(destinationDetails.state)
+        if (destinationDetails.areaCode?.isNotBlank() == true) stringBuilder.append("/${destinationDetails.areaCode}")
+        if (destinationDetails.destn?.isNotBlank() == true) stringBuilder.append("/${destinationDetails.destn}")
+        return stringBuilder.toString().substring(1)
+    }
+
+    private fun getMasterAddress(masterAddressDetails: MasterAddressDetails) : String {
+        val stringBuilder = StringBuilder()
+        stringBuilder.append("${UIConfig.COMPANY_ADDRESS}\n")
+        if (masterAddressDetails.address?.isNotBlank() == true) stringBuilder.append("${masterAddressDetails.address}\n")
+        if (masterAddressDetails.gstNo?.isNotBlank() == true) stringBuilder.append("GST: ${masterAddressDetails.gstNo}\n")
+        if (masterAddressDetails.contactNo?.isNotBlank() == true) stringBuilder.append("ContactNo: ${masterAddressDetails.contactNo}")
+        return stringBuilder.toString()
     }
 }
