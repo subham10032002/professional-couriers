@@ -20,6 +20,7 @@ import com.tpcindia.professionalcouriersapp.data.repository.LocationRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -35,7 +36,9 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
 
     fun fetchDestination(pincode: String) {
         if (pincode.length == 6) {
-            _creditBookingState.value = CreditBookingState(isLoading = true)
+            _creditBookingState.value = _creditBookingState.value.copy(
+                isLoading = true,
+            )
             job?.cancel()
             job = viewModelScope.launch(Dispatchers.IO) {
                 if (job?.isActive == false) {
@@ -44,7 +47,9 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                 try {
                     val result = repository.getDestination(pincode)
                     if (result.isSuccess) {
-                        _creditBookingState.value = CreditBookingState(isLoading = false, destinationOptions = result.getOrThrow())
+                        _creditBookingState.value = _creditBookingState.value.copy(
+                            isLoading = false, destinationOptions = result.getOrThrow()
+                        )
                     } else {
                         updateStateWithError("Failed to fetch destination")
                     }
@@ -69,15 +74,22 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                 creditBookingData.longitude = currentLocation.longitude.toString()
                 creditBookingData.latitude = currentLocation.latitude.toString()
 
-                val consignmentDetails = dataSubmissionRepository.getConsignmentDetails(creditBookingData.branch)
-                if (consignmentDetails.isSuccess) {
-                    val balanceStock = consignmentDetails.getOrThrow().balanceStock
-                    val consignmentNumber = consignmentDetails.getOrThrow().accCode + consignmentDetails.getOrThrow().consignmentNo
-                    creditBookingData.balanceStock = balanceStock
-                    creditBookingData.consignmentNumber = consignmentNumber
+                // Launch network calls concurrently
+                val masterAddressDeferred = async { dataSubmissionRepository.getMasterAddressDetails(creditBookingData.masterCompanyCode) }
+                val consignmentDeferred = async { dataSubmissionRepository.getConsignmentDetails(creditBookingData.branch) }
+
+                // Await both results
+                val masterAddressResult = masterAddressDeferred.await()
+                val consignmentResult = consignmentDeferred.await()
+
+                if (consignmentResult.isSuccess && masterAddressResult.isSuccess) {
+                    val balanceStock = consignmentResult.getOrThrow().balanceStock
+                    val consignmentNumber = consignmentResult.getOrThrow().accCode + consignmentResult.getOrThrow().consignmentNo
+                    val masterAddressDetails = masterAddressResult.getOrThrow()
                     _creditBookingState.value = _creditBookingState.value.copy(
                         consignmentNumber = consignmentNumber,
-                        balanceStock = balanceStock
+                        balanceStock = balanceStock,
+                        masterAddressDetails = masterAddressDetails
                     )
                     val result = dataSubmissionRepository.submitCreditBookingDetails(
                         creditBookingData = creditBookingData,
@@ -93,7 +105,7 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                         updateStateWithError(result.exceptionOrNull()?.message ?: "Failed to submit credit booking data")
                     }
                 } else {
-                    updateStateWithError(consignmentDetails.exceptionOrNull()?.message ?: "Failed to fetch consignment details")
+                    updateStateWithError(consignmentResult.exceptionOrNull()?.message ?: "Failed to fetch consignment details")
                 }
             } catch (e: Exception) {
                 updateStateWithError("Failed to submit credit booking data: ${e.message}")

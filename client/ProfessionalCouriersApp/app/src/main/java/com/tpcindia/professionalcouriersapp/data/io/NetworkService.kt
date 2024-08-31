@@ -42,11 +42,12 @@ class NetworkService {
         }
     }
 
-    fun sendEmails(branch: String, branchCode: String, username: String) : Result<String> {
+    fun sendEmails(branch: String, branchCode: String, username: String, usercode: String) : Result<String> {
         val json = JSONObject()
         json.put("branch", branch)
         json.put("branchCode", branchCode)
         json.put("userName", username)
+        json.put("usercode", usercode)
 
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
         val request = Request.Builder()
@@ -82,7 +83,7 @@ class NetworkService {
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
         val request = Request.Builder()
-            .url(IOConfig.getFirmNameUrl())
+            .url(IOConfig.getFirmDetailsUrl())
             .post(requestBody)
             .build()
 
@@ -127,7 +128,7 @@ class NetworkService {
         }
     }
 
-    fun getDestination(pincode: String): Result<Map<String, Any>> {
+    fun getDestination(pincode: String): Result<String> {
         val baseUrl = IOConfig.getDestinationUrl()
         val url = baseUrl.toHttpUrlOrNull()?.newBuilder()
             ?.addQueryParameter("pinCode", pincode)
@@ -144,12 +145,7 @@ class NetworkService {
             val response = request?.let { client.newCall(it).execute() }
             val responseData = response?.body?.string() ?: return Result.failure(Exception("Empty response"))
             if (response.isSuccessful) {
-                val jsonResponse = JSONObject(responseData)
-                val details = mutableMapOf<String, Any>()
-                jsonResponse.keys().forEach {
-                    details[it] = jsonResponse[it]
-                }
-                Result.success(details)
+                Result.success(responseData)
             } else {
                 Result.failure(Exception(responseData))
             }
@@ -179,27 +175,24 @@ class NetworkService {
         }
     }
 
-    fun fetchCreditBookingData(branch: String): Result<List<CreditBookingData>> {
+    fun getMasterAddressDetails(code: String) : Result<String> {
         val json = JSONObject()
-        json.put("branch", branch)
+        json.put("masterCompanyCode", code)
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
         val request = Request.Builder()
-            .url(IOConfig.getCBDataFetchUrl())
+            .url(IOConfig.getMasterAddressUrl())
             .post(requestBody)
             .build()
 
+
         return try {
-            val response = client.newCall(request).execute()
+            val response = request.let { client.newCall(it).execute() }
+            val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
             if (response.isSuccessful) {
-                val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
-
-                val listType: Type? = object : TypeToken<List<CreditBookingData>>() {}.type
-                val bookingDataList: List<CreditBookingData> = Gson().fromJson(responseData, listType)
-
-                Result.success(bookingDataList)
+                Result.success(responseData)
             } else {
-                Result.failure(Exception("Failed to fetch credit booking data"))
+                Result.failure(Exception(responseData))
             }
         } catch (e: Exception) {
             Result.failure(e)

@@ -1,6 +1,8 @@
 package com.tpcindia.professionalcouriersapp.data.model
 
 import android.os.Parcelable
+import com.tpcindia.professionalcouriersapp.data.model.response.DestinationDetails
+import com.tpcindia.professionalcouriersapp.data.model.response.MasterAddressDetails
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -14,10 +16,12 @@ data class CreditBookingData(
     val clientName: String = "",
     val clientAddress: String = "",
     val clientContact: String = "",
+    val masterCompanyCode: String = "",
     val bookingDate: String = "",
     val pincode: String = "",
     val destination: String = "",
-    val destCode: String = "",
+    val destDetails: DestinationDetails = DestinationDetails(),
+    var masterAddressDetails: MasterAddressDetails = MasterAddressDetails(),
     val consigneeType: String = "",
     val mode: String = "",
     val consigneeName: String = "",
