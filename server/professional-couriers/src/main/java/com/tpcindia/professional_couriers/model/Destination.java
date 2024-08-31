@@ -19,6 +19,18 @@ public class Destination {
     @Column(name = "City")
     private String city;
 
+    @Column(name = "Destn")
+    private String destn;
+
+    @Column(name = "AreaCode")
+    private String areaCode;
+
+    @Column(name = "Hub")
+    private String hub;
+
+    @Column(name = "State")
+    private String state;
+
     public String getDestCode() {
         return destCode;
     }
@@ -41,6 +53,38 @@ public class Destination {
 
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public String getDestn() {
+        return destn;
+    }
+
+    public void setDestn(String destn) {
+        this.destn = destn;
+    }
+
+    public String getAreaCode() {
+        return areaCode;
+    }
+
+    public void setAreaCode(String areaCode) {
+        this.areaCode = areaCode;
+    }
+
+    public String getHub() {
+        return hub;
+    }
+
+    public void setHub(String hub) {
+        this.hub = hub;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
 }

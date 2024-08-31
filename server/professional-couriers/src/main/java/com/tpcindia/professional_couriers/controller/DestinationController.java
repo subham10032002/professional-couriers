@@ -9,9 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/destination")
 public class DestinationController {
@@ -21,14 +18,12 @@ public class DestinationController {
 
     @GetMapping("/cities")
     public ResponseEntity<?> getDestinationsByPinCode(@RequestParam String pinCode) {
-         Map<String, Object> result = new HashMap<>();
         try {
-            result = service.getDestinationsByPinCode(pinCode);
+            return service.getDestinationsByPinCode(pinCode);
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ofNullable(result);
     }
 
 }

@@ -2,11 +2,12 @@ package com.tpcindia.professional_couriers.service;
 
 import com.tpcindia.professional_couriers.model.Destination;
 import com.tpcindia.professional_couriers.repository.DestinationRepository;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class DestinationService {
@@ -17,12 +18,19 @@ public class DestinationService {
         this.destinationRepository = repository;
     }
 
-    public Map<String, Object> getDestinationsByPinCode(String pinCode) {
+    public ResponseEntity<?> getDestinationsByPinCode(String pinCode) {
         List<Destination> destinations = destinationRepository.findDestinaionsByPinCode(pinCode);
-        Map<String, Object> result = new HashMap<>();
-        for (Destination destination: destinations) {
-            result.put(destination.getCity().trim(), destination.getDestCode().trim());
+        if (destinations == null) {
+            return new ResponseEntity<>("No Destinations Found for the given pincode", HttpStatus.NOT_FOUND);
         }
-        return result;
+        for (Destination destination: destinations) {
+            destination.setCity(destination.getCity().trim());
+            destination.setDestCode(destination.getDestCode().trim());
+            destination.setDestn(destination.getDestn().trim());
+            destination.setHub(destination.getHub().trim());
+            destination.setState(destination.getState().trim());
+            destination.setAreaCode(destination.getAreaCode().trim());
+        }
+        return ResponseEntity.ofNullable(destinations);
     }
 }
