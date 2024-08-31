@@ -5,6 +5,7 @@ public class EmailDTO {
     private String branch;
     private String userName;
     private String branchCode;
+    private String usercode;
 
     public String getBranch() {
         return branch;
@@ -28,5 +29,13 @@ public class EmailDTO {
 
     public void setBranchCode(String branchCode) {
         this.branchCode = branchCode;
+    }
+
+    public String getUsercode() {
+        return usercode;
+    }
+
+    public void setUsercode(String code) {
+        this.usercode = code;
     }
 }
