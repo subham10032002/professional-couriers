@@ -2,7 +2,6 @@ package com.tpcindia.professionalcouriersapp.data.repository
 
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.model.response.ClientDetails
-import com.tpcindia.professionalcouriersapp.data.model.response.ConsignmentDetails
 import org.json.JSONArray
 import java.io.IOException
 
@@ -22,11 +21,13 @@ class HomeRepository(private val networkService: NetworkService) {
                     val name = jsonObject.getString("firmName")
                     val address = jsonObject.getString("address")
                     val contactNo = jsonObject.getString("contactNo")
+                    val masterCompanyCode = jsonObject.getString("masterCompanyCode")
 
                     val details = ClientDetails(
                         firmName = name,
                         clientAddress = address,
-                        clientContactNo = contactNo
+                        clientContactNo = contactNo,
+                        masterCompanyCode = masterCompanyCode
                     )
 
                     clientDetails.add(details)
@@ -40,12 +41,13 @@ class HomeRepository(private val networkService: NetworkService) {
         }
     }
 
-    fun sendEmails(branch: String, branchCode: String, userName: String) : Result<String> {
+    fun sendEmails(branch: String, branchCode: String, userName: String, usercode: String) : Result<String> {
         return try {
             val result = networkService.sendEmails(
                 branch = branch,
                 branchCode = branchCode,
-                username = userName
+                username = userName,
+                usercode = usercode
             )
             return result
         } catch (e: Exception) {

@@ -81,7 +81,8 @@ fun HomeScreen(
         viewModel.sendEmails(
             branch = branch,
             branchCode = branchCode,
-            userName = name
+            userName = name,
+            usercode = userCode
         )
     }
 
