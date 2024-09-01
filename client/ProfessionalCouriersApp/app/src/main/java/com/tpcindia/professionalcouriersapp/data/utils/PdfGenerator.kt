@@ -70,11 +70,11 @@ class PdfGenerator {
         table.setWidth(UnitValue.createPointValue(contentRectangle.width))
 
         table.addCell(Cell().add(Paragraph("Shipper").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph("BLR/${creditBookingData.branch}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
+        table.addCell(Cell().add(Paragraph(getShipper(creditBookingData)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Date: ${creditBookingData.bookingDate}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Consignee").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Destination").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph(getDestination(creditBookingData.destDetails)).setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
+        table.addCell(Cell().add(Paragraph(getDestination(creditBookingData.destDetails)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("POD").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
 
         val rowHeight = 40f
@@ -155,17 +155,17 @@ class PdfGenerator {
             .setWidth(barcodeImage.imageWidth)
 
         currentY -= 20f // Manually subtracting to adjust position
-        document.add(xyzDataParagraph.setFixedPosition(barcodeX + 35f, currentY, barcodeImage.imageWidth))
+        document.add(xyzDataParagraph.setFixedPosition(barcodeX + 30f, currentY, barcodeImage.imageWidth))
 
         // Logo Image
         val logoStream = context.resources.openRawResource(R.drawable.tpc_logo)
         val logoByteArray = logoStream.readBytes()
         val logoImage = Image(ImageDataFactory.create(logoByteArray))
-            .scaleToFit(65f, 30f) // Adjusted to fit inside the rectangle
+            .scaleToFit(110f, 40f) // Adjusted to fit inside the rectangle
 
         // Centering the logo image
-        val logoX = (contentRectangle.width - logoImage.imageWidth) / 2 - 35f
-        currentY -= 20f
+        val logoX = (contentRectangle.width - logoImage.imageWidth) / 2 - 55f
+        currentY -= 24f
         document.add(logoImage.setFixedPosition(logoX, currentY, logoImage.imageWidth))
 
         // Weight and Reference Texts
@@ -322,19 +322,30 @@ class PdfGenerator {
         return bmp
     }
 
+    private fun getShipper(creditBookingData: CreditBookingData) : String {
+        val stringBuilder = StringBuilder()
+        stringBuilder.append(creditBookingData.masterAddressDetails.subBranchCode)
+        stringBuilder.append("/")
+        stringBuilder.append(creditBookingData.branch)
+        return stringBuilder.toString()
+    }
+
     private fun getDestination(destinationDetails: DestinationDetails) : String {
-        if (destinationDetails.destn?.isNotBlank() == true) return destinationDetails.destn
-        if (destinationDetails.areaCode?.isNotBlank() == true) return destinationDetails.areaCode
-        if (destinationDetails.hub?.isNotBlank() == true) return destinationDetails.hub
+        val stringBuilder = StringBuilder()
+        stringBuilder.append(destinationDetails.city).append(" / ")
+        if (destinationDetails.destn?.isNotBlank() == true) return stringBuilder.append(destinationDetails.destn).toString()
+        if (destinationDetails.areaCode?.isNotBlank() == true) return stringBuilder.append(destinationDetails.areaCode).toString()
+        if (destinationDetails.hub?.isNotBlank() == true) return stringBuilder.append(destinationDetails.hub).toString()
         return ""
     }
 
     private fun getConsigneeDestCode(destinationDetails: DestinationDetails) : String {
         val stringBuilder = StringBuilder()
-        if (destinationDetails.state?.isNotBlank() == true) stringBuilder.append("/").append(destinationDetails.state)
-        if (destinationDetails.areaCode?.isNotBlank() == true) stringBuilder.append("/${destinationDetails.areaCode}")
-        if (destinationDetails.destn?.isNotBlank() == true) stringBuilder.append("/${destinationDetails.destn}")
-        return stringBuilder.toString().substring(1)
+        if (destinationDetails.state?.isNotBlank() == true) stringBuilder.append(" / ").append(destinationDetails.state)
+        if (destinationDetails.areaCode?.isNotBlank() == true) stringBuilder.append(" / ${destinationDetails.areaCode}")
+        if (destinationDetails.destn?.isNotBlank() == true) stringBuilder.append(" / ${destinationDetails.destn}")
+        if (stringBuilder.toString().length > 3) stringBuilder.delete(0, 3)
+        return stringBuilder.toString()
     }
 
     private fun getMasterAddress(masterAddressDetails: MasterAddressDetails) : String {
