@@ -22,6 +22,9 @@ public class CompanyMaster {
     @Column(name = "GST")
     private String gstNo;
 
+    @Column(name = "SubBranchCode")
+    private String subBranchCode;
+
     public Long getCode() {
         return code;
     }
@@ -52,5 +55,13 @@ public class CompanyMaster {
 
     public void setGstNo(String gstNo) {
         this.gstNo = gstNo;
+    }
+
+    public String getSubBranchCode() {
+        return subBranchCode;
+    }
+
+    public void setSubBranchCode(String code) {
+        this.subBranchCode = code;
     }
 }
