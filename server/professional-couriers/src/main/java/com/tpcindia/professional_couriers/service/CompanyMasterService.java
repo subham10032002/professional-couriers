@@ -25,6 +25,7 @@ public class CompanyMasterService {
         masterAddressDetails.setAddress(masterAddressDetails.getAddress().trim());
         masterAddressDetails.setContactNo(masterAddressDetails.getContactNo().trim());
         masterAddressDetails.setGstNo(masterAddressDetails.getGstNo().trim());
+        masterAddressDetails.setSubBranchCode(masterAddressDetails.getSubBranchCode().trim());
 
         return ResponseEntity.ofNullable(masterAddressDetails);
     }
