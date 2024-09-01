@@ -86,6 +86,11 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                     val balanceStock = consignmentResult.getOrThrow().balanceStock
                     val consignmentNumber = consignmentResult.getOrThrow().accCode + consignmentResult.getOrThrow().consignmentNo
                     val masterAddressDetails = masterAddressResult.getOrThrow()
+
+                    creditBookingData.balanceStock = balanceStock
+                    creditBookingData.consignmentNumber = consignmentNumber
+                    creditBookingData.masterAddressDetails = masterAddressDetails
+
                     _creditBookingState.value = _creditBookingState.value.copy(
                         consignmentNumber = consignmentNumber,
                         balanceStock = balanceStock,
