@@ -8,5 +8,6 @@ data class  MasterAddressDetails(
     val code: String? = "",
     val address: String? = "",
     val contactNo: String? = "",
-    val gstNo: String? = ""
+    val gstNo: String? = "",
+    val subBranchCode: String? = ""
 ) : Parcelable
