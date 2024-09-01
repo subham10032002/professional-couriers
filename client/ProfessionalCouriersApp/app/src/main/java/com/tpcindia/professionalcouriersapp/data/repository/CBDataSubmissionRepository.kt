@@ -84,12 +84,14 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         val address = jsonObject.getString("address")
         val contactNo = jsonObject.getString("contactNo")
         val gstNo = jsonObject.getString("gstNo")
+        val subBranchCode = jsonObject.getString("subBranchCode")
 
         val masterAddressDetails = MasterAddressDetails(
             code = code,
             address = address,
             contactNo = contactNo,
-            gstNo = gstNo
+            gstNo = gstNo,
+            subBranchCode = subBranchCode
         )
 
         return masterAddressDetails
