@@ -3,11 +3,16 @@ package com.tpcindia.professional_couriers.service;
 import com.tpcindia.professional_couriers.dto.CreditBookingDataDTO;
 import com.tpcindia.professional_couriers.model.CreditBookingData;
 import com.tpcindia.professional_couriers.repository.AccountsCustomerRepository;
+import com.tpcindia.professional_couriers.repository.BookTransRepository;
 import com.tpcindia.professional_couriers.repository.CreditBookingDataRepository;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class CreditBookingDataService {
 
     @Autowired
@@ -16,6 +21,9 @@ public class CreditBookingDataService {
     @Autowired
     private AccountsCustomerRepository accountsCustomerRepository;
 
+    @Autowired
+    private BookTransRepository bookTransRepository;
+
     public boolean saveCreditBookingData(CreditBookingDataDTO dataDTO) {
         String custCode = accountsCustomerRepository.findCustCodeByFirmNameAndBranch(
                 dataDTO.getBranch(),
@@ -23,6 +31,10 @@ public class CreditBookingDataService {
         );
         if (custCode != null) {
             creditBookingDataRepository.save(mapToEntity(custCode, dataDTO));
+            String accCode = dataDTO.getConsignmentNumber().substring(0,3);
+            Long accNo = Long.parseLong(dataDTO.getConsignmentNumber().substring(3));
+            
+            bookTransRepository.updateBookTransCounter("Yes", accNo, accCode);
             return true;
         }
         return false;

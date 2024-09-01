@@ -13,6 +13,9 @@ public class BookTrans {
     @Column(name = "AccNo")
     private Long accNo;
 
+    @Column(name = "AccCode")
+    private String accCode;
+
     @Column(name = "Counter")
     private String counter;
 
