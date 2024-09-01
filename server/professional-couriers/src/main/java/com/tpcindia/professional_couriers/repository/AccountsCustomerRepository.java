@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AccountsCustomerRepository extends JpaRepository<AccountsCustomer, Long> {
+public interface AccountsCustomerRepository extends JpaRepository<AccountsCustomer, String> {
 
     @Query("SELECT new com.tpcindia.professional_couriers.dto.responsedto.FirmDetailsDTO(ac.firmName, TRIM(ac.address), TRIM(ac.contactNo), TRIM(ac.masterCompanyCode)) FROM AccountsCustomer ac WHERE ac.type = 'Cust' AND ac.branch = :branch AND ac.flag = 'Acti' ORDER BY ac.firmName")
     List<FirmDetailsDTO> findFirmDetailsByTypeAndBranch(@Param("branch") String branch);
