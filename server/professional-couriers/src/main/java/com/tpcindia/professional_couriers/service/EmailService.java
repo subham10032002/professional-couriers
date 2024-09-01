@@ -94,6 +94,7 @@ public class EmailService {
                 row.createCell(0).setCellValue(booking.getBookingDate().toString());
                 row.createCell(1).setCellValue(booking.getConsignmentNumber());
                 row.createCell(2).setCellValue(booking.getDestination());
+                row.createCell(3).setCellValue(booking.getConsigneeName());
                 row.createCell(4).setCellValue(booking.getNoOfPsc());
                 row.createCell(5).setCellValue(booking.getWeight());
             }
@@ -115,7 +116,7 @@ public class EmailService {
 
             // Send the Excel file via email
             // boolean emailSent = sendEmail(customerEmail, branchEmail, firmName, excelFile);
-            boolean emailSent = sendEmail("Epod@atlantglobalindia.com", "Epod@atlantglobalindia.com", excelFile, firmName);
+            boolean emailSent = sendEmail("epod@atlantglobalindia.com", "epod@atlantglobalindia.com", excelFile, firmName);
             // boolean emailSent = sendEmail("subhamsahu270@gmail.com", "subhamsahu270@gmail.com", excelFile, firmName);
 
             if (emailSent) {
@@ -126,6 +127,7 @@ public class EmailService {
                     creditBookingDataRepository.save(booking);
                 }
             } else {
+                excelFile.delete();
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email not sent for firm: " + firmName);
             }
 
