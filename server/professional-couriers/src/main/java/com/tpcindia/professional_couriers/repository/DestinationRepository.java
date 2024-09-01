@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DestinationRepository extends JpaRepository<Destination, Long> {
+public interface DestinationRepository extends JpaRepository<Destination, String> {
 
     @Query("SELECT d FROM Destination d WHERE d.pincode = :pinCode ORDER BY d.city")
     List<Destination> findDestinaionsByPinCode(String pinCode);
