@@ -73,6 +73,7 @@ public class CreditBookingDataService {
         entity.setUserCode(dto.getUserCode());
         entity.setLongitude(dto.getLongitude());
         entity.setLatitude(dto.getLatitude());
+        entity.setPdfAddress(dto.getPdfAddress());
         return entity;
     }
 }

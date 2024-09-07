@@ -6,16 +6,20 @@ import com.tpcindia.professional_couriers.repository.CreditBookingDataRepository
 
 import jakarta.mail.internet.MimeMessage;
 
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
@@ -114,16 +118,20 @@ public class EmailService {
             // Close the workbook
             workbook.close();
 
+            // Fetch PDFs from the database and combine them
+            byte[] combinedPdf = combinePdfs(firmBookings);
+
             // Send the Excel file via email
             // boolean emailSent = sendEmail(customerEmail, branchEmail, firmName, excelFile);
-            boolean emailSent = sendEmail("epod@atlantglobalindia.com", "epod@atlantglobalindia.com", excelFile, firmName);
-            // boolean emailSent = sendEmail("subhamsahu270@gmail.com", "subhamsahu270@gmail.com", excelFile, firmName);
+            boolean emailSent = sendEmail("epod@atlantglobalindia.com", "epod@atlantglobalindia.com", excelFile, firmName, combinedPdf);
+            // boolean emailSent = sendEmail("subhamsahu270@gmail.com", "subhamsahu270@gmail.com", excelFile, firmName, combinedPdf);
 
             if (emailSent) {
                 for (CreditBookingData booking : firmBookings) {
                     booking.setEmailSent("Yes");
                     booking.setDateOfEmailSent(getCurrentDate());
                     booking.setEmailSenderUsername(userName);
+                    booking.setPdfAddress(null);
                     creditBookingDataRepository.save(booking);
                 }
             } else {
@@ -142,7 +150,7 @@ public class EmailService {
 
     }
 
-    private boolean sendEmail(String to, String cc, File file, String clientName) {
+    private boolean sendEmail(String to, String cc, File file, String clientName, byte[] combinedPdf) {
         try {
 
             MimeMessage message = javaMailSender.createMimeMessage();
@@ -156,6 +164,9 @@ public class EmailService {
             FileSystemResource fileResource = new FileSystemResource(file);
             helper.addAttachment(file.getName(), fileResource);
 
+            ByteArrayResource pdfResource = new ByteArrayResource(combinedPdf);
+            helper.addAttachment(clientName + ".pdf", pdfResource);
+
             javaMailSender.send(message);
             return true;
         } catch (Exception e) {
@@ -164,7 +175,26 @@ public class EmailService {
     }
 
     private String getCurrentDate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
         return sdf.format(new Date());
+    }
+
+    private byte[] combinePdfs(List<CreditBookingData> creditBookingData) throws Exception {
+        PDFMergerUtility pdfMergerUtility = new PDFMergerUtility();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        for (CreditBookingData booking : creditBookingData) {
+            if (booking.getPdfAddress() == null) continue;
+            try (ByteArrayInputStream inputStream = new ByteArrayInputStream(booking.getPdfAddress())) {
+                pdfMergerUtility.addSource(inputStream);
+            }
+        }
+
+        pdfMergerUtility.setDestinationStream(outputStream);
+        pdfMergerUtility.mergeDocuments(null);
+
+        return outputStream.toByteArray();
+
     }
 }
