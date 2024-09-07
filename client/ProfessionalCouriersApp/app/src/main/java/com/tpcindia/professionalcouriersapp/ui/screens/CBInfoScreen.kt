@@ -1,6 +1,5 @@
 package com.tpcindia.professionalcouriersapp.ui.screens
 
-import android.widget.Toast
 import androidx.compose.runtime.Composable
 
 import androidx.compose.foundation.background
@@ -172,17 +171,12 @@ fun CBInfoScreen(
             }
         }
 
-        LaunchedEffect(infoState.isDataSubmitted) {
+        LaunchedEffect(infoState.isDataSubmitted && infoState.pdfAddress != null) {
             if (infoState.isDataSubmitted) {
                 viewModel.clearDataSubmitted()
                 try {
-                    val byteArray = viewModel.createPdf(
-                        context = context,
-                        creditBookingData = creditBookingData,
-                        cbDimensionData = cbDimensionData
-                    )
                     val fileName = "${creditBookingData.consignmentNumber}.pdf"
-                    viewModel.savePdf(byteArray, fileName, branch = creditBookingData.branch)
+                    viewModel.savePdf(infoState.pdfAddress!!, fileName, branch = creditBookingData.branch)
                 } catch (e: Exception) {
                     // Handle Exception
                 }

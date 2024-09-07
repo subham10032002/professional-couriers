@@ -1,7 +1,6 @@
 package com.tpcindia.professionalcouriersapp.viewModel
 
 import android.app.Application
-import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
@@ -21,7 +20,6 @@ import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class CreditBookingViewModel(application: Application) : AndroidViewModel(application) {
@@ -91,10 +89,14 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                     creditBookingData.consignmentNumber = consignmentNumber
                     creditBookingData.masterAddressDetails = masterAddressDetails
 
+                    val pdfAddress = dataSubmissionRepository.createPdf(getApplication(), creditBookingData, cbDimensionData, cbInfoData)
+                    creditBookingData.pdfAddress = pdfAddress
+
                     _creditBookingState.value = _creditBookingState.value.copy(
                         consignmentNumber = consignmentNumber,
                         balanceStock = balanceStock,
-                        masterAddressDetails = masterAddressDetails
+                        masterAddressDetails = masterAddressDetails,
+                        pdfAddress = pdfAddress
                     )
                     val result = dataSubmissionRepository.submitCreditBookingDetails(
                         creditBookingData = creditBookingData,
@@ -122,21 +124,12 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
         _creditBookingState.value = _creditBookingState.value.copy(
             isLoading = false,
             error = errorMsg,
+            pdfAddress = null
         )
     }
 
     fun createPDFScreenRoute(branch: String): String {
         return Screen.PdfScreen.createRoute(branch)
-    }
-
-    fun createPdf(context: Context, creditBookingData: CreditBookingData,
-                  cbDimensionData: CBDimensionData,
-                  cbInfoData: CBInfoData) : ByteArray {
-        _creditBookingState.value = _creditBookingState.value.copy(
-            isDataSubmitted = false,
-            isLoading = true,
-        )
-        return dataSubmissionRepository.createPdf(context, creditBookingData, cbDimensionData, cbInfoData)
     }
 
     fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {

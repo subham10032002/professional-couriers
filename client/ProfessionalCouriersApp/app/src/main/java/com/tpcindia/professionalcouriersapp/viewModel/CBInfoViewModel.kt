@@ -60,6 +60,10 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                     creditBookingData.consignmentNumber = consignmentResult.getOrThrow().accCode +
                             consignmentResult.getOrThrow().consignmentNo
                     creditBookingData.masterAddressDetails = masterAddressResult.getOrThrow()
+
+                    val pdfAddress = repository.createPdf(getApplication(), creditBookingData, cbDimensionData, getCreditInfoData())
+                    creditBookingData.pdfAddress = pdfAddress
+
                     val result = repository.submitCreditBookingDetails(
                         creditBookingData = creditBookingData,
                         cbDimensionData = cbDimensionData,
@@ -68,35 +72,27 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                     if (result.isSuccess) {
                         _infoState.value =  _infoState.value.copy(
                             isLoading = false,
-                            isDataSubmitted = true
+                            isDataSubmitted = true,
+                            pdfAddress = pdfAddress
                         )
                     } else {
-                        _infoState.value =  _infoState.value.copy(
-                            error = result.exceptionOrNull()?.message,
-                            isLoading = false
-                        )
+                        updateStateWithError(result.exceptionOrNull()?.message ?: "Failed to submit credit booking data")
                     }
                 } else {
-                    _infoState.value =  _infoState.value.copy(
-                        error = consignmentResult.exceptionOrNull()?.message,
-                        isLoading = false
-                    )
+                    updateStateWithError(consignmentResult.exceptionOrNull()?.message ?: "Failed to fetch consignment details")
                 }
             } catch (e: Exception) {
-                _infoState.value =  _infoState.value.copy(
-                    error = e.message,
-                    isLoading = false
-                )
+                updateStateWithError("Failed to submit credit booking data: ${e.message}")
             }
         }
     }
 
-    fun createPdf(
-        context: Context,
-        creditBookingData: CreditBookingData,
-        cbDimensionData: CBDimensionData
-    ) : ByteArray {
-        return repository.createPdf(context, creditBookingData, cbDimensionData, getCreditInfoData())
+    private fun updateStateWithError(errorMsg: String) {
+        _infoState.value = _infoState.value.copy(
+            error = errorMsg,
+            isLoading = false,
+            pdfAddress = null
+        )
     }
 
     fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {

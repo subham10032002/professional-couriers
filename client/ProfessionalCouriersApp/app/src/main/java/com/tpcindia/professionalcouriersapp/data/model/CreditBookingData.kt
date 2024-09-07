@@ -29,7 +29,8 @@ data class CreditBookingData(
     val weight: String = "",
     var longitude: String = "",
     var latitude: String = "",
-    val photoOfAddress: ByteArray? = null
+    val photoOfAddress: ByteArray? = null,
+    var pdfAddress: ByteArray? = null
 ) : Parcelable {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

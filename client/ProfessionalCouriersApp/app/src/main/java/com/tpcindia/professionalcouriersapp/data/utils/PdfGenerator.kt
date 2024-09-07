@@ -71,7 +71,7 @@ class PdfGenerator {
 
         table.addCell(Cell().add(Paragraph("Shipper").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph(getShipper(creditBookingData)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph("Date: ${creditBookingData.bookingDate}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
+        table.addCell(Cell().add(Paragraph("Date: \n ${creditBookingData.bookingDate}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Consignee").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph("Destination").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
         table.addCell(Cell().add(Paragraph(getDestination(creditBookingData.destDetails)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
@@ -85,7 +85,7 @@ class PdfGenerator {
 
         val verticalDividerX = contentRectangle.left + (contentRectangle.width / 7) * 3
         canvas.moveTo(verticalDividerX.toDouble(), contentRectangle.bottom.toDouble())
-        canvas.lineTo(verticalDividerX.toDouble(), contentRectangle.top.toDouble())
+        canvas.lineTo(verticalDividerX.toDouble(), contentRectangle.top.toDouble() - 40f)
         canvas.setStrokeColor(ColorConstants.BLACK)
         canvas.setLineWidth(1f)
         canvas.stroke()
