@@ -104,6 +104,10 @@ public class CreditBookingData {
     @Column(name = "photoOfAddress")
     private byte[] photoOfAddress;
 
+    @Lob
+    @Column(name = "pdfAddress")
+    private byte[] pdfAddress;
+
     // Getters and setters
 
     public Long getId() {
@@ -359,5 +363,12 @@ public class CreditBookingData {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public byte[] getPdfAddress() {
+        return pdfAddress;
+    }
+    public void setPdfAddress(byte[] address) {
+        this.pdfAddress = address;
     }
 }
