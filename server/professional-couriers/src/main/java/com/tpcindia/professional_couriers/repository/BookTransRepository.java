@@ -22,5 +22,5 @@ public interface BookTransRepository extends JpaRepository<BookTrans, Long> {
     @Modifying
     @Transactional
     @Query("UPDATE BookTrans tr SET tr.counter = :counter WHERE tr.accNo = :accNo AND tr.accCode = :accCode")
-    void updateBookTransCounter(@Param("counter") String counter, @Param("accNo") Long accNo, @Param("accCode") String accCode);
+    int updateBookTransCounter(@Param("counter") String counter, @Param("accNo") Long accNo, @Param("accCode") String accCode);
 }
