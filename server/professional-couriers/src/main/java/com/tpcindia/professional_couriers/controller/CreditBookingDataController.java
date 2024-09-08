@@ -20,12 +20,7 @@ public class CreditBookingDataController {
     @PostMapping("/save")
     public ResponseEntity<?> submitCreditBooking(@RequestBody CreditBookingDataDTO creditBookingDataDTO) {
         try {
-            boolean isSubmitted = creditBookingDataService.saveCreditBookingData(creditBookingDataDTO);
-            if (isSubmitted) {
-                return new ResponseEntity<>("Credit booking data submitted successfully", HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>("Credit booking data not submitted", HttpStatus.BAD_REQUEST);
-            }
+            return creditBookingDataService.saveCreditBookingData(creditBookingDataDTO);
         } catch (Exception e) {
             return new ResponseEntity<>("Failed to submit credit booking data: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

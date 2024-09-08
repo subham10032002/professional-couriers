@@ -9,6 +9,8 @@ import com.tpcindia.professional_couriers.repository.CreditBookingDataRepository
 import jakarta.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,20 +26,25 @@ public class CreditBookingDataService {
     @Autowired
     private BookTransRepository bookTransRepository;
 
-    public boolean saveCreditBookingData(CreditBookingDataDTO dataDTO) {
+    public ResponseEntity<?> saveCreditBookingData(CreditBookingDataDTO dataDTO) {
         String custCode = accountsCustomerRepository.findCustCodeByFirmNameAndBranch(
                 dataDTO.getBranch(),
                 dataDTO.getClientName()
         );
         if (custCode != null) {
-            creditBookingDataRepository.save(mapToEntity(custCode, dataDTO));
+            
             String accCode = dataDTO.getConsignmentNumber().substring(0,3);
             Long accNo = Long.parseLong(dataDTO.getConsignmentNumber().substring(3));
             
-            bookTransRepository.updateBookTransCounter("Yes", accNo, accCode);
-            return true;
+            int rowsUpdated = bookTransRepository.updateBookTransCounter("Yes", accNo, accCode);
+            if (rowsUpdated > 0) {
+                creditBookingDataRepository.save(mapToEntity(custCode, dataDTO));
+                return new ResponseEntity<>("Credit booking data submitted successfully", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Credit booking data not submitted: Book is not alloted", HttpStatus.BAD_REQUEST);
+            }
         }
-        return false;
+        return new ResponseEntity<>("Credit booking data not submitted: Customer Code Not found", HttpStatus.BAD_REQUEST);
     }
 
     private CreditBookingData mapToEntity(String custCode, CreditBookingDataDTO dto) {
