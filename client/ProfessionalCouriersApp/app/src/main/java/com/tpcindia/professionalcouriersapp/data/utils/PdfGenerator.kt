@@ -249,12 +249,12 @@ class PdfGenerator {
         canvas.setLineWidth(1f)
         canvas.stroke()
 
-        var finalPositionY = horizontalDividerY - 65f
+        var finalPositionY = horizontalDividerY - 68f
         var finalPositionX = contentRectangle.left - 3f
 
         val address = Paragraph(getMasterAddress(creditBookingData.masterAddressDetails))
             .setFont(font)
-            .setFontSize(8f)
+            .setFontSize(7f)
             .setTextAlignment(TextAlignment.CENTER)
 
         document.add(address.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2 - 33f))
