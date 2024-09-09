@@ -50,15 +50,16 @@ class PdfGenerator {
         val document = Document(pdfDoc)
         val a4Width = pageSize.width
         val a4Height = pageSize.height
-        val padding = 20f
+        val padding = 10f
 
         val boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)
 
+        val contentHeight = a4Height / 3
         val contentRectangle = Rectangle(
             padding,
-            a4Height - a4Height / 3 - padding - 50,
+            a4Height - contentHeight + padding,  // Start 1/3rd from the top
             a4Width - 2 * padding,
-            a4Height / 3 - padding + 80
+            contentHeight - 2 * padding
         )
         val canvas = PdfCanvas(pdfDoc.addNewPage())
         canvas.rectangle(contentRectangle)
@@ -69,15 +70,15 @@ class PdfGenerator {
         val table = Table(UnitValue.createPercentArray(floatArrayOf(1f, 1f, 1f, 1f, 1f, 1f, 1f)))
         table.setWidth(UnitValue.createPointValue(contentRectangle.width))
 
-        table.addCell(Cell().add(Paragraph("Shipper").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph(getShipper(creditBookingData)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph("Date: \n ${creditBookingData.bookingDate}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph("Consignee").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph("Destination").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph(getDestination(creditBookingData.destDetails)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
-        table.addCell(Cell().add(Paragraph("POD").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f))
+        table.addCell(Cell().add(Paragraph("Shipper").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
+        table.addCell(Cell().add(Paragraph(getShipper(creditBookingData)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
+        table.addCell(Cell().add(Paragraph("Date: \n ${creditBookingData.bookingDate}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
+        table.addCell(Cell().add(Paragraph("Consignee").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
+        table.addCell(Cell().add(Paragraph("Destination").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
+        table.addCell(Cell().add(Paragraph(getDestination(creditBookingData.destDetails)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
+        table.addCell(Cell().add(Paragraph("POD").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
 
-        val rowHeight = 40f
+        val rowHeight = 30f
         val tableTop = contentRectangle.top - rowHeight
         table.setFixedPosition(contentRectangle.left, tableTop, contentRectangle.width)
 
@@ -85,31 +86,29 @@ class PdfGenerator {
 
         val verticalDividerX = contentRectangle.left + (contentRectangle.width / 7) * 3
         canvas.moveTo(verticalDividerX.toDouble(), contentRectangle.bottom.toDouble())
-        canvas.lineTo(verticalDividerX.toDouble(), contentRectangle.top.toDouble() - 40f)
+        canvas.lineTo(verticalDividerX.toDouble(), contentRectangle.top.toDouble() - 30f)
         canvas.setStrokeColor(ColorConstants.BLACK)
         canvas.setLineWidth(1f)
         canvas.stroke()
 
-        val addressSectionHeight = 110f
-        val verticalSpacing = 5f
 
         val fromAddressX = contentRectangle.left + 5f
         var toAddressX = verticalDividerX + 5f
 
         val fromAddressParagraph = Paragraph("From: \n${creditBookingData.clientName} \n${creditBookingData.clientAddress} \n Contact:${creditBookingData.clientContact}")
             .setFont(font)
-            .setFontSize(9f)
+            .setFontSize(7.5f)
             .setTextAlignment(TextAlignment.LEFT)
             .setWidth(verticalDividerX - fromAddressX - 10f)
 
         val toAddressParagraph = Paragraph("To Address: \n${creditBookingData.consigneeName} \n${creditBookingData.destination}")
             .setFont(font)
-            .setFontSize(9f)
+            .setFontSize(7.5f)
             .setTextAlignment(TextAlignment.LEFT)
             .setWidth(contentRectangle.right - toAddressX - 10f)
 
-        val fromAddressPositionY = 690f
-        var toAddressPositionY = 710f
+        val fromAddressPositionY = 720f
+        var toAddressPositionY = 730f
 
         document.add(fromAddressParagraph.setFixedPosition(fromAddressX, fromAddressPositionY, verticalDividerX - fromAddressX - 10f))
         document.add(toAddressParagraph.setFixedPosition(toAddressX, toAddressPositionY, contentRectangle.right - toAddressX - 10f))
@@ -139,11 +138,11 @@ class PdfGenerator {
         val barcodeByteArray = barcodeStream.toByteArray()
 
         val barcodeImage = Image(ImageDataFactory.create(barcodeByteArray))
-        barcodeImage.scaleToFit(120f, 40f) // Adjusted to fit inside the rectangle
+        barcodeImage.scaleToFit(300f, 30f) // Adjusted to fit inside the rectangle
 
         // Centering the barcode image
-        val barcodeX =  (contentRectangle.width - barcodeImage.imageWidth) / 2 - 45f
-        var currentY = horizontalDividerY - 50f
+        val barcodeX =  (contentRectangle.width - barcodeImage.imageWidth) / 2 - 65f
+        var currentY = horizontalDividerY - 35f
 
         barcodeImage.setFixedPosition(barcodeX, currentY)
         document.add(barcodeImage)
@@ -155,7 +154,7 @@ class PdfGenerator {
             .setWidth(barcodeImage.imageWidth)
 
         currentY -= 20f // Manually subtracting to adjust position
-        document.add(xyzDataParagraph.setFixedPosition(barcodeX + 30f, currentY, barcodeImage.imageWidth))
+        document.add(xyzDataParagraph.setFixedPosition(barcodeX + 12f, currentY, barcodeImage.imageWidth))
 
         // Logo Image
         val logoStream = context.resources.openRawResource(R.drawable.tpc_logo)
@@ -164,86 +163,93 @@ class PdfGenerator {
             .scaleToFit(110f, 40f) // Adjusted to fit inside the rectangle
 
         // Centering the logo image
-        val logoX = (contentRectangle.width - logoImage.imageWidth) / 2 - 55f
+        val logoX = (contentRectangle.width - logoImage.imageWidth) / 2 - 90f
         currentY -= 24f
         document.add(logoImage.setFixedPosition(logoX, currentY, logoImage.imageWidth))
 
         // Weight and Reference Texts
         val weightParagraph = Paragraph("Weight: ${creditBookingData.weight}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
         val volWeightParagraph = Paragraph("Vol weight: 0")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
         val pcs = Paragraph("Pcs: ${creditBookingData.noOfPsc}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
         val awbNo = Paragraph("AWB No: ${creditBookingData.consignmentNumber}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
-        var weightPositionY = horizontalDividerY - 30f
+        var weightPositionY = horizontalDividerY - 20f
         val weightX = verticalDividerX + 5f
         document.add(weightParagraph.setFixedPosition(weightX, weightPositionY, contentRectangle.width / 2))
 
-        weightPositionY -= 20f
+        weightPositionY -= 15f
         document.add(volWeightParagraph.setFixedPosition(weightX, weightPositionY, contentRectangle.width / 2))
 
-        weightPositionY -= 20f
+        weightPositionY -= 15f
         document.add(pcs.setFixedPosition(weightX, weightPositionY, contentRectangle.width / 2))
 
-        weightPositionY -= 20f
+        weightPositionY -= 15f
         document.add(awbNo.setFixedPosition(weightX, weightPositionY, contentRectangle.width / 2))
 
         val invoiceNo = Paragraph("Invoice Value: ${cbInfoData.invoiceValue}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
         val content = Paragraph("Invoice No: ${cbInfoData.invoiceNumber}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
         val value = Paragraph("E-waybill: ${cbInfoData.ewayBill}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
         val reference = Paragraph("Product: ${cbInfoData.product}")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
         val rightColumnX = contentRectangle.right - 175f
-        weightPositionY = horizontalDividerY - 30f
+        weightPositionY = horizontalDividerY - 20f
 
         document.add(invoiceNo.setFixedPosition(rightColumnX, weightPositionY, contentRectangle.width / 2))
 
-        weightPositionY -= 20f
+        weightPositionY -= 15f
         document.add(content.setFixedPosition(rightColumnX, weightPositionY, contentRectangle.width / 2))
 
-        weightPositionY -= 20f
+        weightPositionY -= 15f
         document.add(value.setFixedPosition(rightColumnX, weightPositionY, contentRectangle.width / 2))
 
-        weightPositionY -= 20f
+        weightPositionY -= 15f
         document.add(reference.setFixedPosition(rightColumnX, weightPositionY, contentRectangle.width / 2))
 
-        horizontalDividerY = weightPositionY - 10f
+        horizontalDividerY = weightPositionY - 20f
         canvas.moveTo(contentRectangle.left.toDouble(), horizontalDividerY.toDouble())
+        canvas.lineTo(verticalDividerX.toDouble(), horizontalDividerY.toDouble())
+        canvas.setStrokeColor(ColorConstants.BLACK)
+        canvas.setLineWidth(1f)
+        canvas.stroke()
+
+        horizontalDividerY = weightPositionY - 5f
+        canvas.moveTo(verticalDividerX.toDouble(), horizontalDividerY.toDouble())
         canvas.lineTo(contentRectangle.right.toDouble(), horizontalDividerY.toDouble())
         canvas.setStrokeColor(ColorConstants.BLACK)
         canvas.setLineWidth(1f)
         canvas.stroke()
 
-        var finalPositionY = horizontalDividerY - 75f
+        var finalPositionY = horizontalDividerY - 65f
         var finalPositionX = contentRectangle.left - 3f
 
         val address = Paragraph(getMasterAddress(creditBookingData.masterAddressDetails))
@@ -253,19 +259,19 @@ class PdfGenerator {
 
         document.add(address.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2 - 33f))
 
-        finalPositionY = horizontalDividerY - 30f
+        finalPositionY = horizontalDividerY - 25f
         finalPositionX = verticalDividerX + 5f
 
         val receivedMessage = Paragraph(UIConfig.RECEIVED_MESSAGE)
             .setFont(font)
-            .setFontSize(9f)
+            .setFontSize(8f)
             .setTextAlignment(TextAlignment.LEFT)
 
         document.add(receivedMessage.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2))
 
         val name = Paragraph("Name: ")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(9f)
             .setFont(boldFont)
             .setTextAlignment(TextAlignment.LEFT)
 
@@ -275,7 +281,7 @@ class PdfGenerator {
 
         val sign = Paragraph("Sign/Stamp: ")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(9f)
             .setFont(boldFont)
             .setTextAlignment(TextAlignment.LEFT)
 
@@ -283,12 +289,12 @@ class PdfGenerator {
 
         document.add(sign.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2))
 
-        finalPositionY = horizontalDividerY - 55f
+        finalPositionY = horizontalDividerY - 45f
         finalPositionX = contentRectangle.right - 135f
 
         val phone = Paragraph("Phone: ")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(9f)
             .setFont(boldFont)
             .setTextAlignment(TextAlignment.LEFT)
 
@@ -296,7 +302,7 @@ class PdfGenerator {
 
         val date = Paragraph("Date: ")
             .setFont(font)
-            .setFontSize(10f)
+            .setFontSize(9f)
             .setFont(boldFont)
             .setTextAlignment(TextAlignment.LEFT)
 

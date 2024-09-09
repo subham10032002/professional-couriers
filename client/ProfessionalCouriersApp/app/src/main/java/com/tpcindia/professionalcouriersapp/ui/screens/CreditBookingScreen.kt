@@ -209,7 +209,7 @@ fun CreditBookingScreen(
 
             Spacer(modifier = Modifier.height(15.dp))
 
-            LabelText("Consignee Type ")
+            LabelText("Consignment Type ")
             DropdownTextField(
                 label = "Select..",
                 options = UIConfig.CONSIGNEE_TYPE,
