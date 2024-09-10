@@ -54,7 +54,7 @@ class PdfGenerator {
 
         val boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD)
 
-        val contentHeight = a4Height / 3
+        val contentHeight = a4Height / 3 - 10
         val contentRectangle = Rectangle(
             padding,
             a4Height - contentHeight + padding,  // Start 1/3rd from the top
@@ -138,11 +138,11 @@ class PdfGenerator {
         val barcodeByteArray = barcodeStream.toByteArray()
 
         val barcodeImage = Image(ImageDataFactory.create(barcodeByteArray))
-        barcodeImage.scaleToFit(300f, 30f) // Adjusted to fit inside the rectangle
+        barcodeImage.scaleToFit(300f, 27f) // Adjusted to fit inside the rectangle
 
         // Centering the barcode image
         val barcodeX =  (contentRectangle.width - barcodeImage.imageWidth) / 2 - 65f
-        var currentY = horizontalDividerY - 35f
+        var currentY = horizontalDividerY - 32f
 
         barcodeImage.setFixedPosition(barcodeX, currentY)
         document.add(barcodeImage)
@@ -153,18 +153,18 @@ class PdfGenerator {
             .setFontSize(10f)
             .setWidth(barcodeImage.imageWidth)
 
-        currentY -= 20f // Manually subtracting to adjust position
-        document.add(xyzDataParagraph.setFixedPosition(barcodeX + 12f, currentY, barcodeImage.imageWidth))
+        currentY -= 16f // Manually subtracting to adjust position
+        document.add(xyzDataParagraph.setFixedPosition(barcodeX + 9f, currentY, barcodeImage.imageWidth))
 
         // Logo Image
         val logoStream = context.resources.openRawResource(R.drawable.tpc_logo)
         val logoByteArray = logoStream.readBytes()
         val logoImage = Image(ImageDataFactory.create(logoByteArray))
-            .scaleToFit(110f, 40f) // Adjusted to fit inside the rectangle
+            .scaleToFit(115f, 35f) // Adjusted to fit inside the rectangle
 
         // Centering the logo image
-        val logoX = (contentRectangle.width - logoImage.imageWidth) / 2 - 90f
-        currentY -= 24f
+        val logoX = (contentRectangle.width - logoImage.imageWidth) / 2 - 95f
+        currentY -= 24.5f
         document.add(logoImage.setFixedPosition(logoX, currentY, logoImage.imageWidth))
 
         // Weight and Reference Texts
@@ -235,7 +235,7 @@ class PdfGenerator {
         weightPositionY -= 15f
         document.add(reference.setFixedPosition(rightColumnX, weightPositionY, contentRectangle.width / 2))
 
-        horizontalDividerY = weightPositionY - 20f
+        horizontalDividerY = weightPositionY - 13f
         canvas.moveTo(contentRectangle.left.toDouble(), horizontalDividerY.toDouble())
         canvas.lineTo(verticalDividerX.toDouble(), horizontalDividerY.toDouble())
         canvas.setStrokeColor(ColorConstants.BLACK)
@@ -249,12 +249,12 @@ class PdfGenerator {
         canvas.setLineWidth(1f)
         canvas.stroke()
 
-        var finalPositionY = horizontalDividerY - 68f
+        var finalPositionY = horizontalDividerY - 57f
         var finalPositionX = contentRectangle.left - 3f
 
         val address = Paragraph(getMasterAddress(creditBookingData.masterAddressDetails))
             .setFont(font)
-            .setFontSize(7f)
+            .setFontSize(6.5f)
             .setTextAlignment(TextAlignment.CENTER)
 
         document.add(address.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2 - 33f))
@@ -264,7 +264,7 @@ class PdfGenerator {
 
         val receivedMessage = Paragraph(UIConfig.RECEIVED_MESSAGE)
             .setFont(font)
-            .setFontSize(8f)
+            .setFontSize(7f)
             .setTextAlignment(TextAlignment.LEFT)
 
         document.add(receivedMessage.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2))
@@ -275,7 +275,7 @@ class PdfGenerator {
             .setFont(boldFont)
             .setTextAlignment(TextAlignment.LEFT)
 
-        finalPositionY -= 20f
+        finalPositionY -= 15f
 
         document.add(name.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2))
 
@@ -285,11 +285,11 @@ class PdfGenerator {
             .setFont(boldFont)
             .setTextAlignment(TextAlignment.LEFT)
 
-        finalPositionY -= 20f
+        finalPositionY -= 15f
 
         document.add(sign.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2))
 
-        finalPositionY = horizontalDividerY - 45f
+        finalPositionY = horizontalDividerY - 41f
         finalPositionX = contentRectangle.right - 135f
 
         val phone = Paragraph("Phone: ")
@@ -306,7 +306,7 @@ class PdfGenerator {
             .setFont(boldFont)
             .setTextAlignment(TextAlignment.LEFT)
 
-        finalPositionY -= 20f
+        finalPositionY -= 15f
 
         document.add(date.setFixedPosition(finalPositionX, finalPositionY, contentRectangle.width / 2))
 
