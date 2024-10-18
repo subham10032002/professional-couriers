@@ -70,12 +70,31 @@ class PdfGenerator {
         val table = Table(UnitValue.createPercentArray(floatArrayOf(1f, 1f, 1f, 1f, 1f, 1f, 1f)))
         table.setWidth(UnitValue.createPointValue(contentRectangle.width))
 
+        val destDetails = getDestination(creditBookingData.destDetails)
+
+
+        val maxCharsPerLine = 13
+
+
+        val firstLine = if (destDetails.length > maxCharsPerLine) destDetails.substring(
+            0,
+            maxCharsPerLine
+        ) else destDetails
+        val secondLine =
+            if (destDetails.length > maxCharsPerLine) destDetails.substring(maxCharsPerLine) else ""
+
+
+        val formattedDestDetails = """
+            $firstLine
+            $secondLine
+            """.trimIndent()
+
         table.addCell(Cell().add(Paragraph("Shipper").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
         table.addCell(Cell().add(Paragraph(getShipper(creditBookingData)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
         table.addCell(Cell().add(Paragraph("Date: \n ${creditBookingData.bookingDate}").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
         table.addCell(Cell().add(Paragraph("Consignee").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
         table.addCell(Cell().add(Paragraph("Destination").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
-        table.addCell(Cell().add(Paragraph(getDestination(creditBookingData.destDetails)).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
+        table.addCell(Cell().add(Paragraph(formattedDestDetails).setTextAlignment(TextAlignment.CENTER).setFont(boldFont)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(6f).setTextAlignment(TextAlignment.CENTER)
         table.addCell(Cell().add(Paragraph("POD").setTextAlignment(TextAlignment.CENTER)).setBorderRight(SolidBorder(1f))).setBorderBottom(SolidBorder(1f)).setFontSize(8f).setTextAlignment(TextAlignment.CENTER)
 
         val rowHeight = 30f

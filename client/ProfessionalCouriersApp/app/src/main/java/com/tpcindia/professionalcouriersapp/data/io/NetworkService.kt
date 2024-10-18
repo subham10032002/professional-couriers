@@ -100,9 +100,10 @@ class NetworkService {
         }
     }
 
-    fun getConsignmentDetails(branch: String): Result<Map<String, Any>> {
+    fun getConsignmentDetails(branch: String, custCode: String): Result<Map<String, Any>> {
         val json = JSONObject()
         json.put("branch", branch)
+        json.put("custCode", custCode)
         val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
 
         val request = Request.Builder()

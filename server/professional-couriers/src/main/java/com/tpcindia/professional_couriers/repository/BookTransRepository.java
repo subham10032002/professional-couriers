@@ -10,14 +10,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface BookTransRepository extends JpaRepository<BookTrans, Long> {
-    @Query("SELECT MAX(tr.accNo) FROM BookTrans tr, BookMaster ma, BookAllot bk WHERE bk.startNo = :startNo AND ma.bookType = 'Credit' AND ma.bookNo = tr.bookNo AND tr.counter = 'Yes' AND tr.accNo >= bk.startNo AND tr.accNo <= bk.endNo AND bk.type = 'Auto Docket Mobile'")
-    Long findMaxAccNoCredit(@Param("startNo") Long startNo);
+    @Query("SELECT MAX(tr.accNo) FROM BookTrans tr, BookMaster ma WHERE ma.bookNo = tr.bookNo AND tr.counter = 'Yes' AND ma.custCode = :custCode AND ma.type = 'Auto Docket Mobile'")
+    Long findMaxAccNoCredit(@Param("custCode") String custCode);
+    
+    @Query("SELECT COUNT(tr.accNo) FROM BookTrans tr, BookMaster ma WHERE ma.bookNo = tr.bookNo AND tr.counter = 'No' AND ma.custCode = :custCode AND ma.type = 'Auto Docket Mobile'")
+    Integer countUnusedAccNosCredit(@Param("custCode") String custCode);
 
-    @Query("SELECT COUNT(tr.accNo) FROM BookTrans tr, BookMaster ma, BookAllot bk WHERE bk.startNo = :startNo AND ma.bookType = 'Credit' AND ma.bookNo = tr.bookNo AND tr.counter = 'No' AND tr.accNo >= bk.startNo AND tr.accNo <= bk.endNo AND bk.type = 'Auto Docket Mobile'")
-    Integer countUnusedAccNosCredit(@Param("startNo") Long startNo);
-
-    @Query("SELECT MIN(tr.accNo) FROM BookTrans tr, BookMaster ma, BookAllot bk WHERE bk.startNo = :startNo AND ma.bookType = 'Credit' AND ma.bookNo = tr.bookNo AND tr.counter = 'No' AND tr.accNo >= bk.startNo AND tr.accNo <= bk.endNo AND bk.type = 'Auto Docket Mobile'")
-    Long findMinUnusedAccNoCredit(@Param("startNo") Long startNo);
+    @Query("SELECT MIN(tr.accNo) FROM BookTrans tr, BookMaster ma WHERE ma.bookNo = tr.bookNo AND tr.counter = 'No' AND ma.custCode = :custCode AND ma.type = 'Auto Docket Mobile'")
+    Long findMinUnusedAccNoCredit(@Param("custCode") String custCode);
 
     @Modifying
     @Transactional

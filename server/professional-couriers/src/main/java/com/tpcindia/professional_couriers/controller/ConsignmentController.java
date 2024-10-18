@@ -23,7 +23,7 @@ public class ConsignmentController {
     public ResponseEntity<?> getConsignmentNumber(@RequestBody ConsignmentRequestDTO requestDTO) {
         Map<String, Object> result = null;
         try {
-            result = consignmentService.getNextConsignmentNumber(requestDTO.getBranch());
+            result = consignmentService.getNextConsignmentNumber(requestDTO.getBranch(), requestDTO.getCustCode());
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);

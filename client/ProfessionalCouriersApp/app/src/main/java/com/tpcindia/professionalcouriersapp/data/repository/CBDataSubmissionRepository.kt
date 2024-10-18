@@ -38,9 +38,9 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         }
     }
 
-    fun getConsignmentDetails(branch: String): Result<ConsignmentDetails> {
+    fun getConsignmentDetails(branch: String, custCode: String): Result<ConsignmentDetails> {
         return try {
-            val result = networkService.getConsignmentDetails(branch)
+            val result = networkService.getConsignmentDetails(branch, custCode)
             if (result.isSuccess) {
                 val consignmentDetails = parseConsignmentDetails(result.getOrThrow())
                 Result.success(consignmentDetails)
