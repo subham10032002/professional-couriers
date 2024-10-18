@@ -122,9 +122,7 @@ public class EmailService {
             byte[] combinedPdf = combinePdfs(firmBookings);
 
             // Send the Excel file via email
-            // boolean emailSent = sendEmail(customerEmail, branchEmail, firmName, excelFile);
-            boolean emailSent = sendEmail("epod@atlantglobalindia.com", "epod@atlantglobalindia.com", excelFile, firmName, combinedPdf);
-            // boolean emailSent = sendEmail("subhamsahu270@gmail.com", "subhamsahu270@gmail.com", excelFile, firmName, combinedPdf);
+            boolean emailSent = sendEmail(customerEmail, branchEmail, excelFile, firmName, combinedPdf);
 
             if (emailSent) {
                 for (CreditBookingData booking : firmBookings) {
@@ -157,7 +155,7 @@ public class EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setTo(to);
-            // helper.setCc(cc);
+            helper.setCc(cc);
             helper.setSubject("Credit Auto booking  - " + clientName + " - "  + getCurrentDate());
             helper.setText("Dear Customer, \nAttached here are the bookings done using mobile app");
 

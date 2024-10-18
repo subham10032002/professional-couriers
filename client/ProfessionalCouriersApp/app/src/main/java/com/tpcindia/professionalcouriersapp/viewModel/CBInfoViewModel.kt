@@ -49,7 +49,7 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
 
                 // Launch network calls concurrently
                 val masterAddressDeferred = async { repository.getMasterAddressDetails(creditBookingData.masterCompanyCode) }
-                val consignmentDeferred = async { repository.getConsignmentDetails(creditBookingData.branch) }
+                val consignmentDeferred = async { repository.getConsignmentDetails(creditBookingData.branch, creditBookingData.userCode) }
 
                 // Await both results
                 val masterAddressResult = masterAddressDeferred.await()

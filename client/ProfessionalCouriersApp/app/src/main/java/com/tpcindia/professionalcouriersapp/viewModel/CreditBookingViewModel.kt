@@ -74,7 +74,7 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
 
                 // Launch network calls concurrently
                 val masterAddressDeferred = async { dataSubmissionRepository.getMasterAddressDetails(creditBookingData.masterCompanyCode) }
-                val consignmentDeferred = async { dataSubmissionRepository.getConsignmentDetails(creditBookingData.branch) }
+                val consignmentDeferred = async { dataSubmissionRepository.getConsignmentDetails(creditBookingData.branch, creditBookingData.userCode) }
 
                 // Await both results
                 val masterAddressResult = masterAddressDeferred.await()

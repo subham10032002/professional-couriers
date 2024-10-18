@@ -13,4 +13,10 @@ public class BookMaster {
     @Column(name = "BookType")
     private String bookType;
 
+    @Column(name = "CustCode")
+    private String custCode;
+
+    @Column(name = "Type")
+    private String type;
+
 }
