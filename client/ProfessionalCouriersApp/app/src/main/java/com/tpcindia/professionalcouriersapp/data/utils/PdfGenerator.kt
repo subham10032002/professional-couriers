@@ -120,7 +120,7 @@ class PdfGenerator {
             .setTextAlignment(TextAlignment.LEFT)
             .setWidth(verticalDividerX - fromAddressX - 10f)
 
-        val toAddressParagraph = Paragraph("To Address: \n${creditBookingData.consigneeName} \n${creditBookingData.destination}")
+        val toAddressParagraph = Paragraph("To Address: \n${creditBookingData.consigneeName} \n${creditBookingData.destination} \n${creditBookingData.pincode}")
             .setFont(font)
             .setFontSize(7.5f)
             .setTextAlignment(TextAlignment.LEFT)
