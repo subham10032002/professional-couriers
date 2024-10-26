@@ -1,3 +1,13 @@
+buildscript {
+    ext {
+        PROTOCOL="PROTOCOL"
+        HOST="HOST"
+        LOCAL_HOST="LOCAL_HOST"
+        PORT="PORT"
+        LOCAL_PORT="LOCAL_PORT"
+        ROOT_PATH = "ROOT_PATH"
+    }
+}
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -23,9 +33,22 @@ android {
     }
 
     buildTypes {
+        debug {
+            multiDexEnabled true
+            buildConfigField "String", "PROTOCOL", "\"$PROTOCOL\""
+            buildConfigField "String", "HOST", "\"$LOCAL_HOST\""
+            buildConfigField "String", "PORT", "\"$LOCAL_PORT\""
+            buildConfigField "String", "ROOT_PATH", "\"$ROOT_PATH\""
+            resValue("string", "my_domain", "\"$LOCAL_HOST\"")
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "PROTOCOL", "\"$PROTOCOL\""
+            buildConfigField "String", "HOST", "\"$HOST\""
+            buildConfigField "String", "PORT", "\"$PORT\""
+            buildConfigField "String", "ROOT_PATH", "\"$ROOT_PATH\""
+            resValue("string", "my_domain", "\"$HOST\"")
             signingConfig signingConfigs.debug
         }
     }
@@ -38,6 +61,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.1'
