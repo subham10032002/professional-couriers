@@ -26,7 +26,7 @@ public class ConsignmentService {
 
         Long finalConsignmentNumber = (long) 0;
         // Find the last used consignment number
-        Long lastUsedConsNo = bookTransRepository.findMaxAccNoCredit(custCode);
+        Long lastUsedConsNo = bookTransRepository.findMaxAccNoCredit(custCode); // +1
         Integer balanceStock = bookTransRepository.countUnusedAccNosCredit(custCode);
 
         if (balanceStock == null || balanceStock <= 2) {
@@ -34,13 +34,15 @@ public class ConsignmentService {
         }
 
         if (lastUsedConsNo == null || lastUsedConsNo == 0) {
-            lastUsedConsNo = bookTransRepository.findMinUnusedAccNoCredit(custCode);
+            lastUsedConsNo = bookTransRepository.findMinUnusedAccNoCredit(custCode); // add nothing
+        } else {
+            lastUsedConsNo += 1;
         }
 
         if (lastUsedConsNo == null || lastUsedConsNo == 0) {
             finalConsignmentNumber = (long) 0;
         } else {
-            finalConsignmentNumber = lastUsedConsNo + 1;
+            finalConsignmentNumber = lastUsedConsNo;
         }
 
         Map<String, Object> result = new HashMap<>();
