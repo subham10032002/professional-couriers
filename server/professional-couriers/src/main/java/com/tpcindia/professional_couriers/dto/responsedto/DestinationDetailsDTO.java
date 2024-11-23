@@ -1,38 +1,19 @@
-package com.tpcindia.professional_couriers.model;
+package com.tpcindia.professional_couriers.dto.responsedto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
-@Entity
-@Table(name = "DestinationMaster", schema = "dbo")
-public class Destination {
-
-    @Id
-    @Column(name = "DestCode", nullable = false)
+public class DestinationDetailsDTO {
     private String destCode;
 
-    @Column(name = "Pincode")
-    private String pincode;
-
-    @Column(name = "City")
     private String city;
 
-    @Column(name = "Destn")
     private String destn;
 
-    @Column(name = "AreaCode")
     private String areaCode;
 
-    @Column(name = "Hub")
     private String hub;
 
-    @Column(name = "State")
     private String state;
 
-    @Column(name = "Branch_type")
-    private String branchType;
+    private String pdfCity;
 
     public String getDestCode() {
         return destCode;
@@ -40,14 +21,6 @@ public class Destination {
 
     public void setDestCode(String destCode) {
         this.destCode = destCode;
-    }
-
-    public String getPinCode() {
-        return pincode;
-    }
-
-    public void setPinCode(String pinCode) {
-        this.pincode = pinCode;
     }
 
     public String getCity() {
@@ -90,11 +63,11 @@ public class Destination {
         this.state = state;
     }
 
-    public String getBranchType() {
-        return branchType;
+    public String getPdfCity() {
+        return pdfCity;
     }
 
-    public void setBranchType(String branchType) {
-        this.branchType = branchType;
+    public void setPdfCity(String pdfCity) {
+        this.pdfCity = pdfCity;
     }
 }
