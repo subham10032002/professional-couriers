@@ -27,13 +27,13 @@ import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.viewModel.PdfViewModel
 
 @Composable
-fun PdfScreen(branch: String, viewModel: PdfViewModel) {
+fun PdfScreen(uniqueUser: String, viewModel: PdfViewModel) {
     val context = LocalContext.current
     val pdfList by viewModel.pdfListState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getAllPdfDocuments(branch, context)
+        viewModel.getAllPdfDocuments(uniqueUser, context)
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

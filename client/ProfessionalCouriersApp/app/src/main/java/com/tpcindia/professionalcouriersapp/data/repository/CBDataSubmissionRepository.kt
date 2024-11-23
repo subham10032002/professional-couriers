@@ -108,9 +108,9 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         }
     }
 
-    suspend fun savePdf(pdfData: ByteArray, fileName: String, branch: String, pdfDao: PdfDao) : Boolean {
+    suspend fun savePdf(pdfData: ByteArray, fileName: String, uniqueUser: String, pdfDao: PdfDao) : Boolean {
         return try {
-            pdfDao.insertPdf(PdfEntity(fileName = fileName, pdfData = pdfData, branch = branch))
+            pdfDao.insertPdf(PdfEntity(fileName = fileName, pdfData = pdfData, uniqueUser = uniqueUser))
             true
         } catch (e: Exception) {
             // Handle exception if insertion fails (e.g., database error)

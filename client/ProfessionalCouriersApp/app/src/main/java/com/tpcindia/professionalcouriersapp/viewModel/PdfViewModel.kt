@@ -33,11 +33,11 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
     private val repository: PdfRepository = PdfRepository()
 
-    fun getAllPdfDocuments(branch: String, context: Context) {
+    fun getAllPdfDocuments(uniqueUser: String, context: Context) {
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                val pdfList = repository.getPDFs(branch, pdfDao)
+                val pdfList = repository.getPDFs(uniqueUser = uniqueUser, pdfDao)
                 _pdfListState.value = pdfList
             } catch (e: Exception) {
                 Toast.makeText(context, "Error fetching PDF documents: ${e.message}", Toast.LENGTH_SHORT).show()

@@ -6,12 +6,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONArray
 import org.json.JSONObject
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
-import java.lang.reflect.Type
 import java.util.concurrent.TimeUnit
 
 class NetworkService {

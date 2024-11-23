@@ -9,6 +9,7 @@ data class InfoState(
     val invoiceNumber: String = "",
     val product: String = "",
     val ewaybill: String = "",
+    val consignmentNumber: String = "",
     val pdfAddress: ByteArray? = null
 ) {
     override fun equals(other: Any?): Boolean {
@@ -25,6 +26,7 @@ data class InfoState(
         if (invoiceNumber != other.invoiceNumber) return false
         if (product != other.product) return false
         if (ewaybill != other.ewaybill) return false
+        if (consignmentNumber != other.consignmentNumber) return false
         if (pdfAddress != null) {
             if (other.pdfAddress == null) return false
             if (!pdfAddress.contentEquals(other.pdfAddress)) return false
@@ -42,6 +44,7 @@ data class InfoState(
         result = 31 * result + invoiceNumber.hashCode()
         result = 31 * result + product.hashCode()
         result = 31 * result + ewaybill.hashCode()
+        result = 31 * result + consignmentNumber.hashCode()
         result = 31 * result + (pdfAddress?.contentHashCode() ?: 0)
         return result
     }

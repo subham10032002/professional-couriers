@@ -98,11 +98,11 @@ fun AppNavHost(
         composable(
             route = Screen.PdfScreen.route,
             arguments = listOf(
-                navArgument("branch") { defaultValue = "" }
+                navArgument("uniqueUser") { defaultValue = "" }
             )
         ) { backStackEntry ->
-            val branch = backStackEntry.arguments?.getString("branch") ?: ""
-            PdfScreen(branch = branch, viewModel = pdfViewModel)
+            val branch = backStackEntry.arguments?.getString("uniqueUser") ?: ""
+            PdfScreen(uniqueUser = branch, viewModel = pdfViewModel)
 
             BackHandler {
                 navController.popBackStack(route = Screen.Home.route, inclusive = false)

@@ -43,23 +43,28 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                 return@launch
             }
             try {
-                val currentLocation = locationRepository.getLocation()
-                creditBookingData.longitude = currentLocation.longitude.toString()
-                creditBookingData.latitude = currentLocation.latitude.toString()
-
                 // Launch network calls concurrently
+                val currentLocation = async { locationRepository.getLocation() }
                 val masterAddressDeferred = async { repository.getMasterAddressDetails(creditBookingData.masterCompanyCode) }
                 val consignmentDeferred = async { repository.getConsignmentDetails(creditBookingData.branch, creditBookingData.userCode) }
 
                 // Await both results
                 val masterAddressResult = masterAddressDeferred.await()
                 val consignmentResult = consignmentDeferred.await()
+                val locationData = currentLocation.await()
 
-                if (consignmentResult.isSuccess && consignmentResult.isSuccess) {
-                    creditBookingData.balanceStock = consignmentResult.getOrThrow().balanceStock
-                    creditBookingData.consignmentNumber = consignmentResult.getOrThrow().accCode +
-                            consignmentResult.getOrThrow().consignmentNo
-                    creditBookingData.masterAddressDetails = masterAddressResult.getOrThrow()
+                if (consignmentResult.isSuccess && masterAddressResult.isSuccess ) {
+
+                    creditBookingData.longitude = locationData.longitude.toString()
+                    creditBookingData.latitude = locationData.latitude.toString()
+
+                    val balanceStock = consignmentResult.getOrThrow().balanceStock
+                    val consignmentNumber = consignmentResult.getOrThrow().accCode + consignmentResult.getOrThrow().consignmentNo
+                    val masterAddressDetails = masterAddressResult.getOrThrow()
+
+                    creditBookingData.balanceStock = balanceStock
+                    creditBookingData.consignmentNumber = consignmentNumber
+                    creditBookingData.masterAddressDetails = masterAddressDetails
 
                     val pdfAddress = repository.createPdf(getApplication(), creditBookingData, cbDimensionData, getCreditInfoData())
                     creditBookingData.pdfAddress = pdfAddress
@@ -73,7 +78,8 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                         _infoState.value =  _infoState.value.copy(
                             isLoading = false,
                             isDataSubmitted = true,
-                            pdfAddress = pdfAddress
+                            pdfAddress = pdfAddress,
+                            consignmentNumber = consignmentNumber
                         )
                     } else {
                         updateStateWithError(result.exceptionOrNull()?.message ?: "Failed to submit credit booking data")
@@ -95,10 +101,10 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
         )
     }
 
-    fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {
+    fun savePdf(pdfData: ByteArray, fileName: String, uniqueUser: String) {
         _infoState.value =  _infoState.value.copy(isLoading = true, isPdfSaved = false)
         viewModelScope.launch {
-            val isSaved = repository.savePdf(pdfData, fileName, branch, pdfDao)
+            val isSaved = repository.savePdf(pdfData, fileName, uniqueUser, pdfDao)
             if (isSaved) {
                 _infoState.value =  _infoState.value.copy(isLoading = false, isPdfSaved = true)
             } else {
@@ -159,8 +165,8 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
         _infoState.value = _infoState.value.copy(invoiceNumber = value)
     }
 
-    fun createPDFScreenRoute(branch: String): String {
-        return Screen.PdfScreen.createRoute(branch)
+    fun createPDFScreenRoute(uniqueUser: String): String {
+        return Screen.PdfScreen.createRoute(uniqueUser = uniqueUser)
     }
 
     fun clearErrorMessage() {

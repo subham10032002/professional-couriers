@@ -11,8 +11,8 @@ interface PdfDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPdf(pdfEntity: PdfEntity)
 
-    @Query("SELECT * FROM pdf_table WHERE branch = :branch")
-    suspend fun getAllPdfs(branch: String): List<PdfEntity>
+    @Query("SELECT * FROM pdf_table WHERE uniqueUser = :uniqueUser")
+    suspend fun getAllPdfs(uniqueUser: String): List<PdfEntity>
 
     @Query("DELETE FROM pdf_table")
     suspend fun deleteAllPdfs()

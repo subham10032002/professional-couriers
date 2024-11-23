@@ -19,8 +19,11 @@ import com.tpcindia.professionalcouriersapp.data.repository.LocationRepository
 import com.tpcindia.professionalcouriersapp.ui.navigation.Screen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 
 class CreditBookingViewModel(application: Application) : AndroidViewModel(application) {
     private val _creditBookingState = MutableStateFlow(CreditBookingState())
@@ -68,9 +71,7 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                 return@launch
             }
             try {
-                val currentLocation = locationRepository.getLocation()
-                creditBookingData.longitude = currentLocation.longitude.toString()
-                creditBookingData.latitude = currentLocation.latitude.toString()
+                val currentLocation = async { locationRepository.getLocation() }
 
                 // Launch network calls concurrently
                 val masterAddressDeferred = async { dataSubmissionRepository.getMasterAddressDetails(creditBookingData.masterCompanyCode) }
@@ -79,8 +80,12 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                 // Await both results
                 val masterAddressResult = masterAddressDeferred.await()
                 val consignmentResult = consignmentDeferred.await()
-
+                val locationData = currentLocation.await()
                 if (consignmentResult.isSuccess && masterAddressResult.isSuccess) {
+
+                    creditBookingData.longitude = locationData.longitude.toString()
+                    creditBookingData.latitude = locationData.latitude.toString()
+
                     val balanceStock = consignmentResult.getOrThrow().balanceStock
                     val consignmentNumber = consignmentResult.getOrThrow().accCode + consignmentResult.getOrThrow().consignmentNo
                     val masterAddressDetails = masterAddressResult.getOrThrow()
@@ -128,18 +133,18 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
         )
     }
 
-    fun createPDFScreenRoute(branch: String): String {
-        return Screen.PdfScreen.createRoute(branch)
+    fun createPDFScreenRoute(uniqueUser: String): String {
+        return Screen.PdfScreen.createRoute(uniqueUser)
     }
 
-    fun savePdf(pdfData: ByteArray, fileName: String, branch: String) {
+    fun savePdf(pdfData: ByteArray, fileName: String, uniqueUser: String) {
         _creditBookingState.value = _creditBookingState.value.copy(
             isDataSubmitted = false,
             isLoading = true,
             isPdfSaved = false,
         )
         viewModelScope.launch {
-            val isSaved = dataSubmissionRepository.savePdf(pdfData, fileName, branch, pdfDao)
+            val isSaved = dataSubmissionRepository.savePdf(pdfData, fileName, uniqueUser, pdfDao)
             if (isSaved) {
                 _creditBookingState.value = _creditBookingState.value.copy(
                     isLoading = false,

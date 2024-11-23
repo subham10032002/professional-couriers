@@ -11,4 +11,5 @@ data class DestinationDetails(
     val areaCode: String? = "",
     val hub: String? = "",
     val state: String? = "",
+    val pdfCity: String? = "",
 ) : Parcelable
