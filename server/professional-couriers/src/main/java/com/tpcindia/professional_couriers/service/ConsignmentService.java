@@ -26,17 +26,11 @@ public class ConsignmentService {
 
         Long finalConsignmentNumber = (long) 0;
         // Find the last used consignment number
-        Long lastUsedConsNo = bookTransRepository.findMaxAccNoCredit(custCode); // +1
+        Long lastUsedConsNo = bookTransRepository.findMinUnusedAccNoCredit(custCode);
         Integer balanceStock = bookTransRepository.countUnusedAccNosCredit(custCode);
 
         if (balanceStock == null || balanceStock <= 2) {
             throw new IllegalArgumentException("Book Not Issued");
-        }
-
-        if (lastUsedConsNo == null || lastUsedConsNo == 0) {
-            lastUsedConsNo = bookTransRepository.findMinUnusedAccNoCredit(custCode); // add nothing
-        } else {
-            lastUsedConsNo += 1;
         }
 
         if (lastUsedConsNo == null || lastUsedConsNo == 0) {
