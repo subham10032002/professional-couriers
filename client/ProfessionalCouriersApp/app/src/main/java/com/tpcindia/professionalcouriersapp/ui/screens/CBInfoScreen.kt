@@ -35,7 +35,6 @@ fun CBInfoScreen(
     sharedViewModel: SharedViewModel
 ) {
     val scrollState = rememberScrollState()
-    val context = LocalContext.current
     val infoState by viewModel.infoState.collectAsState()
 
     val creditBookingData by sharedViewModel.creditBookingData.collectAsState()
@@ -121,8 +120,8 @@ fun CBInfoScreen(
                 CustomButton(
                     onClick = {
                         viewModel.onButtonClicked(
-                            creditBookingData = creditBookingData,
-                            cbDimensionData = cbDimensionData
+                            creditBookingData = creditBookingData.copy(),
+                            cbDimensionData = cbDimensionData.copy()
                         )
                     },
                     horizontalPadding = 60.dp,
@@ -160,9 +159,10 @@ fun CBInfoScreen(
 
         if (infoState.isPdfSaved) {
             viewModel.clearPDFSavedState()
-            val route = viewModel.createPDFScreenRoute(branch = creditBookingData.branch)
+            val route = viewModel.createPDFScreenRoute(uniqueUser = creditBookingData.username+creditBookingData.userCode)
             route.let {
                 viewModel.clearState()
+                sharedViewModel.clearState()
                 navController.navigate(route) {
                     popUpTo(route = Screen.Home.route) {
                         inclusive = false
@@ -175,8 +175,8 @@ fun CBInfoScreen(
             if (infoState.isDataSubmitted) {
                 viewModel.clearDataSubmitted()
                 try {
-                    val fileName = "${creditBookingData.consignmentNumber}.pdf"
-                    viewModel.savePdf(infoState.pdfAddress!!, fileName, branch = creditBookingData.branch)
+                    val fileName = "${infoState.consignmentNumber}.pdf"
+                    viewModel.savePdf(infoState.pdfAddress!!, fileName, uniqueUser = creditBookingData.username+creditBookingData.userCode)
                 } catch (e: Exception) {
                     // Handle Exception
                 }

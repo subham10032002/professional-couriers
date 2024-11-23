@@ -94,7 +94,7 @@ fun HomeScreen(
         ) {
             TopBanner(showMenuIcon = true, menuItem = listOf(
                 MenuItem("PDFs") {
-                    val pdfScreenRoute = viewModel.createPDFScreenRoute(branch = branch)
+                    val pdfScreenRoute = viewModel.createPDFScreenRoute(uniqueUser = name+userCode)
                     navController.navigate(pdfScreenRoute)
                 },
                 MenuItem("Logout") {

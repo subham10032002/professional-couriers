@@ -28,4 +28,10 @@ class SharedViewModel : ViewModel() {
     fun setHomeScreenData(data: HomeScreenData) {
         _homeScreenData.value = data
     }
+
+    fun clearState() {
+        _creditBookingData.value = CreditBookingData()
+        _cbDimensionData.value = CBDimensionData()
+        _homeScreenData.value = HomeScreenData()
+    }
 }

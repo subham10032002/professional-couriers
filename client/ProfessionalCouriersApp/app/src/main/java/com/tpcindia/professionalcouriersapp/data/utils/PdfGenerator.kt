@@ -357,7 +357,7 @@ class PdfGenerator {
 
     private fun getDestination(destinationDetails: DestinationDetails) : String {
         val stringBuilder = StringBuilder()
-        stringBuilder.append(destinationDetails.city).append(" / ")
+        stringBuilder.append(destinationDetails.pdfCity).append(" / ")
         if (destinationDetails.destn?.isNotBlank() == true) return stringBuilder.append(destinationDetails.destn).toString()
         if (destinationDetails.areaCode?.isNotBlank() == true) return stringBuilder.append(destinationDetails.areaCode).toString()
         if (destinationDetails.hub?.isNotBlank() == true) return stringBuilder.append(destinationDetails.hub).toString()

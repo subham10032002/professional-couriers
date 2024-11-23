@@ -8,7 +8,7 @@ data class PdfEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val fileName: String,
     val pdfData: ByteArray,
-    val branch: String
+    val uniqueUser: String
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -19,7 +19,7 @@ data class PdfEntity(
         if (id != other.id) return false
         if (fileName != other.fileName) return false
         if (!pdfData.contentEquals(other.pdfData)) return false
-        if (branch != other.branch) return false
+        if (uniqueUser != other.uniqueUser) return false
 
         return true
     }
@@ -28,7 +28,7 @@ data class PdfEntity(
         var result = id
         result = 31 * result + fileName.hashCode()
         result = 31 * result + pdfData.contentHashCode()
-        result = 31 * result + branch.hashCode()
+        result = 31 * result + uniqueUser.hashCode()
         return result
     }
 }

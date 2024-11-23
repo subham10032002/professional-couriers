@@ -33,6 +33,7 @@ class CreditBookingRepository(private val networkService: NetworkService) {
             val areaCode = jsonObject.getString("areaCode")
             val hub = jsonObject.getString("hub")
             val state = jsonObject.getString("state")
+            val pdfCity = jsonObject.getString("pdfCity")
 
             val details = DestinationDetails(
                 city = cities ?: "",
@@ -40,7 +41,8 @@ class CreditBookingRepository(private val networkService: NetworkService) {
                 destn = destn,
                 areaCode = areaCode,
                 hub = hub,
-                state = state
+                state = state,
+                pdfCity = pdfCity
             )
             finalDestinationDetails.add(details)
         }

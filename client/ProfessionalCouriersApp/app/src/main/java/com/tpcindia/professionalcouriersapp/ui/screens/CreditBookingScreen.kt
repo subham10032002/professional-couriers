@@ -280,9 +280,10 @@ fun CreditBookingScreen(
         }
 
         if (creditBookingState.isPdfSaved) {
-            val route = viewModel.createPDFScreenRoute(branch = homeScreenData.branch)
+            val route = viewModel.createPDFScreenRoute(uniqueUser = homeScreenData.username+homeScreenData.userCode)
             route.let {
                 viewModel.clearState()
+                sharedViewModel.clearState()
                 navController.navigate(route) {
                     popUpTo(route = Screen.Home.route) {
                         inclusive = false
@@ -296,7 +297,7 @@ fun CreditBookingScreen(
             try {
                 val creditBookingData = getCreditBookingData()
                 val fileName = "${creditBookingData.consignmentNumber}.pdf"
-                viewModel.savePdf(creditBookingState.pdfAddress!!, fileName, branch = homeScreenData.branch)
+                viewModel.savePdf(creditBookingState.pdfAddress!!, fileName, uniqueUser = homeScreenData.username+homeScreenData.userCode)
             } catch (e: Exception) {
                 // Handle Exception
             }
