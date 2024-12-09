@@ -28,6 +28,7 @@ public class CreditBookingDataDTO {
     private String userCode;
     private String latitude;
     private String longitude;
+    private String destCode;
     private byte[] pdfAddress;
 
     // Getters
@@ -244,6 +245,14 @@ public class CreditBookingDataDTO {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getDestCode() {
+        return destCode;
+    }
+
+    public void setDestCode(String code) {
+        this.destCode = code;
     }
 
     public byte[] getPdfAddress() {

@@ -2,6 +2,7 @@ package com.tpcindia.professionalcouriersapp.ui.screens
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -125,7 +126,7 @@ fun CreditBookingScreen(
         if (areAllMandatoryFieldsFilled()) {
             val creditBookingData = getCreditBookingData()
             sharedViewModel.setCreditBookingData(creditBookingData)
-            viewModel.submitCreditBookingData(creditBookingData)
+            viewModel.onButtonClicked(creditBookingData)
         } else {
             Toast.makeText(context, "Please fill all mandatory fields", Toast.LENGTH_SHORT).show()
         }
@@ -315,6 +316,7 @@ fun CreditBookingScreen(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .fillMaxSize()
+                .clickable(enabled = false, onClick = { /* Do nothing */ })
                 .background(Color(0x80000000))
         ) {
             CircularProgressIndicator(color = Color.White)

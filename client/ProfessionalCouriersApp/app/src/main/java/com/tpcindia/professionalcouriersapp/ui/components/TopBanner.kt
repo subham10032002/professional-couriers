@@ -37,20 +37,32 @@ fun TopBanner(showMenuIcon: Boolean = false, menuItem: List<MenuItem> = emptyLis
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.tpc_logo),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier
-                .height(42.dp)
-                .width(166.dp)
-                .align(Alignment.Center)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Hardcoded number on the left
+            Text(
+                text = "1",
+                color = Color.White,
+                modifier = Modifier
+                    .padding(end = 16.dp) // Space between the number and the logo
+            )
 
-        if (showMenuIcon) {
-            Box(
-                modifier = Modifier.align(Alignment.CenterEnd)
-            ) {
+            // Logo in the center
+            Spacer(modifier = Modifier.weight(1f))
+            Image(
+                painter = painterResource(id = R.drawable.tpc_logo),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .height(42.dp)
+                    .width(166.dp)
+            )
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Menu icon on the right if enabled
+            if (showMenuIcon) {
                 IconButton(
                     onClick = { menuExpanded = true },
                     modifier = Modifier.size(48.dp)

@@ -90,6 +90,7 @@ public class EmailService {
             headerRow.createCell(3).setCellValue("Consignee");
             headerRow.createCell(4).setCellValue("Psc");
             headerRow.createCell(5).setCellValue("Weight");
+            headerRow.createCell(6).setCellValue("PinCode");
 
             // Write data rows
             int rowNum = 1;
@@ -101,10 +102,11 @@ public class EmailService {
                 row.createCell(3).setCellValue(booking.getConsigneeName());
                 row.createCell(4).setCellValue(booking.getNoOfPsc());
                 row.createCell(5).setCellValue(booking.getWeight());
+                row.createCell(6).setCellValue(booking.getPincode());
             }
 
             // Adjust column widths
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 7; i++) {
                 sheet.autoSizeColumn(i);
             }
 

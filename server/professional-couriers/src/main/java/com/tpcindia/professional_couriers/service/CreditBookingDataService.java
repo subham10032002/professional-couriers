@@ -81,6 +81,7 @@ public class CreditBookingDataService {
         entity.setLongitude(dto.getLongitude());
         entity.setLatitude(dto.getLatitude());
         entity.setPdfAddress(dto.getPdfAddress());
+        entity.setDestCode(dto.getDestCode());
         return entity;
     }
 }
