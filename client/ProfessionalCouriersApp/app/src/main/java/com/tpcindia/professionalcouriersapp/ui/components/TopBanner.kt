@@ -43,7 +43,7 @@ fun TopBanner(showMenuIcon: Boolean = false, menuItem: List<MenuItem> = emptyLis
         ) {
             // Hardcoded number on the left
             Text(
-                text = "1",
+                text = "3",
                 color = Color.White,
                 modifier = Modifier
                     .padding(end = 16.dp) // Space between the number and the logo

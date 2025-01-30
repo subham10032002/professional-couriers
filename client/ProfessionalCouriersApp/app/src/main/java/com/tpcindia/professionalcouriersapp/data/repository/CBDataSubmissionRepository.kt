@@ -9,46 +9,50 @@ import com.tpcindia.professionalcouriersapp.data.model.CBInfoData
 import com.tpcindia.professionalcouriersapp.data.model.CreditBookingData
 import com.tpcindia.professionalcouriersapp.data.model.entity.PdfEntity
 import com.tpcindia.professionalcouriersapp.data.model.response.ConsignmentDetails
-import com.tpcindia.professionalcouriersapp.data.model.response.DestinationDetails
 import com.tpcindia.professionalcouriersapp.data.model.response.MasterAddressDetails
 import com.tpcindia.professionalcouriersapp.data.utils.PdfGenerator
-import org.json.JSONArray
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.IOException
 
 class CBDataSubmissionRepository(private val networkService: NetworkService) {
 
-    fun submitCreditBookingDetails(
+    suspend fun submitCreditBookingDetails(
         creditBookingData: CreditBookingData,
         cbDimensionData: CBDimensionData,
         cbInfoData: CBInfoData): Result<String> {
-        return try {
-            val result = networkService.sendCreditBookingData(mergeDataToJson(
-                creditBookingData,
-                cbDimensionData,
-                cbInfoData
-            ))
-            if (result.isSuccess) {
-                Result.success(result.getOrThrow())
-            } else {
-                Result.failure(result.exceptionOrNull() ?: Exception("Failed to save the data in database"))
+        return withContext(Dispatchers.IO) {
+            try {
+                val result = networkService.sendCreditBookingData(mergeDataToJson(
+                    creditBookingData,
+                    cbDimensionData,
+                    cbInfoData
+                ))
+                if (result.isSuccess) {
+                    Result.success(result.getOrThrow())
+                } else {
+                    Result.failure(result.exceptionOrNull() ?: Exception("Failed to save the data in database"))
+                }
+            } catch (e: IOException) {
+                Result.failure(e)
             }
-        } catch (e: IOException) {
-            Result.failure(e)
         }
     }
 
-    fun getConsignmentDetails(branch: String, custCode: String): Result<ConsignmentDetails> {
-        return try {
-            val result = networkService.getConsignmentDetails(branch, custCode)
-            if (result.isSuccess) {
-                val consignmentDetails = parseConsignmentDetails(result.getOrThrow())
-                Result.success(consignmentDetails)
-            } else {
-                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch consignment details"))
+    suspend fun getConsignmentDetails(branch: String, custCode: String): Result<ConsignmentDetails> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result = networkService.getConsignmentDetails(branch, custCode)
+                if (result.isSuccess) {
+                    val consignmentDetails = parseConsignmentDetails(result.getOrThrow())
+                    Result.success(consignmentDetails)
+                } else {
+                    Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch consignment details"))
+                }
+            } catch (e: IOException) {
+                Result.failure(e)
             }
-        } catch (e: IOException) {
-            Result.failure(e)
         }
     }
 
@@ -64,18 +68,23 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
         }
     }
 
-    fun getMasterAddressDetails(code: String) : Result<MasterAddressDetails> {
-        return try {
-            val result = networkService.getMasterAddressDetails(code)
-            if (result.isSuccess) {
-                val addressDetails = result.getOrThrow()
-                val jsonObject = JSONObject(addressDetails)
-                Result.success(parseMasterAddressDetails(jsonObject))
-            } else {
-                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch master address details"))
+    suspend fun getMasterAddressDetails(code: String) : Result<MasterAddressDetails> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result = networkService.getMasterAddressDetails(code)
+                if (result.isSuccess) {
+                    val addressDetails = result.getOrThrow()
+                    val jsonObject = JSONObject(addressDetails)
+                    Result.success(parseMasterAddressDetails(jsonObject))
+                } else {
+                    Result.failure(
+                        result.exceptionOrNull()
+                            ?: Exception("Failed to fetch master address details")
+                    )
+                }
+            } catch (e: IOException) {
+                Result.failure(e)
             }
-        } catch (e: IOException) {
-            Result.failure(e)
         }
     }
 
@@ -110,7 +119,9 @@ class CBDataSubmissionRepository(private val networkService: NetworkService) {
 
     suspend fun savePdf(pdfData: ByteArray, fileName: String, uniqueUser: String, pdfDao: PdfDao) : Boolean {
         return try {
-            pdfDao.insertPdf(PdfEntity(fileName = fileName, pdfData = pdfData, uniqueUser = uniqueUser))
+            withContext(Dispatchers.IO) {
+                pdfDao.insertPdf(PdfEntity(fileName = fileName, pdfData = pdfData, uniqueUser = uniqueUser))
+            }
             true
         } catch (e: Exception) {
             // Handle exception if insertion fails (e.g., database error)

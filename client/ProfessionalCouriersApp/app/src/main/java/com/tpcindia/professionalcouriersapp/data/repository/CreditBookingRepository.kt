@@ -2,23 +2,27 @@ package com.tpcindia.professionalcouriersapp.data.repository
 
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.model.response.DestinationDetails
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import java.io.IOException
 
 class CreditBookingRepository(private val networkService: NetworkService) {
 
-    fun getDestination(pincode: String): Result<List<DestinationDetails>> {
-        return try {
-            val result = networkService.getDestination(pincode)
-            if (result.isSuccess) {
-                val destinations = result.getOrThrow()
-                val jsonArray = JSONArray(destinations)
-                Result.success(parseDestinationDetails(jsonArray))
-            } else {
-                Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch destinations"))
+    suspend fun getDestination(pincode: String): Result<List<DestinationDetails>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val result = networkService.getDestination(pincode)
+                if (result.isSuccess) {
+                    val destinations = result.getOrThrow()
+                    val jsonArray = JSONArray(destinations)
+                    Result.success(parseDestinationDetails(jsonArray))
+                } else {
+                    Result.failure(result.exceptionOrNull() ?: Exception("Failed to fetch destinations"))
+                }
+            } catch (e: IOException) {
+                Result.failure(e)
             }
-        } catch (e: IOException) {
-            Result.failure(e)
         }
     }
 

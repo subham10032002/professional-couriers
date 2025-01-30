@@ -25,22 +25,24 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun checkLoginState() {
-        val savedUser = repository.getUser(getApplication())
-        if (savedUser != null) {
-            _loginState.value = LoginState(
-                isAuthenticated = true,
-                name = "${savedUser.firstName} ${savedUser.lastName}",
-                branch = savedUser.branch,
-                branchCode = savedUser.branchCode,
-                userCode = savedUser.userCode
-            )
+        viewModelScope.launch(Dispatchers.Main) {
+            val savedUser = repository.getUser(getApplication())
+            if (savedUser != null) {
+                _loginState.value = LoginState(
+                    isAuthenticated = true,
+                    name = "${savedUser.firstName} ${savedUser.lastName}",
+                    branch = savedUser.branch,
+                    branchCode = savedUser.branchCode,
+                    userCode = savedUser.userCode
+                )
+            }
         }
     }
 
     fun login(username: String, password: String) {
         val loginRequest = LoginRequest(username, password)
         _loginState.value = LoginState(isLoading = true)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             try {
                 val result = repository.login(loginRequest)
                 if (result.isSuccess) {

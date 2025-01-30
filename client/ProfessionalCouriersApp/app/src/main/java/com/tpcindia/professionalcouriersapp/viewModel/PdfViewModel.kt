@@ -11,7 +11,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tpcindia.professionalcouriersapp.data.db.dao.PdfDao
 import com.tpcindia.professionalcouriersapp.data.db.database.DatabaseProvider
-import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.model.entity.PdfEntity
 import com.tpcindia.professionalcouriersapp.data.repository.PdfRepository
 import kotlinx.coroutines.Dispatchers
@@ -34,7 +33,7 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: PdfRepository = PdfRepository()
 
     fun getAllPdfDocuments(uniqueUser: String, context: Context) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             _isLoading.value = true
             try {
                 val pdfList = repository.getPDFs(uniqueUser = uniqueUser, pdfDao)
@@ -48,7 +47,7 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun clearAllPDFs(context: Context) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             _isLoading.value = true
             try {
                 repository.clearPDFs(pdfDao)
@@ -62,7 +61,7 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun viewPdf(context: Context, pdf: PdfEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             _isLoading.value = true
             try {
                 val file = savePdfToTempFile(context, pdf)
@@ -99,7 +98,7 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun savePdfToDownloads(context: Context, pdf: PdfEntity) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.Main) {
             _isLoading.value = true
             try {
                 val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
