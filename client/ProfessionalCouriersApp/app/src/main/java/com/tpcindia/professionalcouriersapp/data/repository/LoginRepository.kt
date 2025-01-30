@@ -32,15 +32,21 @@ class LoginRepository(private val networkService: NetworkService) {
         }
     }
 
-    fun saveUser(context: Context, user: User) {
-        SharedPreferencesManager.saveUser(context, user)
+    suspend fun saveUser(context: Context, user: User) {
+        withContext(Dispatchers.IO) {
+            SharedPreferencesManager.saveUser(context, user)
+        }
     }
 
-    fun getUser(context: Context): User? {
-        return SharedPreferencesManager.getUser(context)
+    suspend fun getUser(context: Context): User? {
+        return withContext(Dispatchers.IO) {
+            SharedPreferencesManager.getUser(context)
+        }
     }
 
-    fun clearUser(context: Context) {
-        SharedPreferencesManager.clearUser(context)
+    suspend fun clearUser(context: Context) {
+        withContext(Dispatchers.IO) {
+            SharedPreferencesManager.clearUser(context)
+        }
     }
 }

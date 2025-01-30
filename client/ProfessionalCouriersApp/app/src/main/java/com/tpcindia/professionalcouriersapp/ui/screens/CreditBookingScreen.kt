@@ -1,5 +1,6 @@
 package com.tpcindia.professionalcouriersapp.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -97,7 +98,7 @@ fun CreditBookingScreen(
             clientContact = selectedClientDetails?.clientContactNo ?: "",
             masterCompanyCode = selectedClientDetails?.masterCompanyCode ?: "",
             noOfPsc = noOfPsc.substringBefore("."),
-            weight = creditBookingState.weight,
+            weight = creditBookingState.weight.toFloat().toString(),
             bookingDate = currentDate,
             photoOfAddress = selectedImageByteArray,
             branch = homeScreenData.branch,

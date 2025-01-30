@@ -1,8 +1,6 @@
 package com.tpcindia.professionalcouriersapp.viewModel
 
 import android.app.Application
-import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,9 +17,14 @@ import com.tpcindia.professionalcouriersapp.viewModel.uiState.InfoState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.atomic.AtomicBoolean
 
 class CBInfoViewModel(application: Application) : AndroidViewModel(application) {
     private val _infoState = MutableStateFlow(InfoState())
@@ -32,73 +35,101 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
     private val repository = CBDataSubmissionRepository(NetworkService())
     private val locationRepository = LocationRepository(application)
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
-    private val isSubmitting = MutableStateFlow(false)
+    private val isSubmitting = AtomicBoolean(false)
+    private val mutex = Mutex()
 
     private fun submitCreditBookingData(
         creditBookingData: CreditBookingData,
         cbDimensionData: CBDimensionData
     ) {
-        if (isSubmitting.value) {
-            _infoState.value = _infoState.value.copy(
-                error = "Submission is already in progress. Please wait."
-            )
+
+        job?.cancel()
+        if (job?.isActive == true) {
             return
         }
-        isSubmitting.value = true
-        _infoState.value =  _infoState.value.copy(isLoading = true)
-        job?.cancel()
-        job = viewModelScope.launch(Dispatchers.IO) {
-            if (job?.isActive == false) {
+        job = viewModelScope.launch(Dispatchers.Main) {
+            // Introduce delay for debounce
+            delay(500)
+
+            // Check if already submitting using AtomicBoolean
+            if (isSubmitting.get()) {
+                _infoState.value = _infoState.value.copy(
+                    error = "Submission is already in progress. Please wait."
+                )
                 return@launch
             }
-            try {
-                // Launch network calls concurrently
-                val currentLocation = async { locationRepository.getLocation() }
-                val masterAddressDeferred = async { repository.getMasterAddressDetails(creditBookingData.masterCompanyCode) }
-                val consignmentDeferred = async { repository.getConsignmentDetails(creditBookingData.branch, creditBookingData.userCode) }
+            // Set the flag to true indicating submission is in progress
+            if (isSubmitting.compareAndSet(false, true)) {
+                try {
+                    mutex.withLock {
+                        _infoState.value = _infoState.value.copy(isLoading = true)
 
-                // Await both results
-                val masterAddressResult = masterAddressDeferred.await()
-                val consignmentResult = consignmentDeferred.await()
-                val locationData = currentLocation.await()
+                        // Launch network calls concurrently
+                        val currentLocation = async { locationRepository.getLocation() }
+                        val masterAddressDeferred =
+                            async { repository.getMasterAddressDetails(creditBookingData.masterCompanyCode) }
+                        val consignmentDeferred = async {
+                            repository.getConsignmentDetails(
+                                creditBookingData.branch,
+                                creditBookingData.userCode
+                            )
+                        }
 
-                if (consignmentResult.isSuccess && masterAddressResult.isSuccess ) {
+                        // Await both results
+                        val masterAddressResult = masterAddressDeferred.await()
+                        val consignmentResult = consignmentDeferred.await()
+                        val locationData = currentLocation.await()
+                        ensureActive()
+                        if (consignmentResult.isSuccess && masterAddressResult.isSuccess) {
 
-                    creditBookingData.longitude = locationData.longitude.toString()
-                    creditBookingData.latitude = locationData.latitude.toString()
+                            creditBookingData.longitude = locationData.longitude.toString()
+                            creditBookingData.latitude = locationData.latitude.toString()
 
-                    val balanceStock = consignmentResult.getOrThrow().balanceStock
-                    val consignmentNumber = consignmentResult.getOrThrow().accCode + consignmentResult.getOrThrow().consignmentNo
-                    val masterAddressDetails = masterAddressResult.getOrThrow()
+                            val balanceStock = consignmentResult.getOrThrow().balanceStock
+                            val consignmentNumber =
+                                consignmentResult.getOrThrow().accCode + consignmentResult.getOrThrow().consignmentNo
+                            val masterAddressDetails = masterAddressResult.getOrThrow()
 
-                    creditBookingData.balanceStock = balanceStock
-                    creditBookingData.consignmentNumber = consignmentNumber
-                    creditBookingData.masterAddressDetails = masterAddressDetails
+                            creditBookingData.balanceStock = balanceStock
+                            creditBookingData.consignmentNumber = consignmentNumber
+                            creditBookingData.masterAddressDetails = masterAddressDetails
 
-                    val pdfAddress = repository.createPdf(getApplication(), creditBookingData, cbDimensionData, getCreditInfoData())
-                    creditBookingData.pdfAddress = pdfAddress
+                            val pdfAddress = repository.createPdf(
+                                getApplication(),
+                                creditBookingData,
+                                cbDimensionData,
+                                getCreditInfoData()
+                            )
+                            creditBookingData.pdfAddress = pdfAddress
 
-                    val result = repository.submitCreditBookingDetails(
-                        creditBookingData = creditBookingData,
-                        cbDimensionData = cbDimensionData,
-                        cbInfoData = getCreditInfoData()
-                    )
-                    if (result.isSuccess) {
-                        _infoState.value =  _infoState.value.copy(
-                            isDataSubmitted = true,
-                            pdfAddress = pdfAddress,
-                            consignmentNumber = consignmentNumber
-                        )
-                    } else {
-                        updateStateWithError(result.exceptionOrNull()?.message ?: "Failed to submit credit booking data")
+                            val result = repository.submitCreditBookingDetails(
+                                creditBookingData = creditBookingData,
+                                cbDimensionData = cbDimensionData,
+                                cbInfoData = getCreditInfoData()
+                            )
+                            if (result.isSuccess) {
+                                _infoState.value = _infoState.value.copy(
+                                    isDataSubmitted = true,
+                                    pdfAddress = pdfAddress,
+                                    consignmentNumber = consignmentNumber
+                                )
+                            } else {
+                                updateStateWithError(
+                                    result.exceptionOrNull()?.message
+                                        ?: "Failed to submit credit booking data"
+                                )
+                            }
+                        } else {
+                            updateStateWithError(
+                                consignmentResult.exceptionOrNull()?.message
+                                    ?: "Failed to fetch consignment details"
+                            )
+                        }
                     }
-                } else {
-                    updateStateWithError(consignmentResult.exceptionOrNull()?.message ?: "Failed to fetch consignment details")
+                } catch (e: Exception) {
+                    updateStateWithError("Failed to submit credit booking data: ${e.message}")
+                    isSubmitting.set(false)
                 }
-            } catch (e: Exception) {
-                updateStateWithError("Failed to submit credit booking data: ${e.message}")
-            } finally {
-                isSubmitting.value = false
             }
         }
     }
@@ -112,20 +143,27 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun savePdf(pdfData: ByteArray, fileName: String, uniqueUser: String) {
-        _infoState.value =  _infoState.value.copy(isPdfSaved = false)
-        viewModelScope.launch {
-            val isSaved = repository.savePdf(pdfData, fileName, uniqueUser, pdfDao)
-            if (isSaved) {
-                _infoState.value =  _infoState.value.copy(isLoading = false, isPdfSaved = true)
-            } else {
-                _infoState.value =  _infoState.value.copy(isLoading = false, isPdfSaved = false)
-                Toast.makeText(getApplication(), "Failed to save PDF", Toast.LENGTH_SHORT).show()
+        try {
+            viewModelScope.launch(Dispatchers.Main) {
+                _infoState.value =  _infoState.value.copy(isPdfSaved = false)
+                val isSaved = repository.savePdf(pdfData, fileName, uniqueUser, pdfDao)
+                if (isSaved) {
+                    _infoState.value =  _infoState.value.copy(isLoading = false, isPdfSaved = true)
+                } else {
+                    _infoState.value =  _infoState.value.copy(isLoading = false, isPdfSaved = false)
+                    Toast.makeText(getApplication(), "Failed to save PDF", Toast.LENGTH_SHORT).show()
+                }
             }
+        } catch (e: Exception) {
+            _infoState.value =  _infoState.value.copy(isLoading = false, isPdfSaved = false)
+            isSubmitting.set(false)
+            Toast.makeText(getApplication(), "Failed to save PDF", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     fun onButtonClicked(creditBookingData: CreditBookingData, cbDimensionData: CBDimensionData) {
-        if (!_infoState.value.isLoading) {
+        if (!_infoState.value.isLoading && !isSubmitting.get()) {
             val updateInvoiceValue = _infoState.value.invoiceValue.toIntOrNull()
             if (updateInvoiceValue != null && updateInvoiceValue >= 50000 && isMandatoryFieldBlank()) {
                 _infoState.value = _infoState.value.copy(error = "Please fill the mandatory fields")
@@ -193,6 +231,6 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
 
     fun clearState() {
         _infoState.value = InfoState()
-        isSubmitting.value = false
+        isSubmitting.set(false)
     }
 }
