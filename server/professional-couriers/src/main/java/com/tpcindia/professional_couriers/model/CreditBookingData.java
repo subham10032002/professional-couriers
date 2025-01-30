@@ -100,6 +100,9 @@ public class CreditBookingData {
     @Column(name = "latitude")
     private String latitude;
 
+    @Column(name = "destcode")
+    private String destCode;
+
     @Lob
     @Column(name = "photoOfAddress")
     private byte[] photoOfAddress;
@@ -363,6 +366,14 @@ public class CreditBookingData {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getDestCode() {
+        return destCode;
+    }
+
+    public void setDestCode(String code) {
+        this.destCode = code;
     }
 
     public byte[] getPdfAddress() {

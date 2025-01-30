@@ -62,7 +62,7 @@ class NetworkService {
                 val responseBody = response.body?.string() ?: return Result.failure(Exception("Empty response"))
                 Result.success(responseBody)
             } else if (response.code == 404) {
-                Result.failure(Exception("Branch not found"))
+                Result.failure(Exception("Data not found for sending the mail"))
             } else {
                 Result.failure(Exception(response.message))
             }

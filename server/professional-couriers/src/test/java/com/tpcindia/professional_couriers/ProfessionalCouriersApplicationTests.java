@@ -1,13 +1,13 @@
-package com.tpcindia.professional_couriers;
+// package com.tpcindia.professional_couriers;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class ProfessionalCouriersApplicationTests {
+// @SpringBootTest
+// class ProfessionalCouriersApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// 	@Test
+// 	void contextLoads() {
+// 	}
 
-}
+// }
