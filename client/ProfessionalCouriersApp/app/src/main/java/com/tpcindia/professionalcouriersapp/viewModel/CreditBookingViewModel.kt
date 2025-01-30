@@ -1,6 +1,7 @@
 package com.tpcindia.professionalcouriersapp.viewModel
 
 import android.app.Application
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
@@ -34,6 +35,7 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
     private val locationRepository = LocationRepository(application)
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
     private var job: Job? = null
+    private val isSubmitting = MutableStateFlow(false)
 
     fun fetchDestination(pincode: String) {
         if (pincode.length == 6) {
@@ -61,7 +63,14 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
         }
     }
 
-    fun submitCreditBookingData(creditBookingData: CreditBookingData, cbDimensionData: CBDimensionData = CBDimensionData(), cbInfoData: CBInfoData = CBInfoData()) {
+    private fun submitCreditBookingData(creditBookingData: CreditBookingData, cbDimensionData: CBDimensionData = CBDimensionData(), cbInfoData: CBInfoData = CBInfoData()) {
+        if (isSubmitting.value) {
+            _creditBookingState.value = _creditBookingState.value.copy(
+                error = "Submission is already in progress. Please wait."
+            )
+            return
+        }
+        isSubmitting.value = true
         _creditBookingState.value = _creditBookingState.value.copy(
             isLoading = true,
         )
@@ -71,6 +80,7 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                 return@launch
             }
             try {
+                Log.d("CHECKYY", "hell011111")
                 val currentLocation = async { locationRepository.getLocation() }
 
                 // Launch network calls concurrently
@@ -110,7 +120,6 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                     )
                     if (result.isSuccess) {
                         _creditBookingState.value = _creditBookingState.value.copy(
-                            isLoading = false,
                             isDataSubmitted = true
                         )
                     } else {
@@ -121,7 +130,19 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                 }
             } catch (e: Exception) {
                 updateStateWithError("Failed to submit credit booking data: ${e.message}")
+            } finally {
+                isSubmitting.value = false
             }
+        }
+    }
+
+    fun onButtonClicked(creditBookingData: CreditBookingData) {
+        if (!_creditBookingState.value.isLoading) {
+            submitCreditBookingData(
+                creditBookingData = creditBookingData,
+            )
+        } else {
+            _creditBookingState.value = _creditBookingState.value.copy(error = "Please wait we're submitting the data")
         }
     }
 
@@ -140,7 +161,6 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
     fun savePdf(pdfData: ByteArray, fileName: String, uniqueUser: String) {
         _creditBookingState.value = _creditBookingState.value.copy(
             isDataSubmitted = false,
-            isLoading = true,
             isPdfSaved = false,
         )
         viewModelScope.launch {
@@ -181,6 +201,7 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
 
     fun clearState() {
         _creditBookingState.value = CreditBookingState()
+        isSubmitting.value = false
     }
 
 }

@@ -2,6 +2,7 @@ package com.tpcindia.professionalcouriersapp.viewModel
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,11 +32,19 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
     private val repository = CBDataSubmissionRepository(NetworkService())
     private val locationRepository = LocationRepository(application)
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
+    private val isSubmitting = MutableStateFlow(false)
 
     private fun submitCreditBookingData(
         creditBookingData: CreditBookingData,
         cbDimensionData: CBDimensionData
     ) {
+        if (isSubmitting.value) {
+            _infoState.value = _infoState.value.copy(
+                error = "Submission is already in progress. Please wait."
+            )
+            return
+        }
+        isSubmitting.value = true
         _infoState.value =  _infoState.value.copy(isLoading = true)
         job?.cancel()
         job = viewModelScope.launch(Dispatchers.IO) {
@@ -76,7 +85,6 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                     )
                     if (result.isSuccess) {
                         _infoState.value =  _infoState.value.copy(
-                            isLoading = false,
                             isDataSubmitted = true,
                             pdfAddress = pdfAddress,
                             consignmentNumber = consignmentNumber
@@ -89,6 +97,8 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                 }
             } catch (e: Exception) {
                 updateStateWithError("Failed to submit credit booking data: ${e.message}")
+            } finally {
+                isSubmitting.value = false
             }
         }
     }
@@ -102,7 +112,7 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun savePdf(pdfData: ByteArray, fileName: String, uniqueUser: String) {
-        _infoState.value =  _infoState.value.copy(isLoading = true, isPdfSaved = false)
+        _infoState.value =  _infoState.value.copy(isPdfSaved = false)
         viewModelScope.launch {
             val isSaved = repository.savePdf(pdfData, fileName, uniqueUser, pdfDao)
             if (isSaved) {
@@ -183,5 +193,6 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
 
     fun clearState() {
         _infoState.value = InfoState()
+        isSubmitting.value = false
     }
 }
