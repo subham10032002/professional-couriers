@@ -10,7 +10,9 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.tpcindia.professionalcouriersapp.data.model.CurrentLocation
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 
@@ -20,18 +22,20 @@ class LocationRepository(context: Context) {
         LocationServices.getFusedLocationProviderClient(context)
 
     @SuppressLint("MissingPermission")
-    suspend fun getLocation(): CurrentLocation = suspendCancellableCoroutine { continuation ->
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    val latitude = location.latitude
-                    val longitude = location.longitude
-                    continuation.resume(CurrentLocation(latitude, longitude))
-                } else {
-                    // Request new location data if the last known location is null
-                    requestNewLocationData(continuation)
+    suspend fun getLocation(): CurrentLocation = withContext(Dispatchers.IO) {
+        suspendCancellableCoroutine { continuation ->
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        val latitude = location.latitude
+                        val longitude = location.longitude
+                        continuation.resume(CurrentLocation(latitude, longitude))
+                    } else {
+                        // Request new location data if the last known location is null
+                        requestNewLocationData(continuation)
+                    }
                 }
-            }
+        }
     }
 
     @SuppressLint("MissingPermission")

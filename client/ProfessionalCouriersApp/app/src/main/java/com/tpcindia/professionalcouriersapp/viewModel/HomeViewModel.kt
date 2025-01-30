@@ -2,12 +2,10 @@ package com.tpcindia.professionalcouriersapp.viewModel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
 import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.repository.HomeRepository
 import com.tpcindia.professionalcouriersapp.viewModel.uiState.HomeState
 import androidx.lifecycle.viewModelScope
-import com.tpcindia.professionalcouriersapp.data.model.CBDimensionData
 import com.tpcindia.professionalcouriersapp.data.model.HomeScreenData
 import com.tpcindia.professionalcouriersapp.data.model.response.ClientDetails
 import com.tpcindia.professionalcouriersapp.data.repository.LoginRepository
@@ -16,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -33,7 +30,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun onBookingClick(branch: String) {
         _homeState.value = HomeState(isLoading = true)
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.Main) {
             try {
                 val clientDetailsResult = fetchClientDetails(branch)
                 if (clientDetailsResult.isSuccess) {
@@ -66,11 +63,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _homeState.value = HomeState(
             isEmailSending = true
         )
-        job = viewModelScope.launch(Dispatchers.IO) {
+        job = viewModelScope.launch(Dispatchers.Main) {
             try {
-                if (!isActive) {
-                    return@launch
-                }
                 val result = repository.sendEmails(
                     branch = branch,
                     branchCode = branchCode,
@@ -91,10 +85,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun logout() {
-        loginRepository.clearUser(context = getApplication())
+        viewModelScope.launch(Dispatchers.Main) {
+            loginRepository.clearUser(context = getApplication())
+        }
     }
 
-    private fun fetchClientDetails(branch: String): Result<List<ClientDetails>> {
+    private suspend fun fetchClientDetails(branch: String): Result<List<ClientDetails>> {
         return repository.getClientDetails(branch)
     }
 
