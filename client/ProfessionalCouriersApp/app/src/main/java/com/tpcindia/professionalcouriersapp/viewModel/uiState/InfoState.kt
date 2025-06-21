@@ -3,6 +3,7 @@ package com.tpcindia.professionalcouriersapp.viewModel.uiState
 data class InfoState(
     val isLoading: Boolean = false,
     val error: String? = null,
+    val message: String? = null,
     val isDataSubmitted: Boolean = false,
     val isPdfSaved: Boolean = false,
     val invoiceValue: String = "",
@@ -10,7 +11,7 @@ data class InfoState(
     val product: String = "",
     val ewaybill: String = "",
     val consignmentNumber: String = "",
-    val pdfAddress: ByteArray? = null
+    val pdfAddress: ByteArray? = null,
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -156,8 +156,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         return Screen.Home.route
     }
 
-    fun createPDFScreenRoute(uniqueUser: String): String {
-        return Screen.PdfScreen.createRoute(uniqueUser)
+    fun createPDFScreenRoute(uniqueUser: String, branch: String, userCode: String): String {
+        return Screen.PdfScreen.createRoute(
+            uniqueUser = uniqueUser,
+            branch = branch,
+            userCode = userCode,)
     }
 
     fun clearBookingCardClicked() {

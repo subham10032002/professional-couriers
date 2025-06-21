@@ -29,6 +29,7 @@ data class CreditBookingData(
     val weight: String = "",
     var longitude: String = "",
     var latitude: String = "",
+    val transactionId: String = "",
     val photoOfAddress: ByteArray? = null,
     var pdfAddress: ByteArray? = null
 ) : Parcelable {

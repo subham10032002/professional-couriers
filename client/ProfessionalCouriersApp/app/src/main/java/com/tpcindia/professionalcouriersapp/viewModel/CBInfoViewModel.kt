@@ -111,7 +111,8 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                                 _infoState.value = _infoState.value.copy(
                                     isDataSubmitted = true,
                                     pdfAddress = pdfAddress,
-                                    consignmentNumber = consignmentNumber
+                                    consignmentNumber = consignmentNumber,
+                                    message = result.getOrNull()
                                 )
                             } else {
                                 updateStateWithError(
@@ -128,6 +129,7 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
                     }
                 } catch (e: Exception) {
                     updateStateWithError("Failed to submit credit booking data: ${e.message}")
+                } finally {
                     isSubmitting.set(false)
                 }
             }
@@ -213,8 +215,12 @@ class CBInfoViewModel(application: Application) : AndroidViewModel(application) 
         _infoState.value = _infoState.value.copy(invoiceNumber = value)
     }
 
-    fun createPDFScreenRoute(uniqueUser: String): String {
-        return Screen.PdfScreen.createRoute(uniqueUser = uniqueUser)
+    fun createPDFScreenRoute(uniqueUser: String, branch: String, userCode: String): String {
+        return Screen.PdfScreen.createRoute(
+            uniqueUser = uniqueUser,
+            branch = branch,
+            userCode = userCode,
+        )
     }
 
     fun clearErrorMessage() {

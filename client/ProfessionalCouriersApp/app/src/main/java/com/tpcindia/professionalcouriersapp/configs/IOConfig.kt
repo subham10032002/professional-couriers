@@ -19,6 +19,7 @@ object IOConfig {
         const val SAVE_DATA = "/api/credit-booking-data/save"
         const val EMAIL_SEND = "/api/email/send"
         const val MASTER_ADDRESS_DETAILS = "/api/companyMaster/addressDetails"
+        const val TOP_PDF = "/api/credit-booking-data/pdfDetails"
     }
 
     fun getBaseUrl(): String {
@@ -51,5 +52,9 @@ object IOConfig {
 
     fun getMasterAddressUrl() : String {
         return String.format("%s%s", BASE_URL, Endpoints.MASTER_ADDRESS_DETAILS)
+    }
+
+    fun getTopPdfUrl(): String {
+        return String.format("%s%s", BASE_URL, Endpoints.TOP_PDF)
     }
 }

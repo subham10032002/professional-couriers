@@ -1,5 +1,6 @@
 package com.tpcindia.professionalcouriersapp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 
 import androidx.compose.foundation.background
@@ -35,6 +36,7 @@ fun CBInfoScreen(
     navController: NavController,
     sharedViewModel: SharedViewModel
 ) {
+    val context = LocalContext.current
     val scrollState = rememberScrollState()
     val infoState by viewModel.infoState.collectAsState()
 
@@ -161,7 +163,11 @@ fun CBInfoScreen(
 
         if (infoState.isPdfSaved) {
             viewModel.clearPDFSavedState()
-            val route = viewModel.createPDFScreenRoute(uniqueUser = creditBookingData.username+creditBookingData.userCode)
+            val route = viewModel.createPDFScreenRoute(
+                uniqueUser = creditBookingData.username+creditBookingData.userCode,
+                branch = creditBookingData.branch,
+                userCode = creditBookingData.userCode,
+            )
             route.let {
                 viewModel.clearState()
                 sharedViewModel.clearState()
@@ -177,6 +183,9 @@ fun CBInfoScreen(
             if (infoState.isDataSubmitted) {
                 viewModel.clearDataSubmitted()
                 try {
+                    infoState.message?.let {
+                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                    }
                     val fileName = "${infoState.consignmentNumber}.pdf"
                     viewModel.savePdf(infoState.pdfAddress!!, fileName, uniqueUser = creditBookingData.username+creditBookingData.userCode)
                 } catch (e: Exception) {
