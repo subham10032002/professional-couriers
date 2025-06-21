@@ -4,5 +4,5 @@ data class CBInfoData(
     val invoiceNumber: String = "",
     val product: String = "",
     val invoiceValue: String = "",
-    val ewayBill: String = ""
+    val    ewayBill: String = ""
 )

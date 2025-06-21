@@ -27,7 +27,12 @@ import com.tpcindia.professionalcouriersapp.ui.components.TopBanner
 import com.tpcindia.professionalcouriersapp.viewModel.PdfViewModel
 
 @Composable
-fun PdfScreen(uniqueUser: String, viewModel: PdfViewModel) {
+fun PdfScreen(
+    uniqueUser: String,
+    branch: String,
+    userCode: String,
+    viewModel: PdfViewModel,
+) {
     val context = LocalContext.current
     val pdfList by viewModel.pdfListState.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
@@ -49,6 +54,17 @@ fun PdfScreen(uniqueUser: String, viewModel: PdfViewModel) {
                         onClick = {
                             viewModel.clearAllPDFs(context)
                             Toast.makeText(context, "PDFs cleared", Toast.LENGTH_SHORT).show()
+                        }
+                    ),
+                    MenuItem(
+                        text = "Refresh",
+                        onClick = {
+                            viewModel.getTopPdfs(
+                                uniqueUser = uniqueUser,
+                                branch = branch,
+                                userCode = userCode,
+                                context = context,
+                            )
                         }
                     )
                 )

@@ -30,6 +30,7 @@ public class CreditBookingDataDTO {
     private String longitude;
     private String destCode;
     private byte[] pdfAddress;
+    private String transactionId;
 
     // Getters
     public String getCurrentDate() {
@@ -261,5 +262,13 @@ public class CreditBookingDataDTO {
 
     public void setPdfAddress(byte[] address) {
         this.pdfAddress = address;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String id) {
+        this.transactionId = id;
     }
 }

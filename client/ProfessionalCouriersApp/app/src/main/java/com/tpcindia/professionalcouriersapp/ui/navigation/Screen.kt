@@ -18,7 +18,11 @@ sealed class Screen(val route: String) {
     data object CreditBooking : Screen("credit_booking")
     data object CBInfo : Screen("cb_info")
     data object CBDimensions : Screen("cb_dimensions")
-    data object PdfScreen : Screen("pdf_screen/{uniqueUser}") {
-        fun createRoute(uniqueUser: String) = "pdf_screen/$uniqueUser"
+    data object PdfScreen : Screen("pdf_screen/{uniqueUser}/{branch}/{userCode}") {
+        fun createRoute(
+            uniqueUser: String,
+            branch: String,
+            userCode: String,
+        ) = "pdf_screen/$uniqueUser/$branch/$userCode"
     }
 }

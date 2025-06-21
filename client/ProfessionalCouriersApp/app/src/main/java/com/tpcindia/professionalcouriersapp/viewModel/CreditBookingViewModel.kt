@@ -149,7 +149,8 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                             )
                             if (result.isSuccess) {
                                 _creditBookingState.value = _creditBookingState.value.copy(
-                                    isDataSubmitted = true
+                                    isDataSubmitted = true,
+                                    message = result.getOrNull(),
                                 )
                             } else {
                                 updateStateWithError(
@@ -166,6 +167,7 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
                     }
                 } catch (e: Exception) {
                     updateStateWithError("Failed to submit credit booking data: ${e.message}")
+                } finally {
                     isSubmitting.set(false)
                 }
             }
@@ -190,8 +192,12 @@ class CreditBookingViewModel(application: Application) : AndroidViewModel(applic
         )
     }
 
-    fun createPDFScreenRoute(uniqueUser: String): String {
-        return Screen.PdfScreen.createRoute(uniqueUser)
+    fun createPDFScreenRoute(uniqueUser: String, branch: String, userCode: String): String {
+        return Screen.PdfScreen.createRoute(
+            uniqueUser = uniqueUser,
+            branch = branch,
+            userCode = userCode,
+        )
     }
 
     fun savePdf(pdfData: ByteArray, fileName: String, uniqueUser: String) {

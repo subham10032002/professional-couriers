@@ -194,4 +194,29 @@ class NetworkService {
             Result.failure(e)
         }
     }
+
+    fun getTopPdfs(branch: String, usercode: String) : Result<String> {
+        val json = JSONObject()
+        json.put("branch", branch)
+        json.put("usercode", usercode)
+        val requestBody = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+
+        val request = Request.Builder()
+            .url(IOConfig.getTopPdfUrl())
+            .post(requestBody)
+            .build()
+
+
+        return try {
+            val response = request.let { client.newCall(it).execute() }
+            val responseData = response.body?.string() ?: return Result.failure(Exception("Empty response"))
+            if (response.isSuccessful) {
+                Result.success(responseData)
+            } else {
+                Result.failure(Exception(responseData))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

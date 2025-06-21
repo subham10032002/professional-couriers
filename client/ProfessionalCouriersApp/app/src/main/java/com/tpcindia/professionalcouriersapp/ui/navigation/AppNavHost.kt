@@ -36,7 +36,11 @@ fun AppNavHost(
 ) {
     val navController = rememberNavController()
     val sharedViewModel: SharedViewModel = viewModel()
-    NavHost(navController = navController, startDestination = startDestination, modifier = modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = startDestination,
+        modifier = modifier
+    ) {
         composable(Screen.Login.route) {
             LoginScreen(viewModel = loginViewModel, navController = navController)
         }
@@ -98,11 +102,15 @@ fun AppNavHost(
         composable(
             route = Screen.PdfScreen.route,
             arguments = listOf(
-                navArgument("uniqueUser") { defaultValue = "" }
+                navArgument("uniqueUser") { defaultValue = "" },
+                navArgument("branch") { defaultValue = "" },
+                navArgument("userCode") { defaultValue = "" }
             )
         ) { backStackEntry ->
-            val branch = backStackEntry.arguments?.getString("uniqueUser") ?: ""
-            PdfScreen(uniqueUser = branch, viewModel = pdfViewModel)
+            val uniqueUser = backStackEntry.arguments?.getString("uniqueUser") ?: ""
+            val branch = backStackEntry.arguments?.getString("branch") ?: ""
+            val userCode = backStackEntry.arguments?.getString("userCode") ?: ""
+            PdfScreen(uniqueUser = uniqueUser, branch = branch, userCode = userCode, viewModel = pdfViewModel)
 
             BackHandler {
                 navController.popBackStack(route = Screen.Home.route, inclusive = false)

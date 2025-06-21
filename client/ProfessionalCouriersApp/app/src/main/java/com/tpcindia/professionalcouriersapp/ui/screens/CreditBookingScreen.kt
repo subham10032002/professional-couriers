@@ -105,7 +105,8 @@ fun CreditBookingScreen(
             consignmentNumber = creditBookingState.consignmentNumber,
             balanceStock = creditBookingState.balanceStock,
             masterAddressDetails = creditBookingState.masterAddressDetails,
-            pdfAddress = creditBookingState.pdfAddress
+            pdfAddress = creditBookingState.pdfAddress,
+            transactionId = homeScreenData.transactionId,
         )
         return creditBookingData
     }
@@ -282,7 +283,11 @@ fun CreditBookingScreen(
         }
 
         if (creditBookingState.isPdfSaved) {
-            val route = viewModel.createPDFScreenRoute(uniqueUser = homeScreenData.username+homeScreenData.userCode)
+            val route = viewModel.createPDFScreenRoute(
+                uniqueUser = homeScreenData.username+homeScreenData.userCode,
+                branch = homeScreenData.branch,
+                userCode = homeScreenData.userCode,
+            )
             route.let {
                 viewModel.clearState()
                 sharedViewModel.clearState()
@@ -297,6 +302,9 @@ fun CreditBookingScreen(
 
         if (creditBookingState.isDataSubmitted && creditBookingState.pdfAddress != null) {
             try {
+                creditBookingState.message?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                }
                 val creditBookingData = getCreditBookingData()
                 val fileName = "${creditBookingData.consignmentNumber}.pdf"
                 viewModel.savePdf(creditBookingState.pdfAddress!!, fileName, uniqueUser = homeScreenData.username+homeScreenData.userCode)

@@ -11,6 +11,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.tpcindia.professionalcouriersapp.data.db.dao.PdfDao
 import com.tpcindia.professionalcouriersapp.data.db.database.DatabaseProvider
+import com.tpcindia.professionalcouriersapp.data.io.NetworkService
 import com.tpcindia.professionalcouriersapp.data.model.entity.PdfEntity
 import com.tpcindia.professionalcouriersapp.data.repository.PdfRepository
 import kotlinx.coroutines.Dispatchers
@@ -30,16 +31,44 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
     val isLoading: StateFlow<Boolean> = _isLoading
 
     private val pdfDao: PdfDao = DatabaseProvider.getDatabase(application).pdfDao()
-    private val repository: PdfRepository = PdfRepository()
+    private val repository: PdfRepository = PdfRepository(NetworkService())
 
     fun getAllPdfDocuments(uniqueUser: String, context: Context) {
         viewModelScope.launch(Dispatchers.Main) {
             _isLoading.value = true
             try {
                 val pdfList = repository.getPDFs(uniqueUser = uniqueUser, pdfDao)
-                _pdfListState.value = pdfList
+                _pdfListState.value = (_pdfListState.value + pdfList).convertPdfDataToUniqueData()
             } catch (e: Exception) {
                 Toast.makeText(context, "Error fetching PDF documents: ${e.message}", Toast.LENGTH_SHORT).show()
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun getTopPdfs(uniqueUser: String, branch: String, userCode: String, context: Context) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _isLoading.value = true
+            try {
+                val result = repository.getTopPdfs(branch, userCode)
+                if (result.isSuccess) {
+                    val pdfDetails = result.getOrNull()
+                    val topPdfData = pdfDetails?.mapNotNull { detail ->
+                        if (detail.pdfAddress != null) {
+                            PdfEntity(
+                                fileName = detail.consignmentNumber + ".pdf",
+                                pdfData = detail.pdfAddress!!,
+                                uniqueUser = uniqueUser
+                            )
+                        } else {
+                            null // Skip this item if pdfAddress is null
+                        }
+                    }?.toMutableList() ?: mutableListOf()
+                    _pdfListState.value = (_pdfListState.value + topPdfData).convertPdfDataToUniqueData()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error refreshing PDF documents: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
                 _isLoading.value = false
             }
@@ -131,5 +160,9 @@ class PdfViewModel(application: Application) : AndroidViewModel(application) {
         } catch (e: Exception) {
             null
         }
+    }
+
+    private fun List<PdfEntity>.convertPdfDataToUniqueData(): List<PdfEntity> {
+        return this.associateBy { it.fileName }.values.toList()
     }
 }

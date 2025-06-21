@@ -6,6 +6,7 @@ import com.tpcindia.professionalcouriersapp.data.model.response.MasterAddressDet
 data class CreditBookingState(
     val error: String? = null,
     val isLoading: Boolean = false,
+    val message: String? = null,
     val destinationOptions: List<DestinationDetails> = emptyList(),
     val weight: String = "",
     val submitEnabled: Boolean = false,

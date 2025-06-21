@@ -103,6 +103,9 @@ public class CreditBookingData {
     @Column(name = "destcode")
     private String destCode;
 
+    @Column(name = "TransactionID")
+    private String transactionId;
+
     @Lob
     @Column(name = "photoOfAddress")
     private byte[] photoOfAddress;
@@ -379,7 +382,16 @@ public class CreditBookingData {
     public byte[] getPdfAddress() {
         return pdfAddress;
     }
+
     public void setPdfAddress(byte[] address) {
         this.pdfAddress = address;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String id) {
+        this.transactionId = id;
     }
 }
