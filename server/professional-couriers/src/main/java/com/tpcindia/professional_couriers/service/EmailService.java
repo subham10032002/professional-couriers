@@ -2,6 +2,7 @@ package com.tpcindia.professional_couriers.service;
 
 import com.tpcindia.professional_couriers.model.CreditBookingData;
 import com.tpcindia.professional_couriers.repository.AccountsCustomerRepository;
+import com.tpcindia.professional_couriers.repository.CompanyMasterRepository;
 import com.tpcindia.professional_couriers.repository.CreditBookingDataRepository;
 
 import jakarta.mail.internet.MimeMessage;
@@ -16,6 +17,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -43,6 +45,9 @@ public class EmailService {
 
     @Autowired
     private CreditBookingDataRepository creditBookingDataRepository;
+
+    @Autowired
+    private CompanyMasterRepository companyMasterRepository;
 
     public ResponseEntity<?> sendEmails(String branch, String userName, String branchCode, String userCode) {
         try {
@@ -152,8 +157,18 @@ public class EmailService {
 
     private boolean sendEmail(String to, String cc, File file, String clientName, byte[] combinedPdf) {
         try {
+            String emailPassword = companyMasterRepository.getEmailPassword();
 
-            MimeMessage message = javaMailSender.createMimeMessage();
+            if (emailPassword != null) {
+                emailPassword = emailPassword.trim();
+            }
+
+            JavaMailSenderImpl mailSender = (JavaMailSenderImpl) javaMailSender;
+
+            // Override the password dynamically
+            mailSender.setPassword(emailPassword);
+
+            MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
             helper.setTo(to);
@@ -167,7 +182,7 @@ public class EmailService {
             ByteArrayResource pdfResource = new ByteArrayResource(combinedPdf);
             helper.addAttachment(clientName + ".pdf", pdfResource);
 
-            javaMailSender.send(message);
+            mailSender.send(message);
             return true;
         } catch (Exception e) {
             return false;
