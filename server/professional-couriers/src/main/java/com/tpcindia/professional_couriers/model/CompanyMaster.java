@@ -25,6 +25,12 @@ public class CompanyMaster {
     @Column(name = "SubBranchCode")
     private String subBranchCode;
 
+    @Column(name = "Epod")
+    private String emailPassword;
+
+    @Column(name = "DefaultTyp")
+    private String defaultType;
+
     public Long getCode() {
         return code;
     }
@@ -63,5 +69,17 @@ public class CompanyMaster {
 
     public void setSubBranchCode(String code) {
         this.subBranchCode = code;
+    }
+
+    public String getEmailPassword() { return emailPassword; }
+
+    public void setEmailPassword(String password) {
+        this.emailPassword = password;
+    }
+
+    public String getDefaultType() { return defaultType; }
+
+    public void setDefaultType(String type) {
+        this.defaultType = type;
     }
 }
